@@ -4,8 +4,8 @@ plugins {
 }
 android {
     namespace = "me.free_time.design"
-    compileSdk = 37
-    defaultConfig { minSdk = 24 }
+    compileSdk = libs.versions.compileSdk.get().toInt()
+    defaultConfig { minSdk = libs.versions.minSdk.get().toInt() }
     buildFeatures { compose = true }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
