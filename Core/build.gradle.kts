@@ -14,4 +14,5 @@ android {
 
 dependencies {
     api(libs.androidx.core.ktx)
+    testImplementation(libs.junit)
 }

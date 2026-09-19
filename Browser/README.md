@@ -1,0 +1,44 @@
+# Freetime Browser
+
+Common URL routing for Freetime Android apps without forcing a specific WebView implementation.
+
+## Dependency
+
+```kotlin
+implementation("me.free-time:freetime-browser:<version>")
+```
+
+## External browser
+
+```kotlin
+FreetimeBrowser.openExternal(context, "https://example.org")
+```
+
+This starts an Android `ACTION_VIEW` intent.
+
+## In-app browser
+
+The host app owns its WebView or Custom Tabs implementation:
+
+```kotlin
+FreetimeBrowser.open(
+    context = context,
+    url = url,
+    options = BrowserOptions(mode = BrowserMode.IN_APP),
+    openInApp = { requestedUrl ->
+        openMyWebView(requestedUrl)
+        true
+    },
+)
+```
+
+Return `true` when the app handled the URL. Returning `false` allows the external-browser fallback when `allowExternalFallback` is enabled.
+
+To prevent fallback:
+
+```kotlin
+BrowserOptions(
+    mode = BrowserMode.IN_APP,
+    allowExternalFallback = false,
+)
+```
