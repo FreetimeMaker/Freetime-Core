@@ -32,7 +32,7 @@ subprojects {
             repositories {
                 maven {
                     name = "CentralBundle"
-                    url = rootProject.layout.buildDirectory.dir("central-repository").get().asFile.toURI()
+                    url = rootProject.file("build/central-repository").toURI()
                 }
             }
         }

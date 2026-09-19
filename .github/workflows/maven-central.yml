@@ -85,7 +85,16 @@ jobs:
         run: |
           set -euo pipefail
           chmod +x ./gradlew
-          ./gradlew clean test assembleRelease publishAllPublicationsToCentralBundleRepository -PreleaseVersion="$RELEASE_VERSION"
+          rm -rf build/central-repository
+          ./gradlew clean test assembleRelease \
+            :Core:publishReleasePublicationToCentralBundleRepository \
+            :Design:publishReleasePublicationToCentralBundleRepository \
+            :Updater:publishReleasePublicationToCentralBundleRepository \
+            :Browser:publishReleasePublicationToCentralBundleRepository \
+            :Donations:publishReleasePublicationToCentralBundleRepository \
+            -PreleaseVersion="$RELEASE_VERSION"
+          echo "Staged Maven files:"
+          find build/central-repository -type f | sort
 
       - name: Verify staged modules
         if: steps.duplicate.outputs.skip != 'true'
