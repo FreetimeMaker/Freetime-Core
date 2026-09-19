@@ -114,7 +114,16 @@ Apps keep control over link handling and wallet-copy behavior.
 
 ## Publishing
 
-The **Maven Central** GitHub Actions workflow creates release AARs, sources, Javadocs, signatures and checksums, then uploads one bundle through the Central Publisher API using `USER_MANAGED`. A successful workflow stages and validates the deployment; it does **not** automatically publish it.
+The library version is defined once in `gradle/libs.versions.toml`:
+
+```toml
+[versions]
+freetime = "1.0.0"
+```
+
+Changing this value on `master` automatically starts the **Maven Central Release** workflow. It builds/tests all modules, signs and bundles the Maven artifacts, uploads them with Central's automatic publishing mode, waits for publication, and only then creates the matching GitHub tag (for example `v1.0.0`).
+
+If that tag already exists, the workflow skips the release to prevent publishing the same immutable Maven version twice.
 
 Required repository secrets:
 

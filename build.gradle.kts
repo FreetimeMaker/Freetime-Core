@@ -8,8 +8,7 @@ plugins {
 }
 
 val releaseVersion = providers.gradleProperty("releaseVersion")
-    .orElse(providers.environmentVariable("RELEASE_VERSION"))
-    .orElse("0.0.0-local")
+    .orElse(libs.versions.freetime)
 
 allprojects {
     group = "me.free-time"

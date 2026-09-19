@@ -1,21 +1,23 @@
-name: Maven Central
+name: Maven Central Release
 
 on:
+  push:
+    branches: [master]
+    paths:
+      - "gradle/libs.versions.toml"
   workflow_dispatch:
-    inputs:
-      version:
-        description: Version to stage, for example 1.0.0
-        required: true
-        type: string
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: maven-central-release
+  cancel-in-progress: false
 
 jobs:
-  stage:
+  release:
     runs-on: ubuntu-latest
     env:
-      RELEASE_VERSION: ${{ inputs.version }}
       SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
       MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
@@ -23,24 +25,50 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read release version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(sed -n 's/^freetime = "\([^"]*\)"/\1/p' gradle/libs.versions.toml | head -n1)"
+          if [[ -z "$VERSION" ]]; then
+            echo "Missing [versions].freetime in gradle/libs.versions.toml"
+            exit 1
+          fi
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid Freetime Core version: $VERSION"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+          echo "RELEASE_VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Stop if version is already released
+        id: duplicate
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git rev-parse "refs/tags/${{ steps.version.outputs.tag }}" >/dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Tag ${{ steps.version.outputs.tag }} already exists; nothing to release."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - uses: actions/setup-java@v4
+        if: steps.duplicate.outputs.skip != 'true'
         with:
           distribution: temurin
           java-version: "17"
 
       - uses: gradle/actions/setup-gradle@v4
-
-      - name: Validate version
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ ! "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
-            echo "Invalid release version: $RELEASE_VERSION"
-            exit 1
-          fi
+        if: steps.duplicate.outputs.skip != 'true'
 
       - name: Check required secrets
+        if: steps.duplicate.outputs.skip != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -51,12 +79,27 @@ jobs:
             fi
           done
 
-      - name: Build and publish to local Central bundle
+      - name: Build, test and stage Maven artifacts
+        if: steps.duplicate.outputs.skip != 'true'
+        shell: bash
         run: |
+          set -euo pipefail
           chmod +x ./gradlew
-          ./gradlew clean assembleRelease test publishAllPublicationsToCentralBundleRepository
+          ./gradlew clean test assembleRelease publishAllPublicationsToCentralBundleRepository -PreleaseVersion="$RELEASE_VERSION"
 
-      - name: Add Maven Central checksums
+      - name: Verify staged modules
+        if: steps.duplicate.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="build/central-repository/me/free-time"
+          for artifact in freetime-core freetime-design freetime-updater freetime-browser freetime-donations; do
+            test -f "$base/$artifact/$RELEASE_VERSION/$artifact-$RELEASE_VERSION.pom"
+            test -f "$base/$artifact/$RELEASE_VERSION/$artifact-$RELEASE_VERSION.aar"
+          done
+
+      - name: Add checksums
+        if: steps.duplicate.outputs.skip != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -71,14 +114,16 @@ jobs:
             sha512sum "$file" | awk '{print $1}' > "$file.sha512"
           done < <(find "$repo" -type f -print0)
 
-      - name: Create Central deployment bundle
+      - name: Create Central bundle
+        if: steps.duplicate.outputs.skip != 'true'
         shell: bash
         run: |
           set -euo pipefail
           cd build/central-repository
-          zip -r ../central-bundle.zip .
+          zip -q -r ../central-bundle.zip .
 
-      - name: Upload bundle for validation
+      - name: Upload and automatically publish on Maven Central
+        if: steps.duplicate.outputs.skip != 'true'
         id: central
         shell: bash
         run: |
@@ -88,25 +133,48 @@ jobs:
             --request POST \
             --header "Authorization: Bearer $TOKEN" \
             --form "bundle=@build/central-bundle.zip;type=application/octet-stream" \
-            "https://central.sonatype.com/api/v1/publisher/upload?name=Freetime-Core-$RELEASE_VERSION&publishingType=USER_MANAGED")"
+            "https://central.sonatype.com/api/v1/publisher/upload?name=Freetime-Core-$RELEASE_VERSION&publishingType=AUTOMATIC")"
           echo "deployment_id=$DEPLOYMENT_ID" >> "$GITHUB_OUTPUT"
-          echo "Central deployment created: $DEPLOYMENT_ID"
-          echo "It is USER_MANAGED and has NOT been published automatically."
+          echo "Central deployment: $DEPLOYMENT_ID"
 
-      - name: Show validation status
+      - name: Wait for Central result
+        if: steps.duplicate.outputs.skip != 'true'
         shell: bash
         run: |
           set -euo pipefail
           TOKEN="$(printf '%s:%s' "$MAVEN_CENTRAL_USERNAME" "$MAVEN_CENTRAL_PASSWORD" | base64 -w 0)"
-          sleep 10
-          curl --fail-with-body --silent --show-error \
-            --request POST \
-            --header "Authorization: Bearer $TOKEN" \
-            "https://central.sonatype.com/api/v1/publisher/status?id=${{ steps.central.outputs.deployment_id }}" || true
+          ID="${{ steps.central.outputs.deployment_id }}"
+          for attempt in {1..30}; do
+            BODY="$(curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header "Authorization: Bearer $TOKEN" \
+              "https://central.sonatype.com/api/v1/publisher/status?id=$ID")"
+            echo "$BODY"
+            STATE="$(printf '%s' "$BODY" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("deploymentState",""))')"
+            case "$STATE" in
+              PUBLISHED) exit 0 ;;
+              FAILED) echo "Maven Central validation/publication failed."; exit 1 ;;
+            esac
+            sleep 20
+          done
+          echo "Timed out waiting for Maven Central publication."
+          exit 1
 
-      - name: Upload bundle as workflow artifact
+      - name: Create and push GitHub tag
+        if: steps.duplicate.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.version.outputs.tag }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Freetime Core $RELEASE_VERSION"
+          git push origin "$TAG"
+
+      - name: Upload Central bundle
+        if: steps.duplicate.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: central-bundle-${{ inputs.version }}
+          name: central-bundle-${{ steps.version.outputs.version }}
           path: build/central-bundle.zip
           if-no-files-found: error
