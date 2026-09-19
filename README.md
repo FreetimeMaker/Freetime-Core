@@ -62,21 +62,32 @@ The backdrop source is intentionally separated from the glass content to avoid R
 
 ## Updater
 
+Apps register the supported update backends and users can select Luma Store, F-Droid, GitHub, another source, any combination of them, or all sources at once.
+
 ```kotlin
 val updater = FreetimeUpdater(
-    UpdateSource { packageName ->
-        // Fetch from All API, Luma Store, GitHub, F-Droid, etc.
-        AppVersion("2.0.0", 20, downloadUrl = "...")
-    }
+    listOf(
+        RegisteredUpdateSource(UpdateSourceType.LUMA_STORE, lumaStoreSource),
+        RegisteredUpdateSource(UpdateSourceType.F_DROID, fDroidSource),
+        RegisteredUpdateSource(UpdateSourceType.GITHUB, githubSource),
+    )
 )
 
-val result = updater.check(
-    packageName = context.packageName,
-    current = AppVersion(BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE.toLong())
+// Check every registered source and choose the highest versionCode.
+val all = updater.check(packageName, currentVersion)
+
+// Check only selected sources.
+val selected = updater.check(
+    packageName,
+    currentVersion,
+    UpdateSourceSelection.of(
+        UpdateSourceType.LUMA_STORE,
+        UpdateSourceType.F_DROID,
+    ),
 )
 ```
 
-The updater does not require Luma Store and does not install APKs itself.
+`UpdateInfo.source` reports which source supplied the newest version and `UpdateInfo.candidates` contains the results returned by all checked sources. The updater does not require Luma Store and does not install APKs itself.
 
 ## Browser
 

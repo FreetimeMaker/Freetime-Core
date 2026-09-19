@@ -29,59 +29,61 @@ subprojects {
         apply(plugin = "maven-publish")
         apply(plugin = "signing")
 
-        afterEvaluate {
-            extensions.configure<PublishingExtension> {
-                publications {
-                    create<MavenPublication>("release") {
-                        from(components["release"])
-                        artifactId = artifactIds.getValue(project.name)
+        extensions.configure<PublishingExtension> {
+            repositories {
+                maven {
+                    name = "CentralBundle"
+                    url = rootProject.layout.buildDirectory.dir("central-repository").get().asFile.toURI()
+                }
+            }
+        }
 
-                        pom {
-                            name.set("Freetime Core - ${project.name}")
-                            description.set("Reusable Android ${project.name} module from Freetime Core.")
-                            url.set("https://github.com/FreetimeMaker/Freetime-Core")
+        components.whenObjectAdded {
+            if (name == "release" && extensions.getByType<PublishingExtension>().publications.findByName("release") == null) {
+                val releaseComponent = this
+                extensions.configure<PublishingExtension> {
+                    publications {
+                        create<MavenPublication>("release") {
+                            from(releaseComponent)
+                            artifactId = artifactIds.getValue(project.name)
 
-                            licenses {
-                                license {
-                                    name.set("GNU General Public License v3.0")
-                                    url.set("https://www.gnu.org/licenses/gpl-3.0.html")
-                                    distribution.set("repo")
-                                }
-                            }
-
-                            developers {
-                                developer {
-                                    id.set("FreetimeMaker")
-                                    name.set("Freetime Maker")
-                                    url.set("https://github.com/FreetimeMaker")
-                                    organization.set("Freetime Maker")
-                                    organizationUrl.set("https://free-time.me")
-                                }
-                            }
-
-                            scm {
-                                connection.set("scm:git:https://github.com/FreetimeMaker/Freetime-Core.git")
-                                developerConnection.set("scm:git:ssh://git@github.com/FreetimeMaker/Freetime-Core.git")
+                            pom {
+                                name.set("Freetime Core - ${project.name}")
+                                description.set("Reusable Android ${project.name} module from Freetime Core.")
                                 url.set("https://github.com/FreetimeMaker/Freetime-Core")
+                                licenses {
+                                    license {
+                                        name.set("GNU General Public License v3.0")
+                                        url.set("https://www.gnu.org/licenses/gpl-3.0.html")
+                                        distribution.set("repo")
+                                    }
+                                }
+                                developers {
+                                    developer {
+                                        id.set("FreetimeMaker")
+                                        name.set("Freetime Maker")
+                                        url.set("https://github.com/FreetimeMaker")
+                                        organization.set("Freetime Maker")
+                                        organizationUrl.set("https://free-time.me")
+                                    }
+                                }
+                                scm {
+                                    connection.set("scm:git:https://github.com/FreetimeMaker/Freetime-Core.git")
+                                    developerConnection.set("scm:git:ssh://git@github.com/FreetimeMaker/Freetime-Core.git")
+                                    url.set("https://github.com/FreetimeMaker/Freetime-Core")
+                                }
                             }
                         }
                     }
                 }
 
-                repositories {
-                    maven {
-                        name = "CentralBundle"
-                        url = rootProject.layout.buildDirectory.dir("central-repository").get().asFile.toURI()
+                extensions.configure<SigningExtension> {
+                    val signingKey = System.getenv("SIGNING_KEY")
+                    val signingPassword = System.getenv("SIGNING_PASSWORD")
+                    if (!signingKey.isNullOrBlank()) {
+                        useInMemoryPgpKeys(signingKey, signingPassword)
+                        sign(extensions.getByType<PublishingExtension>().publications["release"])
                     }
-                }
-            }
-
-            extensions.configure<SigningExtension> {
-                val signingKey = System.getenv("SIGNING_KEY")
-                val signingPassword = System.getenv("SIGNING_PASSWORD")
-                if (!signingKey.isNullOrBlank()) {
-                    useInMemoryPgpKeys(signingKey, signingPassword)
-                    sign(extensions.getByType<PublishingExtension>().publications["release"])
                 }
             }
         }
