@@ -1,9 +1,6 @@
-plugins {
-    alias(libs.plugins.android.library)
-}
-
+plugins { alias(libs.plugins.android.library) }
 android {
-    namespace = "me.free_time.core"
+    namespace = "me.free_time.updater"
     compileSdk = 36
     defaultConfig { minSdk = 24 }
     compileOptions {
@@ -11,7 +8,4 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
-
-dependencies {
-    api(libs.androidx.core.ktx)
-}
+dependencies { api(project(":Core")) }

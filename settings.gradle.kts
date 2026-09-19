@@ -1,12 +1,6 @@
 pluginManagement {
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -23,4 +17,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Freetime Core"
-include(":Core")
+include(":Core", ":Design", ":Updater", ":Browser", ":Donations")
