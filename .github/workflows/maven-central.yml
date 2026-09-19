@@ -1,0 +1,112 @@
+name: Maven Central
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to stage, for example 1.0.0
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_VERSION: ${{ inputs.version }}
+      SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+      MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Validate version
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid release version: $RELEASE_VERSION"
+            exit 1
+          fi
+
+      - name: Check required secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in SIGNING_KEY SIGNING_PASSWORD MAVEN_CENTRAL_USERNAME MAVEN_CENTRAL_PASSWORD; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "Missing GitHub Actions secret: $name"
+              exit 1
+            fi
+          done
+
+      - name: Build and publish to local Central bundle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean assembleRelease test publishAllPublicationsToCentralBundleRepository
+
+      - name: Add Maven Central checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="build/central-repository"
+          while IFS= read -r -d '' file; do
+            case "$file" in
+              *.asc|*.md5|*.sha1|*.sha256|*.sha512) continue ;;
+            esac
+            md5sum "$file" | awk '{print $1}' > "$file.md5"
+            sha1sum "$file" | awk '{print $1}' > "$file.sha1"
+            sha256sum "$file" | awk '{print $1}' > "$file.sha256"
+            sha512sum "$file" | awk '{print $1}' > "$file.sha512"
+          done < <(find "$repo" -type f -print0)
+
+      - name: Create Central deployment bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd build/central-repository
+          zip -r ../central-bundle.zip .
+
+      - name: Upload bundle for validation
+        id: central
+        shell: bash
+        run: |
+          set -euo pipefail
+          TOKEN="$(printf '%s:%s' "$MAVEN_CENTRAL_USERNAME" "$MAVEN_CENTRAL_PASSWORD" | base64 -w 0)"
+          DEPLOYMENT_ID="$(curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header "Authorization: Bearer $TOKEN" \
+            --form "bundle=@build/central-bundle.zip;type=application/octet-stream" \
+            "https://central.sonatype.com/api/v1/publisher/upload?name=Freetime-Core-$RELEASE_VERSION&publishingType=USER_MANAGED")"
+          echo "deployment_id=$DEPLOYMENT_ID" >> "$GITHUB_OUTPUT"
+          echo "Central deployment created: $DEPLOYMENT_ID"
+          echo "It is USER_MANAGED and has NOT been published automatically."
+
+      - name: Show validation status
+        shell: bash
+        run: |
+          set -euo pipefail
+          TOKEN="$(printf '%s:%s' "$MAVEN_CENTRAL_USERNAME" "$MAVEN_CENTRAL_PASSWORD" | base64 -w 0)"
+          sleep 10
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header "Authorization: Bearer $TOKEN" \
+            "https://central.sonatype.com/api/v1/publisher/status?id=${{ steps.central.outputs.deployment_id }}" || true
+
+      - name: Upload bundle as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: central-bundle-${{ inputs.version }}
+          path: build/central-bundle.zip
+          if-no-files-found: error
