@@ -4,7 +4,7 @@ plugins {
 }
 android {
     namespace = "me.free_time.design"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig { minSdk = 24 }
     buildFeatures { compose = true }
     compileOptions {

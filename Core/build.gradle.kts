@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "me.free_time.core"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig { minSdk = 24 }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
