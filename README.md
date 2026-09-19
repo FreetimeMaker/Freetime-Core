@@ -1,42 +1,64 @@
 # Freetime Core
 
-Reusable Android building blocks for Freetime Maker apps. The SDK is modular, open-source friendly and does **not** require Luma Store, an account, or a proprietary runtime.
+Shared Android libraries for Freetime Maker apps. Freetime Core keeps common design, update, browser and donation behavior reusable while every app remains independently installable and usable.
 
 ## Modules
 
-- **Core** — common models, results and lightweight utilities.
-- **Design** — Material You theme plus reusable Liquid Glass Compose components.
-- **Updater** — source-agnostic update models and update checking. Apps decide where version data comes from.
-- **Browser** — consistent external/in-app URL routing without forcing WebView on every app.
-- **Donations** — reusable donation models and a Liquid Glass Compose donation screen for links and wallet addresses.
+| Artifact | Purpose |
+| --- | --- |
+| `freetime-core` | Common models, results and lightweight utilities |
+| `freetime-design` | Material You and the current GeoWeather-style Liquid Glass system |
+| `freetime-updater` | Source-agnostic update checking |
+| `freetime-browser` | External/in-app URL routing |
+| `freetime-donations` | Reusable donation models and Compose UI |
 
-## Local Gradle usage
+## Maven Central
 
-When this repository is included as a composite build or modules are copied into a workspace:
+Releases use the verified `me.free-time` namespace:
 
 ```kotlin
+repositories {
+    google()
+    mavenCentral()
+}
+
 dependencies {
-    implementation(project(":Core"))
-    implementation(project(":Design"))
-    implementation(project(":Updater"))
-    implementation(project(":Browser"))
-    implementation(project(":Donations"))
+    implementation("me.free-time:freetime-core:<version>")
+    implementation("me.free-time:freetime-design:<version>")
+    implementation("me.free-time:freetime-updater:<version>")
+    implementation("me.free-time:freetime-browser:<version>")
+    implementation("me.free-time:freetime-donations:<version>")
 }
 ```
 
-Only include modules the app actually needs.
+Only add the modules an app needs.
 
-## Design
+## Liquid Glass
+
+The Design module follows GeoWeather's current Liquid Glass implementation. On Android 13+ it uses Kyant Backdrop and Shapes for backdrop sampling, vibrancy, blur, lens distortion, capsules and interactive spring scaling. Older Android versions receive a Material color-aware fallback.
+
+Wrap the app content once so glass surfaces can sample a separate backdrop layer:
 
 ```kotlin
 FreetimeTheme {
-    FreetimeGlassCard {
-        FreetimeGlassButton("Continue", onClick = ::continueFlow)
+    FreetimeGlassRoot {
+        // App UI
     }
 }
 ```
 
-The theme follows system dark mode by default and supports Android dynamic color. Components use Material color roles, so foreground text automatically remains readable in light and dark themes.
+Then use the reusable components or modifiers:
+
+```kotlin
+FreetimeGlassCard {
+    FreetimeGlassButton("Continue", onClick = ::continueFlow)
+}
+
+Modifier.freetimeGlass()
+Modifier.freetimeGlassCapsule()
+```
+
+The backdrop source is intentionally separated from the glass content to avoid RuntimeShader feedback loops seen on some Android GPU drivers.
 
 ## Updater
 
@@ -54,7 +76,7 @@ val result = updater.check(
 )
 ```
 
-The updater deliberately does not install APKs or require Luma Store.
+The updater does not require Luma Store and does not install APKs itself.
 
 ## Browser
 
@@ -62,27 +84,42 @@ The updater deliberately does not install APKs or require Luma Store.
 FreetimeBrowser.openExternal(context, "https://example.org")
 ```
 
-For an app-owned WebView/custom tab flow, choose `BrowserMode.IN_APP` and provide an `openInApp` callback.
+For app-owned WebView or custom-tab behavior, use `BrowserMode.IN_APP` and provide an `openInApp` callback.
 
 ## Donations
 
 ```kotlin
 val targets = listOf(
     DonationTarget.Link("OpenCollective", "https://opencollective.com/example"),
-    DonationTarget.Wallet("Bitcoin", "BTC", "wallet-address")
+    DonationTarget.Wallet("Bitcoin", "BTC", "wallet-address"),
 )
 ```
 
-Apps control link handling and wallet-copy behavior themselves.
+Apps keep control over link handling and wallet-copy behavior.
+
+## Android versions
+
+`compileSdk` and `minSdk` are defined centrally in `gradle/libs.versions.toml`. The current minimum SDK is 24 and compile SDK is 37.
+
+## Publishing
+
+The **Maven Central** GitHub Actions workflow creates release AARs, sources, Javadocs, signatures and checksums, then uploads one bundle through the Central Publisher API using `USER_MANAGED`. A successful workflow stages and validates the deployment; it does **not** automatically publish it.
+
+Required repository secrets:
+
+- `MAVEN_CENTRAL_USERNAME`
+- `MAVEN_CENTRAL_PASSWORD`
+- `SIGNING_KEY`
+- `SIGNING_PASSWORD`
 
 ## Principles
 
-1. Every consuming app must continue to work independently.
-2. No mandatory account or store dependency.
-3. Keep dependencies small and F-Droid-friendly.
-4. Prefer interfaces/callbacks over hard-coded Freetime backend dependencies.
-5. Shared UI uses Material color roles for light/dark accessibility.
+1. Consuming apps continue to work independently.
+2. No mandatory Freetime account or Luma Store dependency.
+3. Dependencies remain open-source and F-Droid-friendly.
+4. Shared infrastructure uses interfaces/callbacks instead of hard-coded backends.
+5. Design follows Material color roles for readable light and dark themes.
 
 ## License
 
-Add the repository license before publishing binary artifacts to a Maven repository.
+Freetime Core is licensed under the GNU General Public License v3.0 (GPL-3.0).

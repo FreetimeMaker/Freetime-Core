@@ -1,4 +1,3 @@
-import com.android.build.gradle.LibraryExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.plugins.signing.SigningExtension
@@ -29,15 +28,6 @@ subprojects {
     plugins.withId("com.android.library") {
         apply(plugin = "maven-publish")
         apply(plugin = "signing")
-
-        extensions.configure<LibraryExtension> {
-            publishing {
-                singleVariant("release") {
-                    withSourcesJar()
-                    withJavadocJar()
-                }
-            }
-        }
 
         afterEvaluate {
             extensions.configure<PublishingExtension> {

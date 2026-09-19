@@ -19,4 +19,6 @@ dependencies {
     api(libs.androidx.compose.foundation)
     api(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui.tooling.preview)
+    api(libs.kyant.backdrop)
+    api(libs.kyant.shapes)
 }
