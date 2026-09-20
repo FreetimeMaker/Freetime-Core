@@ -7,17 +7,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -31,6 +28,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.kyant.backdrop.Backdrop
@@ -146,26 +144,25 @@ fun Modifier.freetimeLiquidGlass(
 
 @Composable
 fun FreetimeGlassCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Card(
-        modifier = modifier.freetimeGlass(FreetimeGlassDefaults.shape),
-        shape = FreetimeGlassDefaults.shape,
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-    ) {
-        Surface(color = Color.Transparent, modifier = Modifier.padding(16.dp)) { content() }
-    }
+    Box(
+        modifier = modifier
+            .freetimeGlass(FreetimeGlassDefaults.shape, interactive = false)
+            .padding(16.dp)
+    ) { content() }
 }
 
 @Composable
 fun FreetimeGlassButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Button(
-        onClick = onClick,
-        modifier = modifier.freetimeGlassCapsule(),
-        shape = Capsule(),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-        ),
-    ) { Text(text) }
+    Box(
+        modifier = modifier
+            .defaultMinSize(minHeight = 48.dp)
+            .freetimeGlassCapsule()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text, color = MaterialTheme.colorScheme.onSurface)
+    }
 }
 
 @Composable
@@ -173,9 +170,11 @@ fun FreetimeGlassNavigationBar(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
 ) {
-    NavigationBar(
-        modifier = modifier.freetimeGlassCapsule(interactive = false),
-        containerColor = Color.Transparent,
+    Row(
+        modifier = modifier
+            .freetimeGlassCapsule(interactive = false)
+            .padding(horizontal = 8.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
         content = content,
     )
 }
