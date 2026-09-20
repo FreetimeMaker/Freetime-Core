@@ -49,13 +49,14 @@ fun rememberFreetimeReducedMotion(): Boolean {
 fun rememberFreetimeGlassPerformance(): Float =
     remember { if (Build.VERSION.SDK_INT >= 33) 1f else if (Build.VERSION.SDK_INT >= 29) .72f else .5f }
 
+@Composable
 fun Modifier.freetimeDepth(depth: FreetimeGlassDepth, interactive: Boolean = false): Modifier {
     val shape = when (depth) {
         FreetimeGlassDepth.SUBTLE -> RoundedCornerShape(FreetimeDesignTokens.radiusSubtle)
         FreetimeGlassDepth.STANDARD -> RoundedCornerShape(FreetimeDesignTokens.radiusStandard)
         FreetimeGlassDepth.ELEVATED -> RoundedCornerShape(FreetimeDesignTokens.radiusElevated)
     }
-    return this.then(Modifier).let { base -> base }
+    return freetimeGlass(shape, interactive)
 }
 
 @Composable
