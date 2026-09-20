@@ -5,7 +5,27 @@ data class AppVersion(
     val versionCode: Long,
     val downloadUrl: String? = null,
     val changelog: String? = null,
+    val sha256: String? = null,
+    val signature: String? = null,
+    val downloadSizeBytes: Long? = null,
 )
+
+sealed interface UpdateDownloadState {
+    data object Idle : UpdateDownloadState
+    data class Downloading(val bytesDownloaded: Long, val totalBytes: Long?) : UpdateDownloadState {
+        val progress: Float? get() = totalBytes?.takeIf { it > 0 }?.let { (bytesDownloaded.toFloat() / it).coerceIn(0f, 1f) }
+    }
+    data object Verifying : UpdateDownloadState
+    data class Ready(val filePath: String) : UpdateDownloadState
+    data class Failed(val reason: String) : UpdateDownloadState
+}
+
+object UpdateIntegrity {
+    fun sha256Matches(bytes: ByteArray, expectedHex: String): Boolean {
+        val actual = java.security.MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
+        return actual.equals(expectedHex.trim(), ignoreCase = true)
+    }
+}
 
 enum class UpdateSourceType {
     LUMA_STORE,
