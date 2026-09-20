@@ -133,7 +133,7 @@ fun Modifier.freetimeLiquidGlass(
         shape = { shape },
         effects = {
             vibrancy()
-            blur(1.25.dp.toPx())
+            blur(18.dp.toPx())
             lens(
                 30.dp.toPx(),
                 62.dp.toPx(),
