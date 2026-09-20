@@ -17,4 +17,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Freetime Core"
-include(":Core", ":Design", ":Updater", ":Browser", ":Donations")
+include(":Core", ":Design", ":Browser", ":Donations")
