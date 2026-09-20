@@ -93,12 +93,12 @@ fun Modifier.freetimeLiquidGlass(
     interactive: Boolean = true,
 ): Modifier {
     val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val surface = if (isDarkTheme) Color.Black.copy(alpha = 0.48f)
-    else Color.White.copy(alpha = 0.42f)
+    val surface = if (isDarkTheme) Color.Black.copy(alpha = 0.20f)
+    else Color.White.copy(alpha = 0.16f)
     val fallbackSurface = if (isDarkTheme) {
-        MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.92f)
+        MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.78f)
     } else {
-        MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.90f)
+        MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.74f)
     }
 
     if (backdrop == null) return clip(shape).background(fallbackSurface)
@@ -111,11 +111,18 @@ fun Modifier.freetimeLiquidGlass(
         shape = { shape },
         effects = {
             vibrancy()
-            blur(12.dp.toPx())
-            lens(24.dp.toPx(), 24.dp.toPx())
+            // Keep the backdrop crisp and let the lens/refraction define the glass,
+            // closer to SimpMusic's floating Liquid Glass surfaces.
+            blur(2.dp.toPx())
+            lens(
+                28.dp.toPx(),
+                56.dp.toPx(),
+                depthEffect = true,
+                chromaticAberration = true,
+            )
         },
         layerBlock = {
-            val scale = lerp(1f, 1.025f, press.value)
+            val scale = lerp(1f, 0.975f, press.value)
             scaleX = scale
             scaleY = scale
         },
