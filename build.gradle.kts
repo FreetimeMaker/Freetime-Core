@@ -18,7 +18,6 @@ allprojects {
 val artifactIds = mapOf(
     "Core" to "freetime-core",
     "Design" to "freetime-design",
-    "Updater" to "freetime-updater",
     "Browser" to "freetime-browser",
     "Donations" to "freetime-donations"
 )
