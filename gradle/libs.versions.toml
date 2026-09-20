@@ -2,7 +2,7 @@
 freetime = "1.2.0"
 compileSdk = "37"
 minSdk = "24"
-agp = "9.3.2"
+agp = "9.4.1"
 kotlin = "2.4.20"
 coreKtx = "1.19.0"
 composeBom = "2026.09.00"
