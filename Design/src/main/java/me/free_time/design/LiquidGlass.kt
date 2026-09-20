@@ -76,7 +76,7 @@ fun FreetimeGlassRoot(
         }
         Modifier.background(brush)
     } else {
-        Modifier.background(MaterialTheme.colorScheme.background)
+        Modifier
     }
     CompositionLocalProvider(LocalFreetimeBackdrop provides backdrop) {
         Box(Modifier.fillMaxSize()) {
@@ -117,10 +117,12 @@ fun Modifier.freetimeLiquidGlass(
         Color.White.copy(alpha = 0.055f)
     }
 
+    // Pre-Android 13 cannot sample the real backdrop. Keep the fallback
+    // translucent instead of turning glass controls into opaque white cards.
     val fallbackSurface = if (isDarkTheme) {
-        Color.White.copy(alpha = 0.12f)
+        Color.White.copy(alpha = 0.055f)
     } else {
-        Color.White.copy(alpha = 0.32f)
+        Color.White.copy(alpha = 0.09f)
     }
 
     if (backdrop == null) return clip(shape).background(fallbackSurface)
