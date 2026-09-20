@@ -163,7 +163,8 @@ jobs:
           set -euo pipefail
           TOKEN="$(printf '%s:%s' "$MAVEN_CENTRAL_USERNAME" "$MAVEN_CENTRAL_PASSWORD" | base64 -w 0)"
           ID="${{ steps.central.outputs.deployment_id }}"
-          for attempt in {1..30}; do
+          # Maven Central publication can take a while; poll gently every 30 minutes.
+          for attempt in {1..12}; do
             BODY="$(curl --fail-with-body --silent --show-error \
               --request POST \
               --header "Authorization: Bearer $TOKEN" \
@@ -174,9 +175,10 @@ jobs:
               PUBLISHED) exit 0 ;;
               FAILED) echo "Maven Central validation/publication failed."; exit 1 ;;
             esac
-            sleep 20
+            echo "Not published yet; checking again in 30 minutes..."
+            sleep 1800
           done
-          echo "Timed out waiting for Maven Central publication."
+          echo "Timed out waiting for Maven Central publication after about 6 hours."
           exit 1
 
       - name: Create and push GitHub tag
