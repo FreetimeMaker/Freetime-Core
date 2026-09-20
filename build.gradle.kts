@@ -1,6 +1,5 @@
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.plugins.signing.SigningExtension
 
 plugins {
     alias(libs.plugins.android.library) apply false
@@ -8,33 +7,21 @@ plugins {
 }
 
 val releaseVersion = providers.gradleProperty("releaseVersion")
+    .orElse(providers.environmentVariable("VERSION"))
     .orElse(libs.versions.freetime)
 
 allprojects {
-    group = "me.free-time"
+    group = if (System.getenv("JITPACK") == "true") {
+        "com.github.FreetimeMaker.Freetime-Core"
+    } else {
+        "me.free-time"
+    }
     version = releaseVersion.get()
 }
-
-val artifactIds = mapOf(
-    "Core" to "freetime-core",
-    "Design" to "freetime-design",
-    "Browser" to "freetime-browser",
-    "Donations" to "freetime-donations"
-)
 
 subprojects {
     plugins.withId("com.android.library") {
         apply(plugin = "maven-publish")
-        apply(plugin = "signing")
-
-        extensions.configure<PublishingExtension> {
-            repositories {
-                maven {
-                    name = "CentralBundle"
-                    url = rootProject.file("build/central-repository").toURI()
-                }
-            }
-        }
 
         components.whenObjectAdded {
             if (name == "release" && extensions.getByType<PublishingExtension>().publications.findByName("release") == null) {
@@ -43,8 +30,9 @@ subprojects {
                     publications {
                         create<MavenPublication>("release") {
                             from(releaseComponent)
-                            artifactId = artifactIds.getValue(project.name)
-
+                            // JitPack multi-module coordinates use the module name:
+                            // com.github.FreetimeMaker.Freetime-Core:<Module>:<Tag>
+                            artifactId = project.name
                             pom {
                                 name.set("Freetime Core - ${project.name}")
                                 description.set("Reusable Android ${project.name} module from Freetime Core.")
@@ -61,26 +49,14 @@ subprojects {
                                         id.set("FreetimeMaker")
                                         name.set("Freetime Maker")
                                         url.set("https://github.com/FreetimeMaker")
-                                        organization.set("Freetime Maker")
-                                        organizationUrl.set("https://free-time.me")
                                     }
                                 }
                                 scm {
                                     connection.set("scm:git:https://github.com/FreetimeMaker/Freetime-Core.git")
-                                    developerConnection.set("scm:git:ssh://git@github.com/FreetimeMaker/Freetime-Core.git")
                                     url.set("https://github.com/FreetimeMaker/Freetime-Core")
                                 }
                             }
                         }
-                    }
-                }
-
-                extensions.configure<SigningExtension> {
-                    val signingKey = System.getenv("SIGNING_KEY")
-                    val signingPassword = System.getenv("SIGNING_PASSWORD")
-                    if (!signingKey.isNullOrBlank()) {
-                        useInMemoryPgpKeys(signingKey, signingPassword)
-                        sign(extensions.getByType<PublishingExtension>().publications["release"])
                     }
                 }
             }
