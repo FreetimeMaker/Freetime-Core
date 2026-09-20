@@ -24,6 +24,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.PointerEventPass
@@ -56,16 +57,34 @@ fun rememberFreetimeBackdrop(): LayerBackdrop? =
 fun Modifier.freetimeBackdropSource(backdrop: LayerBackdrop?): Modifier =
     if (backdrop != null) layerBackdrop(backdrop) else this
 
+data class FreetimeDynamicBackdrop(
+    val colors: List<Color>,
+    val vertical: Boolean = true,
+)
+
 @Composable
-fun FreetimeGlassRoot(content: @Composable () -> Unit) {
+fun FreetimeGlassRoot(
+    dynamicBackdrop: FreetimeDynamicBackdrop? = null,
+    content: @Composable () -> Unit,
+) {
     val backdrop = rememberFreetimeBackdrop()
+    val backgroundModifier = if (dynamicBackdrop != null && dynamicBackdrop.colors.isNotEmpty()) {
+        val brush = if (dynamicBackdrop.vertical) {
+            Brush.verticalGradient(dynamicBackdrop.colors)
+        } else {
+            Brush.horizontalGradient(dynamicBackdrop.colors)
+        }
+        Modifier.background(brush)
+    } else {
+        Modifier.background(MaterialTheme.colorScheme.background)
+    }
     CompositionLocalProvider(LocalFreetimeBackdrop provides backdrop) {
         Box(Modifier.fillMaxSize()) {
             Box(
                 Modifier
                     .fillMaxSize()
                     .freetimeBackdropSource(backdrop)
-                    .background(MaterialTheme.colorScheme.background)
+                    .then(backgroundModifier)
             )
             Box(Modifier.fillMaxSize()) { content() }
         }
