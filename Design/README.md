@@ -5,7 +5,7 @@ Shared Material You and Liquid Glass UI for Freetime Android apps.
 ## Dependency
 
 ```kotlin
-implementation("me.free-time:freetime-design:<version>")
+implementation("com.github.FreetimeMaker.Freetime-Core:Design:<version>")
 ```
 
 ## Theme
@@ -22,7 +22,7 @@ FreetimeTheme {
 
 ## Liquid Glass
 
-The implementation follows GeoWeather's current glass system. Android 13+ uses Kyant Backdrop/Shapes with backdrop sampling, vibrancy, 12dp blur, 24dp lens distortion and spring press animation. Older versions use a Material color-aware fallback.
+The implementation follows GeoWeather's current glass system. Android 13+ uses Kyant Backdrop/Shapes with backdrop sampling, vibrancy, 18dp blur, lens distortion and spring press animation. Older versions use a Material color-aware fallback.
 
 The root is important because the sampled backdrop and glass surfaces are kept in separate layers to avoid RuntimeShader feedback loops on affected GPUs.
 
