@@ -1,6 +1,6 @@
 # Freetime Core
 
-Shared Android libraries for Freetime Maker apps. Freetime Core keeps common design, update, browser and donation behavior reusable while every app remains independently installable and usable.
+Shared Android libraries for Freetime Maker apps. Freetime Core keeps common design, browser and donation behavior reusable while every app remains independently installable and usable.
 
 ## Modules
 
@@ -8,7 +8,6 @@ Shared Android libraries for Freetime Maker apps. Freetime Core keeps common des
 | --- | --- |
 | `freetime-core` | Common models, results and lightweight utilities |
 | `freetime-design` | Material You and the current GeoWeather-style Liquid Glass system |
-| `freetime-updater` | Source-agnostic update checking |
 | `freetime-browser` | External/in-app URL routing |
 | `freetime-donations` | Reusable donation models and Compose UI |
 
@@ -25,7 +24,6 @@ repositories {
 dependencies {
     implementation("me.free-time:freetime-core:<version>")
     implementation("me.free-time:freetime-design:<version>")
-    implementation("me.free-time:freetime-updater:<version>")
     implementation("me.free-time:freetime-browser:<version>")
     implementation("me.free-time:freetime-donations:<version>")
 }
@@ -59,35 +57,6 @@ Modifier.freetimeGlassCapsule()
 ```
 
 The backdrop source is intentionally separated from the glass content to avoid RuntimeShader feedback loops seen on some Android GPU drivers.
-
-## Updater
-
-Apps register the supported update backends and users can select Luma Store, F-Droid, GitHub, another source, any combination of them, or all sources at once.
-
-```kotlin
-val updater = FreetimeUpdater(
-    listOf(
-        RegisteredUpdateSource(UpdateSourceType.LUMA_STORE, lumaStoreSource),
-        RegisteredUpdateSource(UpdateSourceType.F_DROID, fDroidSource),
-        RegisteredUpdateSource(UpdateSourceType.GITHUB, githubSource),
-    )
-)
-
-// Check every registered source and choose the highest versionCode.
-val all = updater.check(packageName, currentVersion)
-
-// Check only selected sources.
-val selected = updater.check(
-    packageName,
-    currentVersion,
-    UpdateSourceSelection.of(
-        UpdateSourceType.LUMA_STORE,
-        UpdateSourceType.F_DROID,
-    ),
-)
-```
-
-`UpdateInfo.source` reports which source supplied the newest version and `UpdateInfo.candidates` contains the results returned by all checked sources. The updater does not require Luma Store and does not install APKs itself.
 
 ## Browser
 
