@@ -11,25 +11,28 @@ Shared Android libraries for Freetime Maker apps. Freetime Core keeps common des
 | `freetime-browser` | External/in-app URL routing |
 | `freetime-donations` | Reusable donation models and Compose UI |
 
-## Maven Central
+## JitPack
 
-Releases use the verified `me.free-time` namespace:
+Releases are distributed through JitPack. Add the JitPack repository:
 
 ```kotlin
 repositories {
     google()
     mavenCentral()
-}
-
-dependencies {
-    implementation("me.free-time:freetime-core:<version>")
-    implementation("me.free-time:freetime-design:<version>")
-    implementation("me.free-time:freetime-browser:<version>")
-    implementation("me.free-time:freetime-donations:<version>")
+    maven("https://jitpack.io")
 }
 ```
 
-Only add the modules an app needs.
+Then add only the modules your app needs:
+
+```kotlin
+dependencies {
+    implementation("com.github.FreetimeMaker.Freetime-Core:Core:<version>")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Design:<version>")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:<version>")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:<version>")
+}
+```
 
 ## Liquid Glass
 
@@ -87,19 +90,10 @@ The library version is defined once in `gradle/libs.versions.toml`:
 
 ```toml
 [versions]
-freetime = "1.0.0"
+freetime = "1.3.0"
 ```
 
-Changing this value on `master` automatically starts the **Maven Central Release** workflow. It builds/tests all modules, signs and bundles the Maven artifacts, uploads them with Central's automatic publishing mode, waits for publication, and only then creates the matching GitHub tag (for example `v1.0.0`).
-
-If that tag already exists, the workflow skips the release to prevent publishing the same immutable Maven version twice.
-
-Required repository secrets:
-
-- `MAVEN_CENTRAL_USERNAME`
-- `MAVEN_CENTRAL_PASSWORD`
-- `SIGNING_KEY`
-- `SIGNING_PASSWORD`
+Changing this value on `master` runs the build and verifies all Maven publications locally. The release job then creates the matching Git tag, for example `v1.3.0`. JitPack builds that tag using `jitpack.yml` and publishes the multi-module artifacts. No Maven Central credentials or signing secrets are required.
 
 ## Principles
 
