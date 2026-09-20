@@ -112,15 +112,15 @@ fun Modifier.freetimeLiquidGlass(
     // Keep the material tint extremely light so the backdrop remains visible,
     // closer to SimpMusic's floating glass controls than an opaque M3 surface.
     val surface = if (isDarkTheme) {
-        Color.White.copy(alpha = 0.055f)
+        Color.White.copy(alpha = 0.035f)
     } else {
-        Color.White.copy(alpha = 0.085f)
+        Color.White.copy(alpha = 0.055f)
     }
 
     val fallbackSurface = if (isDarkTheme) {
-        Color.White.copy(alpha = 0.09f)
+        Color.White.copy(alpha = 0.12f)
     } else {
-        Color.White.copy(alpha = 0.46f)
+        Color.White.copy(alpha = 0.32f)
     }
 
     if (backdrop == null) return clip(shape).background(fallbackSurface)
@@ -133,10 +133,10 @@ fun Modifier.freetimeLiquidGlass(
         shape = { shape },
         effects = {
             vibrancy()
-            blur(18.dp.toPx())
+            blur(24.dp.toPx())
             lens(
-                30.dp.toPx(),
-                62.dp.toPx(),
+                26.dp.toPx(),
+                72.dp.toPx(),
                 depthEffect = true,
                 chromaticAberration = true,
             )
