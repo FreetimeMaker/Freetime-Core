@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import me.free_time.design.FreetimeGlassButton
 import me.free_time.design.FreetimeGlassCard
@@ -17,8 +18,20 @@ import me.free_time.design.FreetimeGlassCard
 sealed interface DonationTarget {
     val label: String
     data class Link(override val label: String, val url: String) : DonationTarget
-    data class Wallet(override val label: String, val currency: String, val address: String) : DonationTarget
+    data class Wallet(
+        override val label: String,
+        val currency: String,
+        val address: String,
+        val qrPayload: String = address,
+    ) : DonationTarget
 }
+
+data class DonationActions(
+    val openLink: (DonationTarget.Link) -> Unit,
+    val useWallet: (DonationTarget.Wallet) -> Unit,
+    val copyWallet: ((DonationTarget.Wallet) -> Unit)? = null,
+    val showQr: ((DonationTarget.Wallet) -> Unit)? = null,
+)
 
 @Composable
 fun FreetimeDonationScreen(
@@ -27,6 +40,8 @@ fun FreetimeDonationScreen(
     onWalletClick: (DonationTarget.Wallet) -> Unit,
     modifier: Modifier = Modifier,
     title: String = "Support development",
+    onCopyWallet: ((DonationTarget.Wallet) -> Unit)? = null,
+    onShowQr: ((DonationTarget.Wallet) -> Unit)? = null,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -53,8 +68,12 @@ fun FreetimeDonationScreen(
                             FreetimeGlassButton("Open", { onLinkClick(target) })
                         is DonationTarget.Wallet -> {
                             Text(target.currency)
-                            Text(target.address, color = MaterialTheme.colorScheme.onSurface)
-                            FreetimeGlassButton("Use wallet address", { onWalletClick(target) })
+                            Text(target.address, color = MaterialTheme.colorScheme.onSurface, maxLines = 4, overflow = TextOverflow.Ellipsis)
+                            androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                FreetimeGlassButton("Use", { onWalletClick(target) })
+                                if (onCopyWallet != null) FreetimeGlassButton("Copy", { onCopyWallet(target) })
+                                if (onShowQr != null) FreetimeGlassButton("QR", { onShowQr(target) })
+                            }
                         }
                     }
                 }
