@@ -53,9 +53,12 @@ private val FreetimeLightColors = lightColorScheme(
 fun FreetimeTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
+    oledBlack: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    val colors = if (darkTheme) FreetimeDarkColors else FreetimeLightColors
+    val colors = if (darkTheme) {
+        if (oledBlack) FreetimeDarkColors.copy(background = Color.Black, surface = Color.Black) else FreetimeDarkColors
+    } else FreetimeLightColors
 
     MaterialTheme(
         colorScheme = colors,
