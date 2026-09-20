@@ -43,8 +43,8 @@ import com.kyant.shapes.Capsule
 import kotlinx.coroutines.launch
 
 object FreetimeGlassDefaults {
-    val shape = RoundedCornerShape(28.dp)
-    val compactShape = RoundedCornerShape(22.dp)
+    val shape = RoundedCornerShape(30.dp)
+    val compactShape = RoundedCornerShape(24.dp)
 }
 
 val LocalFreetimeBackdrop = staticCompositionLocalOf<LayerBackdrop?> { null }
@@ -61,8 +61,6 @@ fun FreetimeGlassRoot(content: @Composable () -> Unit) {
     val backdrop = rememberFreetimeBackdrop()
     CompositionLocalProvider(LocalFreetimeBackdrop provides backdrop) {
         Box(Modifier.fillMaxSize()) {
-            // The sampled backdrop must stay separate from glass surfaces to avoid
-            // RuntimeShader feedback loops on affected Android GPU drivers.
             Box(
                 Modifier
                     .fillMaxSize()
@@ -91,12 +89,19 @@ fun Modifier.freetimeLiquidGlass(
     interactive: Boolean = true,
 ): Modifier {
     val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val surface = if (isDarkTheme) Color.Black.copy(alpha = 0.20f)
-    else Color.White.copy(alpha = 0.16f)
-    val fallbackSurface = if (isDarkTheme) {
-        MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.78f)
+
+    // Keep the material tint extremely light so the backdrop remains visible,
+    // closer to SimpMusic's floating glass controls than an opaque M3 surface.
+    val surface = if (isDarkTheme) {
+        Color.White.copy(alpha = 0.055f)
     } else {
-        MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.74f)
+        Color.White.copy(alpha = 0.085f)
+    }
+
+    val fallbackSurface = if (isDarkTheme) {
+        Color.White.copy(alpha = 0.09f)
+    } else {
+        Color.White.copy(alpha = 0.46f)
     }
 
     if (backdrop == null) return clip(shape).background(fallbackSurface)
@@ -109,35 +114,42 @@ fun Modifier.freetimeLiquidGlass(
         shape = { shape },
         effects = {
             vibrancy()
-            // Keep the backdrop crisp and let the lens/refraction define the glass,
-            // closer to SimpMusic's floating Liquid Glass surfaces.
-            blur(2.dp.toPx())
+            blur(1.25.dp.toPx())
             lens(
-                28.dp.toPx(),
-                56.dp.toPx(),
+                30.dp.toPx(),
+                62.dp.toPx(),
                 depthEffect = true,
                 chromaticAberration = true,
             )
         },
         layerBlock = {
-            val scale = lerp(1f, 0.975f, press.value)
+            val scale = lerp(1f, 0.972f, press.value)
             scaleX = scale
             scaleY = scale
         },
         onDrawSurface = { drawRect(surface) },
     )
+
     if (!interactive) return glass
 
     return glass.pointerInput(Unit) {
         awaitEachGesture {
             val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
-            scope.launch { press.animateTo(1f, spring(dampingRatio = 0.55f, stiffness = 340f)) }
+            scope.launch {
+                press.animateTo(1f, spring(dampingRatio = 0.52f, stiffness = 360f))
+            }
+
             var pressed = true
             while (pressed) {
-                val change = awaitPointerEvent(PointerEventPass.Initial).changes.firstOrNull { it.id == down.id }
+                val change = awaitPointerEvent(PointerEventPass.Initial)
+                    .changes
+                    .firstOrNull { it.id == down.id }
                 pressed = change?.pressed == true
             }
-            scope.launch { press.animateTo(0f, spring(dampingRatio = 0.65f, stiffness = 300f)) }
+
+            scope.launch {
+                press.animateTo(0f, spring(dampingRatio = 0.68f, stiffness = 300f))
+            }
         }
     }
 }
