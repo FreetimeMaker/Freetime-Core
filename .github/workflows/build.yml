@@ -105,7 +105,6 @@ jobs:
           ./gradlew assembleRelease \
             :Core:publishReleasePublicationToCentralBundleRepository \
             :Design:publishReleasePublicationToCentralBundleRepository \
-            :Updater:publishReleasePublicationToCentralBundleRepository \
             :Browser:publishReleasePublicationToCentralBundleRepository \
             :Donations:publishReleasePublicationToCentralBundleRepository \
             -PreleaseVersion="$RELEASE_VERSION"
@@ -116,7 +115,7 @@ jobs:
         run: |
           set -euo pipefail
           base="build/central-repository/me/free-time"
-          for artifact in freetime-core freetime-design freetime-updater freetime-browser freetime-donations; do
+          for artifact in freetime-core freetime-design freetime-browser freetime-donations; do
             test -f "$base/$artifact/$RELEASE_VERSION/$artifact-$RELEASE_VERSION.pom"
             test -f "$base/$artifact/$RELEASE_VERSION/$artifact-$RELEASE_VERSION.aar"
           done
@@ -186,7 +185,7 @@ jobs:
         run: |
           set -euo pipefail
           base="https://repo1.maven.org/maven2/me/free-time"
-          for artifact in freetime-core freetime-design freetime-updater freetime-browser freetime-donations; do
+          for artifact in freetime-core freetime-design freetime-browser freetime-donations; do
             url="$base/$artifact/$RELEASE_VERSION/$artifact-$RELEASE_VERSION.pom"
             echo "Checking $url"
             for attempt in {1..15}; do
