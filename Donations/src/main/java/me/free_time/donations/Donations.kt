@@ -2,6 +2,8 @@ package me.free_time.donations
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -26,9 +28,23 @@ fun FreetimeDonationScreen(
     modifier: Modifier = Modifier,
     title: String = "Support development",
 ) {
-    Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(title, style = MaterialTheme.typography.headlineMedium)
-        targets.forEach { target ->
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        item(key = "donation-title") {
+            Text(title, style = MaterialTheme.typography.headlineMedium)
+        }
+        items(
+            items = targets,
+            key = { target ->
+                when (target) {
+                    is DonationTarget.Link -> "link:${target.url}"
+                    is DonationTarget.Wallet -> "wallet:${target.currency}:${target.address}:${target.label}"
+                }
+            },
+        ) { target ->
             FreetimeGlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(target.label, style = MaterialTheme.typography.titleMedium)
