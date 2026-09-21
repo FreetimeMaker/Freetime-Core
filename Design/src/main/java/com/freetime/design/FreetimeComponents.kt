@@ -492,6 +492,31 @@ fun FreetimeDialog(
     title: String,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+    actions: @Composable RowScope.() -> Unit = {},
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        Column(
+            modifier = modifier.freetimeWideGlass(LocalFreetimeShapes.current.dialog, interactive = false)
+                .padding(FreetimeDesign.spacing.xl),
+            verticalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.lg),
+        ) {
+            FreetimeGlassTitle(title)
+            content()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.sm, Alignment.End),
+                content = actions,
+            )
+        }
+    }
+}
+
+@Composable
+fun FreetimeDialog(
+    title: String,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
     text: String? = null,
     confirmText: String,
     onConfirm: () -> Unit,
