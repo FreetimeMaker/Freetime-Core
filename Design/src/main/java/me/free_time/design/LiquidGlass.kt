@@ -14,8 +14,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -112,6 +111,8 @@ fun Modifier.freetimeLiquidGlass(
     interactive: Boolean = true,
 ): Modifier {
     val isDarkTheme = LocalFreetimePalette.current.background.luminance() < 0.5f
+    val tokens = LocalFreetimeGlassTokens.current
+    val designColors = LocalFreetimeDesignColors.current
 
     // Keep the fallback translucent, but use the real Kyant backdrop path whenever
     // Android can provide one. The real path intentionally follows SimpMusic's
