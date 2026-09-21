@@ -371,12 +371,33 @@ fun FreetimeBottomBar(
     if (destinations.isEmpty()) return
     val reducedMotion = rememberFreetimeReducedMotion()
     val safeIndex = selectedIndex.coerceIn(destinations.indices)
+    val animatedIndex by animateFloatAsState(
+        targetValue = safeIndex.toFloat(),
+        animationSpec = if (reducedMotion) snap() else spring(dampingRatio = 0.72f, stiffness = 420f),
+        label = "freetime-bottom-blob-position",
+    )
+    val blobScaleX by animateFloatAsState(
+        targetValue = if (reducedMotion) 1f else 1.08f,
+        animationSpec = if (reducedMotion) snap() else spring(dampingRatio = 0.6f, stiffness = 250f),
+        label = "freetime-bottom-blob-x",
+    )
     BoxWithConstraints(
         modifier = modifier
             .padding(horizontal = 18.dp, vertical = 12.dp)
             .freetimeGlassCapsule(interactive = false)
             .padding(horizontal = 6.dp, vertical = 4.dp),
     ) {
+        val slotWidth = maxWidth / destinations.size
+        Box(
+            Modifier
+                .width(slotWidth)
+                .height(if (compact) 42.dp else 56.dp)
+                .graphicsLayer {
+                    translationX = slotWidth.toPx() * animatedIndex
+                    scaleX = blobScaleX
+                }
+                .freetimeSelectedGlassCapsule(),
+        )
         Row(
             Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
