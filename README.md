@@ -19,10 +19,10 @@ Add the repository used by your release distribution, then include only the modu
 
 ```kotlin
 dependencies {
-    implementation("com.github.FreetimeMaker.Freetime-Core:Core:1.9.1")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.9.1")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:1.9.1")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.9.1")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Core:1.9.2")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.9.2")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:1.9.2")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.9.2")
 }
 ```
 
@@ -77,7 +77,7 @@ The library version is defined once in `gradle/libs.versions.toml`:
 
 ```toml
 [versions]
-freetime = "1.9.0"
+freetime = "1.9.2"
 ```
 
 Freetime Core follows semantic versioning: patch releases fix compatible behavior, minor releases add compatible public functionality, and major releases are reserved for breaking public API changes.
