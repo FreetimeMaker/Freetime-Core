@@ -1,4 +1,4 @@
-package me.free_time.design
+package com.freetime.design
 
 import android.os.Build
 import android.provider.Settings
@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.text.BasicText
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.semantics.Role
@@ -224,11 +226,11 @@ fun FreetimeGlassPullRefreshIndicator(refreshing: Boolean, modifier: Modifier = 
 
 @Composable
 private fun FreetimeIcon(imageVector: ImageVector, contentDescription: String?, modifier: Modifier = Modifier, tint: Color = FreetimeDesign.colors.contentStrong) {
-    androidx.compose.foundation.Image(
+    Image(
         imageVector = imageVector,
         contentDescription = contentDescription,
         modifier = modifier,
-        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(tint),
+        colorFilter = ColorFilter.tint(tint),
     )
 }
 

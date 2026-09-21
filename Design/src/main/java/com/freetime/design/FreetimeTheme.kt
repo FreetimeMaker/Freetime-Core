@@ -1,4 +1,4 @@
-package me.free_time.design
+package com.freetime.design
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable

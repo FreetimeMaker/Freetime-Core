@@ -1,6 +1,6 @@
 plugins { alias(libs.plugins.android.library) }
 android {
-    namespace = "me.free_time.browser"
+    namespace = "com.freetime.browser"
     compileSdk = libs.versions.compileSdk.get().toInt()
     defaultConfig { minSdk = libs.versions.minSdk.get().toInt() }
     publishing {

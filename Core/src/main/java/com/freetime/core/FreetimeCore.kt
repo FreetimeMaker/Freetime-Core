@@ -1,4 +1,4 @@
-package me.free_time.core
+package com.freetime.core
 
 import android.content.Context
 

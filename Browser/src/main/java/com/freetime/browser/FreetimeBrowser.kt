@@ -1,4 +1,4 @@
-package me.free_time.browser
+package com.freetime.browser
 
 import android.content.Context
 import android.content.Intent

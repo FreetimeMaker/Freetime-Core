@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 android {
-    namespace = "me.free_time.donations"
+    namespace = "com.freetime.donations"
     compileSdk = libs.versions.compileSdk.get().toInt()
     defaultConfig { minSdk = libs.versions.minSdk.get().toInt() }
     buildFeatures { compose = true }

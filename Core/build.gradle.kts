@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "me.free_time.core"
+    namespace = "com.freetime.core"
     compileSdk = libs.versions.compileSdk.get().toInt()
     defaultConfig { minSdk = libs.versions.minSdk.get().toInt() }
     publishing {

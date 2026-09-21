@@ -1,4 +1,4 @@
-package me.free_time.design
+package com.freetime.design
 
 import android.os.Build
 import androidx.compose.animation.core.Animatable
@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -126,7 +127,7 @@ fun Modifier.freetimeLiquidGlass(
 
     val scope = rememberCoroutineScope()
     val press = remember { Animatable(0f) }
-    val touchPosition = remember { androidx.compose.runtime.mutableStateOf(Offset.Zero) }
+    val touchPosition = remember { mutableStateOf(Offset.Zero) }
 
     val glass = drawBackdrop(
         backdrop = backdrop,

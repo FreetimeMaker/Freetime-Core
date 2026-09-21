@@ -1,19 +1,20 @@
-package me.free_time.donations
+package com.freetime.donations
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import me.free_time.design.FreetimeGlassButton
-import me.free_time.design.FreetimeGlassCard
+import com.freetime.design.FreetimeGlassButton
+import com.freetime.design.FreetimeGlassCard
 
 sealed interface DonationTarget {
     val label: String
@@ -45,7 +46,7 @@ fun FreetimeDonationScreen(
 ) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item(key = "donation-title") {
@@ -69,7 +70,7 @@ fun FreetimeDonationScreen(
                         is DonationTarget.Wallet -> {
                             Text(target.currency)
                             Text(target.address, color = MaterialTheme.colorScheme.onSurface, maxLines = 4, overflow = TextOverflow.Ellipsis)
-                            androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 FreetimeGlassButton("Use", { onWalletClick(target) })
                                 if (onCopyWallet != null) FreetimeGlassButton("Copy", { onCopyWallet(target) })
                                 if (onShowQr != null) FreetimeGlassButton("QR", { onShowQr(target) })
