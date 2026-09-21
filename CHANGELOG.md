@@ -2,7 +2,32 @@
 
 All notable changes to Freetime Core are documented here.
 
-The project follows semantic versioning. Older entries summarize the known evolution of the repository; the 1.7.0 entry documents the current release in detail.
+The project follows semantic versioning. Older entries summarize the known evolution of the repository; the latest release entries document the current public changes in detail.
+
+## 1.8.0
+
+### Freetime Design
+
+- Expanded the Liquid Glass primitives with tintable, adaptive glass optics, compact and wide interaction behavior, selection glass and round glass highlights.
+- Added sliding frosted selection treatment for bottom navigation.
+- Added `FreetimeGlassText` and `FreetimeGlassTitle` for glass-styled typography.
+- Updated reusable Freetime controls to use the shared Liquid Glass primitives consistently.
+
+### Donations
+
+- Migrated the donation screen from Material 3 UI components to Freetime Design components and Liquid Glass.
+- Removed the Material 3 dependency from the Donations module.
+
+### Sample app
+
+- Added the `:Sample` Android application demonstrating Core, Design, Browser and Donations together.
+- Added examples for SDK helpers, result models, browser validation/opening, donation targets and the reusable Freetime Design component set.
+- Added the Sample application to CI assembly checks.
+
+### Build
+
+- Added Android application plugin configuration for the Sample module.
+- Added Compose activity and icon dependencies used by the Sample application.
 
 ## 1.7.0
 
