@@ -133,7 +133,7 @@ fun FreetimeGlassTopBar(
         navigation()
         Column(Modifier.weight(1f).padding(horizontal = 8.dp)) {
             BasicText(title, style = if (compact) FreetimeDesign.typography.titleMedium else FreetimeDesign.typography.titleLarge, maxLines = 1)
-            if (compact && !subtitle.isNullOrBlank()) BasicText(subtitle, style = FreetimeDesign.typography.labelSmall, color = FreetimeDesign.colors.contentMuted, maxLines = 1)
+            if (compact && !subtitle.isNullOrBlank()) BasicText(subtitle, style = FreetimeDesign.typography.labelSmall.copy(color = FreetimeDesign.colors.contentMuted), maxLines = 1)
         }
         actions()
     }
@@ -177,9 +177,9 @@ fun FreetimeSwitchSetting(title: String, checked: Boolean, onCheckedChange: (Boo
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
             BasicText(title)
-            if (description != null) BasicText(description, style = FreetimeDesign.typography.bodySmall, color = FreetimeDesign.colors.contentMuted)
+            if (description != null) BasicText(description, style = FreetimeDesign.typography.bodySmall.copy(color = FreetimeDesign.colors.contentMuted))
         }
-        Switch(checked, onCheckedChange)
+        FreetimeSwitch(checked, onCheckedChange)
     }
 }
 
@@ -193,14 +193,14 @@ fun FreetimeChoiceSetting(title: String, selected: Boolean, onClick: () -> Unit)
 
 @Composable
 fun FreetimeGlassSearchField(value: String, onValueChange: (String) -> Unit, placeholder: String = "", modifier: Modifier = Modifier) {
-    OutlinedTextField(value, onValueChange, modifier.fillMaxWidth().freetimeGlass(RoundedCornerShape(24.dp), true), placeholder = { BasicText(placeholder) }, singleLine = true)
+    FreetimeTextField(value, onValueChange, modifier, placeholder = placeholder, singleLine = true)
 }
 
 @Composable
 fun FreetimeGlassSnackbar(message: String, modifier: Modifier = Modifier, actionLabel: String? = null, onAction: (() -> Unit)? = null) {
     Row(modifier.freetimeGlassCapsule(false).padding(horizontal = 18.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
         BasicText(message, Modifier.weight(1f))
-        if (actionLabel != null && onAction != null) TextButton(onClick = onAction) { BasicText(actionLabel) }
+        if (actionLabel != null && onAction != null) FreetimeButton(actionLabel, onAction)
     }
 }
 
@@ -216,11 +216,21 @@ fun FreetimeGlassSkeleton(modifier: Modifier = Modifier, height: Dp = 72.dp) {
 fun FreetimeGlassPullRefreshIndicator(refreshing: Boolean, modifier: Modifier = Modifier) {
     AnimatedVisibility(refreshing, modifier = modifier) {
         Box(Modifier.freetimeGlassCapsule(false).padding(12.dp), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp)
+            FreetimeProgressIndicator(Modifier.size(22.dp))
         }
     }
 }
 
+
+@Composable
+private fun FreetimeIcon(imageVector: ImageVector, contentDescription: String?, modifier: Modifier = Modifier, tint: Color = FreetimeDesign.colors.contentStrong) {
+    androidx.compose.foundation.Image(
+        imageVector = imageVector,
+        contentDescription = contentDescription,
+        modifier = modifier,
+        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(tint),
+    )
+}
 
 @Composable
 fun FreetimeButton(
@@ -241,8 +251,8 @@ fun FreetimeButton(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        if (leadingIcon != null) Icon(leadingIcon, null, Modifier.size(20.dp), tint = FreetimeDesign.colors.contentStrong)
-        BasicText(text, style = FreetimeDesign.typography.labelLarge, color = FreetimeDesign.colors.contentStrong)
+        if (leadingIcon != null) FreetimeIcon(leadingIcon, null, Modifier.size(20.dp), FreetimeDesign.colors.contentStrong)
+        BasicText(text, style = FreetimeDesign.typography.labelLarge.copy(color = FreetimeDesign.colors.contentStrong))
     }
 }
 
@@ -260,7 +270,7 @@ fun FreetimeIconButton(
             .alpha(if (enabled) 1f else .45f),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, contentDescription, Modifier.size(22.dp), tint = FreetimeDesign.colors.contentStrong)
+        FreetimeIcon(icon, contentDescription, Modifier.size(22.dp), FreetimeDesign.colors.contentStrong)
     }
 }
 
@@ -289,7 +299,7 @@ fun FreetimeTopBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         navigation?.invoke()
-        BasicText(title, Modifier.weight(1f).padding(horizontal = 12.dp), style = FreetimeDesign.typography.titleMedium, color = FreetimeDesign.colors.contentStrong)
+        BasicText(title, Modifier.weight(1f).padding(horizontal = 12.dp), style = FreetimeDesign.typography.titleMedium.copy(color = FreetimeDesign.colors.contentStrong))
         actions()
     }
 }
@@ -312,9 +322,9 @@ fun RowScope.FreetimeNavigationItem(
             (if (selected) Modifier.freetimeGlassCapsule(false) else Modifier).padding(horizontal = 15.dp, vertical = 5.dp),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(icon, label, Modifier.size(22.dp), tint = color)
+            FreetimeIcon(icon, label, Modifier.size(22.dp), color)
         }
-        BasicText(label, color = color, style = FreetimeDesign.typography.labelSmall, maxLines = 1)
+        BasicText(label, style = FreetimeDesign.typography.labelSmall.copy(color = color), maxLines = 1)
     }
 }
 
@@ -405,12 +415,7 @@ private fun RowScope.FreetimeBottomBarItem(
                 .padding(horizontal = if (compact) 12.dp else 16.dp, vertical = 6.dp),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(
-                imageVector = destination.icon,
-                contentDescription = destination.label,
-                tint = color,
-                modifier = Modifier.size(if (compact) FreetimeDesign.sizes.navigationIcon - 2.dp else FreetimeDesign.sizes.navigationIcon),
-            )
+            FreetimeIcon(destination.icon, destination.label, Modifier.size(if (compact) FreetimeDesign.sizes.navigationIcon - 2.dp else FreetimeDesign.sizes.navigationIcon), color)
         }
         AnimatedVisibility(
             visible = !compact,
@@ -489,8 +494,8 @@ fun FreetimeDialog(
                 .padding(FreetimeDesign.spacing.xl),
             verticalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.lg),
         ) {
-            BasicText(title, style = FreetimeDesign.typography.titleLarge, color = FreetimeDesign.colors.contentStrong)
-            if (!text.isNullOrBlank()) BasicText(text, style = FreetimeDesign.typography.bodyMedium, color = FreetimeDesign.colors.contentMuted)
+            BasicText(title, style = FreetimeDesign.typography.titleLarge.copy(color = FreetimeDesign.colors.contentStrong))
+            if (!text.isNullOrBlank()) BasicText(text, style = FreetimeDesign.typography.bodyMedium.copy(color = FreetimeDesign.colors.contentMuted))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.sm, Alignment.End),
@@ -515,7 +520,7 @@ fun FreetimeSnackbar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.sm),
     ) {
-        BasicText(message, Modifier.weight(1f), color = FreetimeDesign.colors.contentStrong, style = FreetimeDesign.typography.bodyMedium)
+        BasicText(message, Modifier.weight(1f), style = FreetimeDesign.typography.bodyMedium.copy(color = FreetimeDesign.colors.contentStrong))
         if (actionLabel != null && onAction != null) FreetimeButton(actionLabel, onAction)
     }
 }
