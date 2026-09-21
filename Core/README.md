@@ -1,11 +1,11 @@
 # Freetime Core module
 
-Base module used by the other Freetime Core libraries.
+Small base module shared by the other Freetime Core libraries.
 
 ## Dependency
 
 ```kotlin
-implementation("me.free-time:freetime-core:<version>")
+implementation("com.github.FreetimeMaker.Freetime-Core:Core:1.6.0")
 ```
 
 ## What it provides
@@ -26,4 +26,4 @@ val app = FreetimeAppInfo(
 )
 ```
 
-This module intentionally stays small. It does not require Luma Store, authentication, Compose, or a Freetime backend.
+The module intentionally stays small. It does not require Luma Store, authentication, Compose, Material 3 or a Freetime backend. UI belongs in the separate `Design` module.
