@@ -47,6 +47,8 @@ import com.kyant.backdrop.effects.colorControls
 import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
 import com.kyant.backdrop.highlight.Highlight
+import com.kyant.backdrop.shadow.InnerShadow
+import com.kyant.backdrop.shadow.Shadow
 import com.kyant.shapes.Capsule
 import kotlinx.coroutines.launch
 
@@ -324,6 +326,8 @@ fun Modifier.freetimeSelectedGlassCapsule(
             lens(0f, 0f, depthEffect = false, chromaticAberration = true)
         },
         highlight = { Highlight.Default.copy(alpha = tokens.selectedHighlightAlpha) },
+        shadow = { Shadow(radius = 4.dp, alpha = .4f) },
+        innerShadow = { InnerShadow(radius = 8.dp, alpha = .32f) },
         onDrawSurface = {
             val lumNorm = ((backdropLuminance - .3f) / .5f).coerceIn(0f, 1f)
             val shade = if (isDark) lerp(.22f, .55f, lumNorm) else lerp(.06f, .14f, lumNorm)
