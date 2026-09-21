@@ -186,9 +186,10 @@ fun Modifier.freetimeLiquidGlass(
             blur((if (reduceTransparency) tokens.minBlur.toPx() else adaptiveBlur) + tokens.pressedBlurBoost.toPx() * p)
             if (!reduceTransparency) {
                 lens(
-                    size.minDimension / 4f + tokens.pressedBlurBoost.toPx() * p,
-                    size.minDimension / 2f,
-                    depthEffect = false,
+                    size.minDimension / 3.2f + tokens.pressedBlurBoost.toPx() * p,
+                    size.minDimension / 1.65f,
+                    depthEffect = true,
+                    chromaticAberration = true,
                 )
             }
         },
