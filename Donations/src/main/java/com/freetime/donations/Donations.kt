@@ -7,14 +7,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.freetime.design.FreetimeGlassButton
-import com.freetime.design.FreetimeGlassCard
+import com.freetime.design.FreetimeButton
+import com.freetime.design.FreetimeCard
+import com.freetime.design.FreetimeDesign
+import com.freetime.design.FreetimeGlassTitle
+import com.freetime.design.FreetimeText
 
 sealed interface DonationTarget {
     val label: String
@@ -50,7 +50,7 @@ fun FreetimeDonationScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item(key = "donation-title") {
-            Text(title, style = MaterialTheme.typography.headlineMedium)
+            FreetimeGlassTitle(title)
         }
         items(
             items = targets,
@@ -61,19 +61,19 @@ fun FreetimeDonationScreen(
                 }
             },
         ) { target ->
-            FreetimeGlassCard(modifier = Modifier.fillMaxWidth()) {
+            FreetimeCard(modifier = Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(target.label, style = MaterialTheme.typography.titleMedium)
+                    FreetimeText(target.label, style = FreetimeDesign.typography.titleMedium)
                     when (target) {
                         is DonationTarget.Link ->
-                            FreetimeGlassButton("Open", { onLinkClick(target) })
+                            FreetimeButton("Open", { onLinkClick(target) })
                         is DonationTarget.Wallet -> {
-                            Text(target.currency)
-                            Text(target.address, color = MaterialTheme.colorScheme.onSurface, maxLines = 4, overflow = TextOverflow.Ellipsis)
+                            FreetimeText(target.currency, style = FreetimeDesign.typography.labelMedium)
+                            FreetimeText(target.address, style = FreetimeDesign.typography.bodyMedium, maxLines = 4)
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                FreetimeGlassButton("Use", { onWalletClick(target) })
-                                if (onCopyWallet != null) FreetimeGlassButton("Copy", { onCopyWallet(target) })
-                                if (onShowQr != null) FreetimeGlassButton("QR", { onShowQr(target) })
+                                FreetimeButton("Use", { onWalletClick(target) })
+                                if (onCopyWallet != null) FreetimeButton("Copy", { onCopyWallet(target) })
+                                if (onShowQr != null) FreetimeButton("QR", { onShowQr(target) })
                             }
                         }
                     }
