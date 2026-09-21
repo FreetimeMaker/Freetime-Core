@@ -5,7 +5,7 @@ Reusable Compose donation UI built on Freetime Design.
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.9.0")
+implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.9.1")
 ```
 
 The module uses Core, Design and Browser.
