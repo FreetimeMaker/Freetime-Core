@@ -323,12 +323,16 @@ fun Modifier.freetimeSelectedGlassCapsule(
     val backdrop = LocalFreetimeBackdrop.current
     val tokens = LocalFreetimeGlassTokens.current
     val isDark = LocalFreetimePalette.current.background.luminance() < 0.5f
-    if (backdrop == null) {
+    val reduceTransparency = LocalFreetimeReduceTransparency.current
+    val highContrast = LocalFreetimeHighContrast.current
+    if (backdrop == null || reduceTransparency) {
         return clip(Capsule()).background(
             Brush.linearGradient(
                 listOf(
                     tint.copy(alpha = tokens.tintFallbackAlpha),
-                    (if (isDark) Color.Black else Color.White).copy(alpha = .28f),
+                    (if (isDark) Color.Black else Color.White).copy(
+                        alpha = if (reduceTransparency) .90f else if (highContrast) .55f else .28f
+                    ),
                 )
             )
         )
@@ -338,7 +342,7 @@ fun Modifier.freetimeSelectedGlassCapsule(
         shape = { Capsule() },
         effects = {
             vibrancy()
-            colorControls(brightness = .05f, contrast = 1f, saturation = 1.5f)
+            colorControls(brightness = .05f, contrast = if (highContrast) 1.22f else 1f, saturation = 1.5f)
             val normalized = (backdropLuminance * 2f - 1f).let { value ->
                 kotlin.math.sign(value) * value * value
             }
@@ -350,7 +354,7 @@ fun Modifier.freetimeSelectedGlassCapsule(
             blur(adaptive + tokens.selectedBlurBoost.toPx())
             lens(0f, 0f, depthEffect = false, chromaticAberration = true)
         },
-        highlight = { Highlight.Default.copy(alpha = tokens.selectedHighlightAlpha) },
+        highlight = { Highlight.Default.copy(alpha = if (highContrast) 1f else tokens.selectedHighlightAlpha) },
         shadow = { Shadow(radius = 4.dp, alpha = .4f) },
         innerShadow = { InnerShadow(radius = 8.dp, alpha = .32f) },
         onDrawSurface = {
