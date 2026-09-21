@@ -28,12 +28,12 @@ fun FreetimeDesignShowcase(modifier: Modifier = Modifier) {
     ) {
         FreetimeTopBar(title = "Freetime Design")
 
-        Text("Liquid Glass", style = androidx.compose.material3.MaterialTheme.typography.headlineMedium)
+        BasicText("Liquid Glass", style = androidx.compose.material3.MaterialTheme.typography.headlineMedium)
 
         FreetimeCard(Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.md)) {
-                Text("Glass surface", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
-                Text(
+                BasicText("Glass surface", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
+                BasicText(
                     "Reusable translucent surfaces, controls and motion driven by Freetime tokens.",
                     color = FreetimeDesign.colors.contentMuted,
                 )
@@ -55,7 +55,7 @@ fun FreetimeDesignShowcase(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.md),
         ) {
-            Text("Enabled", Modifier.weight(1f))
+            BasicText("Enabled", Modifier.weight(1f))
             FreetimeSwitch(enabled, { enabled = it })
         }
 
