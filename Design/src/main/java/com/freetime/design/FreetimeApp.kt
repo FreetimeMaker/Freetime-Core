@@ -94,7 +94,7 @@ private fun FreetimeStoredThemeMode.toDesignMode(): FreetimeThemeMode = when (th
     FreetimeStoredThemeMode.AUTO_TIME -> FreetimeThemeMode.AUTO_TIME
 }
 
-@Composable
+@Stable
 class FreetimePreferencesController internal constructor(
     private val preferences: FreetimePreferences,
     initialState: FreetimePreferencesState,
