@@ -4,6 +4,16 @@ All notable changes to Freetime Core are documented here.
 
 The project follows semantic versioning. Older entries summarize the known evolution of the repository; the latest release entries document the current public changes in detail.
 
+## 1.9.0
+
+### Freetime Design
+
+- Added `FreetimeScaffold` as a Material-free screen layout with top bar, content, bottom bar and floating action slots.
+- Added Liquid Glass tabs, floating action buttons and bottom sheets.
+- Added adaptive navigation that switches between floating bottom navigation and a glass navigation rail for wider layouts.
+- Added `FreetimeNavigationRail`, `FreetimePopupMenu` and reusable `FreetimeMenuItem` models.
+- Expanded the Sample app to showcase the new layout primitives.
+
 ## 1.8.0
 
 ### Freetime Design
