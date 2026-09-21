@@ -28,12 +28,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import kotlin.math.sign
 import com.kyant.backdrop.Backdrop
 import com.kyant.backdrop.backdrops.LayerBackdrop
 import com.kyant.backdrop.backdrops.layerBackdrop
@@ -101,14 +104,16 @@ fun Modifier.freetimeGlass(
     interactive: Boolean = true,
     tint: Color = Color.Unspecified,
     backdropLuminance: Float = 0.5f,
-): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, shape, interactive, tint, backdropLuminance)
+    pressedScale: Float = 1.12f,
+): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, shape, interactive, tint, backdropLuminance, pressedScale)
 
 @Composable
 fun Modifier.freetimeGlassCapsule(
     interactive: Boolean = true,
     tint: Color = Color.Unspecified,
     backdropLuminance: Float = 0.5f,
-): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, Capsule(), interactive, tint, backdropLuminance)
+    pressedScale: Float = 1.12f,
+): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, Capsule(), interactive, tint, backdropLuminance, pressedScale)
 
 @Composable
 fun Modifier.freetimeLiquidGlass(
@@ -117,6 +122,7 @@ fun Modifier.freetimeLiquidGlass(
     interactive: Boolean = true,
     tint: Color = Color.Unspecified,
     backdropLuminance: Float = 0.5f,
+    pressedScale: Float = 1.12f,
 ): Modifier {
     val isDarkTheme = LocalFreetimePalette.current.background.luminance() < 0.5f
     val tokens = LocalFreetimeGlassTokens.current
@@ -182,7 +188,7 @@ fun Modifier.freetimeLiquidGlass(
         layerBlock = if (interactive) {
             {
                 // SimpMusic's small controls visibly bulge outward while pressed.
-                val scale = lerp(1f, tokens.pressedScale, press.value)
+                val scale = lerp(1f, pressedScale, press.value)
                 scaleX = scale
                 scaleY = scale
             }
@@ -262,6 +268,25 @@ fun Modifier.freetimeLiquidGlass(
         }
     }
 }
+
+
+@Composable
+fun rememberFreetimeGlassLayer(): GraphicsLayer = rememberGraphicsLayer()
+
+@Composable
+fun Modifier.freetimeWideGlass(
+    shape: Shape = FreetimeGlassDefaults.shape,
+    interactive: Boolean = true,
+    tint: Color = Color.Unspecified,
+    backdropLuminance: Float = 0.5f,
+): Modifier = freetimeLiquidGlass(
+    backdrop = LocalFreetimeBackdrop.current,
+    shape = shape,
+    interactive = interactive,
+    tint = tint,
+    backdropLuminance = backdropLuminance,
+    pressedScale = 1.04f,
+)
 
 @Composable
 fun Modifier.freetimeSelectedGlassCapsule(
