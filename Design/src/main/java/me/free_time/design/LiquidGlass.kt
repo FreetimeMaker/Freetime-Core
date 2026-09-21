@@ -111,7 +111,7 @@ fun Modifier.freetimeLiquidGlass(
     shape: Shape,
     interactive: Boolean = true,
 ): Modifier {
-    val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val isDarkTheme = LocalFreetimePalette.current.background.luminance() < 0.5f
 
     // Keep the fallback translucent, but use the real Kyant backdrop path whenever
     // Android can provide one. The real path intentionally follows SimpMusic's
@@ -221,7 +221,7 @@ fun FreetimeGlassButton(text: String, onClick: () -> Unit, modifier: Modifier = 
             .padding(horizontal = 20.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(text, color = MaterialTheme.colorScheme.onSurface)
+        BasicText(text, style = FreetimeDesign.typography.labelLarge.copy(color = FreetimeDesign.colors.contentStrong))
     }
 }
 
