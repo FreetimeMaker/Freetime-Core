@@ -10,6 +10,9 @@ import androidx.compose.ui.unit.dp
 @Immutable
 data class FreetimeGlassTokens(
     val blur: Dp = 8.dp,
+    val minBlur: Dp = 2.dp,
+    val maxBlur: Dp = 16.dp,
+    val selectedBlurBoost: Dp = 20.dp,
     val pressedBlurBoost: Dp = 2.dp,
     val darkSurfaceAlpha: Float = 0.14f,
     val lightSurfaceAlpha: Float = 0.12f,
@@ -22,6 +25,9 @@ data class FreetimeGlassTokens(
     val tintAlpha: Float = 0.20f,
     val tintFallbackAlpha: Float = 0.28f,
     val edgeAlpha: Float = 0.22f,
+    val minScrimAlpha: Float = 0.12f,
+    val maxScrimAlpha: Float = 0.50f,
+    val selectedHighlightAlpha: Float = 0.60f,
 )
 
 @Immutable
