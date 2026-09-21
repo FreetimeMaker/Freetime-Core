@@ -4,6 +4,12 @@ All notable changes to Freetime Core are documented here.
 
 The project follows semantic versioning. Older entries summarize the known evolution of the repository; the latest release entries document the current public changes in detail.
 
+## 1.9.1
+
+### Freetime Design
+
+- Expanded `FreetimeText` with `fontSize`, `fontWeight`, `textAlign`, `overflow`, `softWrap` and `minLines` while keeping existing calls source-compatible.
+
 ## 1.9.0
 
 ### Freetime Design
