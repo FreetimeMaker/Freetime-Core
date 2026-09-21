@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.kyant.shapes.Capsule
 
 @Deprecated("Use FreetimeDepth instead")
 enum class FreetimeGlassDepth { SUBTLE, STANDARD, ELEVATED }
@@ -270,7 +271,7 @@ fun FreetimeIconButton(
     tint: Color = Color.Unspecified,
 ) {
     Box(
-        modifier.size(FreetimeDesign.sizes.iconButton).freetimeGlassCapsule(enabled, tint = tint)
+        modifier.size(FreetimeDesign.sizes.iconButton).freetimeRoundGlass(enabled, tint = tint)
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .alpha(if (enabled) 1f else .45f),
         contentAlignment = Alignment.Center,
@@ -498,7 +499,7 @@ fun FreetimeDialog(
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Column(
-            modifier = modifier.freetimeGlass(LocalFreetimeShapes.current.dialog, interactive = false)
+            modifier = modifier.freetimeWideGlass(LocalFreetimeShapes.current.dialog, interactive = false)
                 .padding(FreetimeDesign.spacing.xl),
             verticalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.lg),
         ) {
@@ -523,7 +524,7 @@ fun FreetimeSnackbar(
     onAction: (() -> Unit)? = null,
 ) {
     Row(
-        modifier = modifier.freetimeGlassCapsule(interactive = false)
+        modifier = modifier.freetimeWideGlass(Capsule(), interactive = false)
             .padding(horizontal = FreetimeDesign.spacing.lg, vertical = FreetimeDesign.spacing.md),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.sm),
