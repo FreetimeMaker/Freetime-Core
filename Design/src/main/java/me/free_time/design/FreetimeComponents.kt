@@ -210,3 +210,117 @@ fun FreetimeGlassPullRefreshIndicator(refreshing: Boolean, modifier: Modifier = 
         }
     }
 }
+
+
+@Composable
+fun FreetimeButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    leadingIcon: ImageVector? = null,
+) {
+    val interaction = remember { MutableInteractionSource() }
+    val pressed by interaction.collectIsPressedAsState()
+    val alpha by animateFloatAsState(if (pressed) .82f else if (enabled) 1f else .45f, label = "freetime-button")
+    Row(
+        modifier.defaultMinSize(minHeight = 50.dp)
+            .freetimeGlassCapsule(enabled)
+            .clickable(interactionSource = interaction, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
+            .padding(horizontal = 20.dp, vertical = 12.dp).alpha(alpha),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        if (leadingIcon != null) Icon(leadingIcon, null, Modifier.size(20.dp), tint = FreetimeDesign.colors.contentStrong)
+        Text(text, style = MaterialTheme.typography.labelLarge, color = FreetimeDesign.colors.contentStrong)
+    }
+}
+
+@Composable
+fun FreetimeIconButton(
+    icon: ImageVector,
+    contentDescription: String?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    Box(
+        modifier.size(48.dp).freetimeGlassCapsule(enabled)
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .alpha(if (enabled) 1f else .45f),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(icon, contentDescription, Modifier.size(22.dp), tint = FreetimeDesign.colors.contentStrong)
+    }
+}
+
+@Composable
+fun FreetimeCard(
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    val base = modifier.freetimeGlass(LocalFreetimeShapes.current.surface, interactive = onClick != null)
+    Box(
+        modifier = (if (onClick != null) base.clickable(onClick = onClick) else base).padding(18.dp),
+        content = content,
+    )
+}
+
+@Composable
+fun FreetimeTopBar(
+    title: String,
+    modifier: Modifier = Modifier,
+    navigation: (@Composable () -> Unit)? = null,
+    actions: @Composable RowScope.() -> Unit = {},
+) {
+    Row(
+        modifier.defaultMinSize(minHeight = 60.dp).freetimeGlassCapsule(false).padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        navigation?.invoke()
+        Text(title, Modifier.weight(1f).padding(horizontal = 12.dp), style = MaterialTheme.typography.titleMedium, color = FreetimeDesign.colors.contentStrong)
+        actions()
+    }
+}
+
+@Composable
+fun RowScope.FreetimeNavigationItem(
+    selected: Boolean,
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val color by animateColorAsState(if (selected) FreetimeDesign.colors.contentStrong else FreetimeDesign.colors.contentMuted, label = "freetime-nav-color")
+    Column(
+        modifier.weight(1f).clickable(role = Role.Tab, onClick = onClick).padding(horizontal = 8.dp, vertical = 5.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        Box(
+            (if (selected) Modifier.freetimeGlassCapsule(false) else Modifier).padding(horizontal = 15.dp, vertical = 5.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, label, Modifier.size(22.dp), tint = color)
+        }
+        Text(label, color = color, style = MaterialTheme.typography.labelSmall, maxLines = 1)
+    }
+}
+
+@Composable
+fun FreetimeChip(
+    text: String,
+    selected: Boolean = false,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val color by animateColorAsState(if (selected) FreetimeDesign.colors.contentStrong else FreetimeDesign.colors.contentMuted, label = "freetime-chip-color")
+    Box(
+        modifier.defaultMinSize(minHeight = 38.dp).freetimeGlassCapsule()
+            .clickable(onClick = onClick).padding(horizontal = 15.dp, vertical = 8.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(text, color = color, style = MaterialTheme.typography.labelMedium)
+    }
+}
