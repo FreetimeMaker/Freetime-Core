@@ -2,9 +2,9 @@
 
 All notable changes to Freetime Core are documented here.
 
-The project follows semantic versioning. Older entries summarize the known evolution of the repository; the 1.6.0 entry documents the current release in detail.
+The project follows semantic versioning. Older entries summarize the known evolution of the repository; the 1.7.0 entry documents the current release in detail.
 
-## Unreleased
+## 1.7.0
 
 ### Freetime Design
 
