@@ -139,11 +139,11 @@ fun Modifier.freetimeLiquidGlass(
                 contrast = 1f,
                 saturation = 1.5f,
             )
-            blur(8.dp.toPx() + 2.dp.toPx() * p)
+            blur(tokens.blur.toPx() + tokens.pressedBlurBoost.toPx() * p)
             // SimpMusic keeps refraction below the shape inradius. This produces
             // the crisp curved edge instead of the old heavy 24dp blur.
             lens(
-                size.minDimension / 4f + 2.dp.toPx() * p,
+                size.minDimension / 4f + tokens.pressedBlurBoost.toPx() * p,
                 size.minDimension / 2f,
                 depthEffect = false,
             )
@@ -151,20 +151,20 @@ fun Modifier.freetimeLiquidGlass(
         layerBlock = if (interactive) {
             {
                 // SimpMusic's small controls visibly bulge outward while pressed.
-                val scale = lerp(1f, 1.12f, press.value)
+                val scale = lerp(1f, tokens.pressedScale, press.value)
                 scaleX = scale
                 scaleY = scale
             }
         } else null,
         onDrawSurface = {
             val base = if (isDarkTheme) Color.Black else Color.White
-            drawRect(base.copy(alpha = if (isDarkTheme) 0.18f else 0.16f))
+            drawRect(base.copy(alpha = if (isDarkTheme) tokens.darkSurfaceAlpha else tokens.lightSurfaceAlpha))
             val p = press.value
             if (p > 0f) {
                 drawRect(
                     brush = Brush.radialGradient(
                         colors = listOf(
-                            Color.White.copy(alpha = 0.18f * p),
+                            designColors.glassHighlight.copy(alpha = tokens.highlightAlpha * p),
                             Color.Transparent,
                         ),
                         center = touchPosition.value.takeUnless { it == Offset.Zero }
@@ -206,7 +206,7 @@ fun Modifier.freetimeLiquidGlass(
 fun FreetimeGlassCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Box(
         modifier = modifier
-            .freetimeGlass(FreetimeGlassDefaults.shape, interactive = false)
+            .freetimeGlass(LocalFreetimeShapes.current.surface, interactive = false)
             .padding(16.dp)
     ) { content() }
 }
