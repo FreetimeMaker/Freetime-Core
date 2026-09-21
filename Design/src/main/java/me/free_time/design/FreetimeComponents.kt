@@ -341,7 +341,7 @@ fun FreetimeChip(
             .clickable(onClick = onClick).padding(horizontal = 15.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center,
     ) {
-        BasicText(text, color = color, style = FreetimeDesign.typography.labelMedium)
+        BasicText(text, style = FreetimeDesign.typography.labelMedium.copy(color = color))
     }
 }
 
@@ -424,8 +424,7 @@ private fun RowScope.FreetimeBottomBarItem(
         ) {
             BasicText(
                 text = destination.label,
-                color = color,
-                style = FreetimeDesign.typography.labelSmall,
+                style = FreetimeDesign.typography.labelSmall.copy(color = color),
                 maxLines = 1,
             )
         }
@@ -528,9 +527,11 @@ fun FreetimeSnackbar(
 @Composable
 fun FreetimeProgressIndicator(modifier: Modifier = Modifier, progress: Float? = null) {
     if (progress == null) {
+        val borderColor = FreetimeDesign.colors.glassBorder
+        val indicatorColor = FreetimeDesign.colors.contentStrong
         Canvas(modifier.size(28.dp)) {
-            drawCircle(FreetimeDesign.colors.glassBorder)
-            drawCircle(FreetimeDesign.colors.contentStrong, radius = size.minDimension * .22f)
+            drawCircle(borderColor)
+            drawCircle(indicatorColor, radius = size.minDimension * .22f)
         }
     } else {
         Box(modifier.fillMaxWidth().height(6.dp).background(FreetimeDesign.colors.glassBorder, RoundedCornerShape(50))) {
