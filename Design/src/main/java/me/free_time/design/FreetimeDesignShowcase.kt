@@ -1,18 +1,10 @@
 package me.free_time.design
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -27,15 +19,14 @@ fun FreetimeDesignShowcase(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.lg),
     ) {
         FreetimeTopBar(title = "Freetime Design")
-
-        BasicText("Liquid Glass", style = androidx.compose.material3.MaterialTheme.typography.headlineMedium)
+        BasicText("Liquid Glass", style = FreetimeDesign.typography.headlineMedium.copy(color = FreetimeDesign.colors.contentStrong))
 
         FreetimeCard(Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.md)) {
-                BasicText("Glass surface", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
+                BasicText("Glass surface", style = FreetimeDesign.typography.titleMedium.copy(color = FreetimeDesign.colors.contentStrong))
                 BasicText(
                     "Reusable translucent surfaces, controls and motion driven by Freetime tokens.",
-                    color = FreetimeDesign.colors.contentMuted,
+                    style = FreetimeDesign.typography.bodyMedium.copy(color = FreetimeDesign.colors.contentMuted),
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.sm)) {
                     FreetimeButton("Primary", onClick = {})
@@ -45,26 +36,14 @@ fun FreetimeDesignShowcase(modifier: Modifier = Modifier) {
             }
         }
 
-        FreetimeTextField(
-            value = query,
-            onValueChange = { query = it },
-            placeholder = "Search",
-        )
+        FreetimeTextField(query, { query = it }, placeholder = "Search")
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.md),
-        ) {
-            BasicText("Enabled", Modifier.weight(1f))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.md)) {
+            BasicText("Enabled", Modifier.weight(1f), style = FreetimeDesign.typography.bodyLarge.copy(color = FreetimeDesign.colors.contentStrong))
             FreetimeSwitch(enabled, { enabled = it })
         }
 
-        FreetimeSlider(
-            value = slider,
-            onValueChange = { slider = it },
-            modifier = Modifier.fillMaxWidth(),
-        )
-
+        FreetimeSlider(slider, { slider = it }, Modifier.fillMaxWidth())
         FreetimeProgressIndicator(progress = slider)
         FreetimeSnackbar("Freetime glass is active", actionLabel = "OK", onAction = {})
     }
@@ -74,14 +53,7 @@ fun FreetimeDesignShowcase(modifier: Modifier = Modifier) {
 @Composable
 private fun FreetimeDesignDarkPreview() {
     FreetimeTheme(darkTheme = true) {
-        FreetimeGlassRoot(
-            dynamicBackdrop = FreetimeDynamicBackdrop(
-                listOf(
-                    androidx.compose.ui.graphics.Color(0xFF171A24),
-                    androidx.compose.ui.graphics.Color(0xFF101010),
-                )
-            )
-        ) {
+        FreetimeGlassRoot(FreetimeDynamicBackdrop(listOf(Color(0xFF171A24), Color(0xFF101010)))) {
             FreetimeDesignShowcase()
         }
     }
@@ -91,14 +63,7 @@ private fun FreetimeDesignDarkPreview() {
 @Composable
 private fun FreetimeDesignLightPreview() {
     FreetimeTheme(darkTheme = false) {
-        FreetimeGlassRoot(
-            dynamicBackdrop = FreetimeDynamicBackdrop(
-                listOf(
-                    androidx.compose.ui.graphics.Color(0xFFE9EEF8),
-                    androidx.compose.ui.graphics.Color(0xFFF4F4F4),
-                )
-            )
-        ) {
+        FreetimeGlassRoot(FreetimeDynamicBackdrop(listOf(Color(0xFFE9EEF8), Color(0xFFF4F4F4)))) {
             FreetimeDesignShowcase()
         }
     }
