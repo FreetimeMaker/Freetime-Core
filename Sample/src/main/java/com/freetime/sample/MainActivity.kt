@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
@@ -43,6 +44,7 @@ private fun SampleApp() {
     var slider by remember { mutableFloatStateOf(.62f) }
     var dialog by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableIntStateOf(0) }
+    var sheet by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val tint = if (tintEnabled) Color(0xFF6EA8FF) else Color.Unspecified
 
@@ -56,16 +58,33 @@ private fun SampleApp() {
                 )
             )
         ) {
-            Column(Modifier.fillMaxSize()) {
-                FreetimeGlassTopBar(
-                    title = "Freetime Design",
-                    subtitle = "Liquid Glass component showcase",
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    actions = {
-                        FreetimeButton(if (dark) "Light" else "Dark", { dark = !dark }, tint = tint)
-                    },
-                )
-
+            FreetimeScaffold(
+                topBar = {
+                    FreetimeGlassTopBar(
+                        title = "Freetime Core",
+                        subtitle = "1.8.0 library showcase",
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                        actions = {
+                            FreetimeButton(if (dark) "Light" else "Dark", { dark = !dark }, tint = tint)
+                        },
+                    )
+                },
+                bottomBar = {
+                    FreetimeBottomBar(
+                        destinations = listOf(
+                            FreetimeNavigationDestination("Design", Icons.Default.Home),
+                            FreetimeNavigationDestination("Core", Icons.Default.Settings),
+                            FreetimeNavigationDestination("Browser", Icons.Default.Search),
+                            FreetimeNavigationDestination("Donate", Icons.Default.Add),
+                        ),
+                        selectedIndex = selectedTab,
+                        onDestinationSelected = { selectedTab = it },
+                    )
+                },
+                floatingActionButton = {
+                    FreetimeFloatingActionButton(Icons.Default.Add, "Open sheet", { sheet = true }, tint = tint)
+                },
+            ) {
                 Column(
                     Modifier
                         .weight(1f)
@@ -209,15 +228,13 @@ private fun SampleApp() {
                     Spacer(Modifier.height(8.dp))
                 }
 
-                FreetimeBottomBar(
-                    destinations = listOf(
-                        FreetimeNavigationDestination("Home", androidx.compose.material.icons.Icons.Default.Home),
-                        FreetimeNavigationDestination("Explore", androidx.compose.material.icons.Icons.Default.Search),
-                        FreetimeNavigationDestination("Settings", androidx.compose.material.icons.Icons.Default.Settings),
-                    ),
-                    selectedIndex = selectedTab,
-                    onDestinationSelected = { selectedTab = it },
-                )
+                }
+            }
+
+            FreetimeBottomSheet(visible = sheet, onDismissRequest = { sheet = false }) {
+                FreetimeGlassTitle("Freetime Bottom Sheet", tint = tint)
+                FreetimeText("This sheet is implemented by Freetime Design without Material Scaffold.")
+                FreetimeButton("Close", { sheet = false }, tint = tint)
             }
 
             if (dialog) {
