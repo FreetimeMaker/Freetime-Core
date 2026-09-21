@@ -25,5 +25,6 @@ kyant-shapes = { group = "io.github.kyant0", name = "shapes", version.ref = "sha
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 [plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
