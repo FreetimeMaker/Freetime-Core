@@ -48,16 +48,16 @@ private fun SampleApp() {
     val context = LocalContext.current
     val tint = if (tintEnabled) Color(0xFF6EA8FF) else Color.Unspecified
 
-    FreetimeTheme(darkTheme = dark) {
-        FreetimeGlassRoot(
-            FreetimeDynamicBackdrop(
-                listOf(
-                    Color(0xFF15233A),
-                    Color(0xFF513A70),
-                    Color(0xFF214F54),
-                )
-            )
-        ) {
+    FreetimeApp(
+        config = FreetimeAppConfig(
+            themeMode = if (dark) FreetimeThemeMode.DARK else FreetimeThemeMode.LIGHT,
+            backdropColors = listOf(
+                Color(0xFF15233A),
+                Color(0xFF513A70),
+                Color(0xFF214F54),
+            ),
+        )
+    ) {
             FreetimeScaffold(
                 topBar = {
                     FreetimeGlassTopBar(
@@ -254,5 +254,4 @@ private fun SampleApp() {
                 )
             }
         }
-    }
 }
