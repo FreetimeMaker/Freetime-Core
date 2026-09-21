@@ -69,7 +69,7 @@ private fun DesignSample(messages: FreetimeMessageHostState, tint: Color) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         FreetimeGlassTitle("Liquid Glass", tint = tint)
         FreetimeGlassText("Reusable Freetime Design components.", tint = tint)
-        FreetimeInfoCard("Core", "Shared SDK helpers") { FreetimeText("SDK: ${FreetimeCore.SDK_VERSION}") }
+        FreetimeInfoCard(title = "Core", subtitle = "Shared SDK helpers") { FreetimeText("SDK: ${FreetimeCore.SDK_VERSION}") }
         FreetimeSettingsGroup("Components") {
             FreetimeSwitchSetting("Enabled", enabled, { enabled = it })
             FreetimeButton("Show message", { messages.show("Hello from Freetime Design") }, tint = tint)
@@ -86,7 +86,7 @@ private fun BrowserSample(messages: FreetimeMessageHostState, tint: Color) {
     val options = BrowserOptions(mode = BrowserMode.EXTERNAL, allowedHosts = setOf("free-time.me"))
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         FreetimeGlassTitle("Browser", tint = tint)
-        FreetimeInfoCard("URL validation") {
+        FreetimeInfoCard(title = "URL validation") {
             FreetimeText("Allowed: ${FreetimeBrowser.isAllowed(url, options)}")
             FreetimeButton("Open website", {
                 FreetimeBrowser.open(context, url, options).onFailure { messages.show(it.message ?: "Could not open URL") }
