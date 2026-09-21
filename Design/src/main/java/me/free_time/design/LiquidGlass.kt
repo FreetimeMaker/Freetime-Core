@@ -117,9 +117,9 @@ fun Modifier.freetimeLiquidGlass(
     // Android can provide one. The real path intentionally follows SimpMusic's
     // liquid-glass recipe instead of behaving like a blurred Material surface.
     val fallbackSurface = if (isDarkTheme) {
-        Color.Black.copy(alpha = 0.28f)
+        Color.Black.copy(alpha = tokens.darkFallbackAlpha)
     } else {
-        Color.White.copy(alpha = 0.32f)
+        Color.White.copy(alpha = tokens.lightFallbackAlpha)
     }
     if (backdrop == null) return clip(shape).background(fallbackSurface)
 
@@ -135,9 +135,9 @@ fun Modifier.freetimeLiquidGlass(
             val p = press.value
             vibrancy()
             colorControls(
-                brightness = 0.05f,
+                brightness = tokens.brightness,
                 contrast = 1f,
-                saturation = 1.5f,
+                saturation = tokens.saturation,
             )
             blur(tokens.blur.toPx() + tokens.pressedBlurBoost.toPx() * p)
             // SimpMusic keeps refraction below the shape inradius. This produces
