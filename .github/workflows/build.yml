@@ -61,7 +61,7 @@ jobs:
         run: |
           set -euo pipefail
           chmod +x ./gradlew
-          ./gradlew assembleDebug test
+          ./gradlew :Design:assembleDebug :Design:testDebugUnitTest assembleDebug test
 
   release:
     needs: build
