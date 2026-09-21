@@ -25,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.PointerEventPass
@@ -38,8 +40,10 @@ import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.kyant.backdrop.drawBackdrop
 import com.kyant.backdrop.effects.blur
+import com.kyant.backdrop.effects.colorControls
 import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
+import com.kyant.backdrop.highlight.Highlight
 import com.kyant.shapes.Capsule
 import kotlinx.coroutines.launch
 
@@ -109,46 +113,68 @@ fun Modifier.freetimeLiquidGlass(
 ): Modifier {
     val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
-    // Keep the material tint extremely light so the backdrop remains visible,
-    // closer to SimpMusic's floating glass controls than an opaque M3 surface.
-    val surface = if (isDarkTheme) {
-        Color.White.copy(alpha = 0.035f)
-    } else {
-        Color.White.copy(alpha = 0.055f)
-    }
-
-    // Pre-Android 13 cannot sample the real backdrop. Keep the fallback
-    // translucent instead of turning glass controls into opaque white cards.
+    // Keep the fallback translucent, but use the real Kyant backdrop path whenever
+    // Android can provide one. The real path intentionally follows SimpMusic's
+    // liquid-glass recipe instead of behaving like a blurred Material surface.
     val fallbackSurface = if (isDarkTheme) {
-        Color.White.copy(alpha = 0.055f)
+        Color.Black.copy(alpha = 0.28f)
     } else {
-        Color.White.copy(alpha = 0.09f)
+        Color.White.copy(alpha = 0.32f)
     }
-
     if (backdrop == null) return clip(shape).background(fallbackSurface)
 
     val scope = rememberCoroutineScope()
     val press = remember { Animatable(0f) }
+    val touchPosition = remember { androidx.compose.runtime.mutableStateOf(Offset.Zero) }
 
     val glass = drawBackdrop(
         backdrop = backdrop,
         shape = { shape },
+        highlight = { Highlight.Default },
         effects = {
+            val p = press.value
             vibrancy()
-            blur(24.dp.toPx())
+            colorControls(
+                brightness = 0.05f,
+                contrast = 1f,
+                saturation = 1.5f,
+            )
+            blur(8.dp.toPx() + 2.dp.toPx() * p)
+            // SimpMusic keeps refraction below the shape inradius. This produces
+            // the crisp curved edge instead of the old heavy 24dp blur.
             lens(
-                26.dp.toPx(),
-                72.dp.toPx(),
-                depthEffect = true,
-                chromaticAberration = true,
+                size.minDimension / 4f + 2.dp.toPx() * p,
+                size.minDimension / 2f,
+                depthEffect = false,
             )
         },
-        layerBlock = {
-            val scale = lerp(1f, 0.972f, press.value)
-            scaleX = scale
-            scaleY = scale
+        layerBlock = if (interactive) {
+            {
+                // SimpMusic's small controls visibly bulge outward while pressed.
+                val scale = lerp(1f, 1.12f, press.value)
+                scaleX = scale
+                scaleY = scale
+            }
+        } else null,
+        onDrawSurface = {
+            val base = if (isDarkTheme) Color.Black else Color.White
+            drawRect(base.copy(alpha = if (isDarkTheme) 0.18f else 0.16f))
+            val p = press.value
+            if (p > 0f) {
+                drawRect(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.18f * p),
+                            Color.Transparent,
+                        ),
+                        center = touchPosition.value.takeUnless { it == Offset.Zero }
+                            ?: Offset(size.width / 2f, size.height / 2f),
+                        radius = size.minDimension * 1.2f,
+                    ),
+                    blendMode = BlendMode.Plus,
+                )
+            }
         },
-        onDrawSurface = { drawRect(surface) },
     )
 
     if (!interactive) return glass
@@ -156,20 +182,21 @@ fun Modifier.freetimeLiquidGlass(
     return glass.pointerInput(Unit) {
         awaitEachGesture {
             val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+            touchPosition.value = down.position
             scope.launch {
-                press.animateTo(1f, spring(dampingRatio = 0.52f, stiffness = 360f))
+                press.animateTo(1f, spring(dampingRatio = 0.5f, stiffness = 300f))
             }
 
             var pressed = true
             while (pressed) {
-                val change = awaitPointerEvent(PointerEventPass.Initial)
-                    .changes
-                    .firstOrNull { it.id == down.id }
+                val event = awaitPointerEvent(PointerEventPass.Initial)
+                val change = event.changes.firstOrNull { it.id == down.id }
+                if (change != null) touchPosition.value = change.position
                 pressed = change?.pressed == true
             }
 
             scope.launch {
-                press.animateTo(0f, spring(dampingRatio = 0.68f, stiffness = 300f))
+                press.animateTo(0f, spring(dampingRatio = 0.5f, stiffness = 300f))
             }
         }
     }
