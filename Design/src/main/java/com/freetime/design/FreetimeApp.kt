@@ -95,10 +95,32 @@ private fun FreetimeStoredThemeMode.toDesignMode(): FreetimeThemeMode = when (th
 }
 
 @Composable
-fun rememberFreetimePreferencesState(
+class FreetimePreferencesController internal constructor(
+    private val preferences: FreetimePreferences,
+    initialState: FreetimePreferencesState,
+) {
+    var state by mutableStateOf(initialState)
+        private set
+
+    fun update(transform: (FreetimePreferencesState) -> FreetimePreferencesState) {
+        state = preferences.update(transform)
+    }
+
+    fun reload() {
+        state = preferences.read()
+    }
+
+    fun reset() {
+        preferences.reset()
+        state = preferences.read()
+    }
+}
+
+@Composable
+fun rememberFreetimePreferencesController(
     preferences: FreetimePreferences,
-): MutableState<FreetimePreferencesState> =
-    remember(preferences) { mutableStateOf(preferences.read()) }
+): FreetimePreferencesController =
+    remember(preferences) { FreetimePreferencesController(preferences, preferences.read()) }
 
 @Composable
 fun FreetimeApp(
@@ -106,8 +128,8 @@ fun FreetimeApp(
     modifierConfig: (FreetimeAppConfig) -> FreetimeAppConfig = { it },
     content: @Composable () -> Unit,
 ) {
-    val stored = rememberFreetimePreferencesState(preferences)
-    val state = stored.value
+    val controller = rememberFreetimePreferencesController(preferences)
+    val state = controller.state
     val config = modifierConfig(
         FreetimeAppConfig(
             themeMode = state.themeMode.toDesignMode(),
