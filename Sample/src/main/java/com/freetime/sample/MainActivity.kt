@@ -1,6 +1,16 @@
 package com.freetime.sample
 
 import android.os.Bundle
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import com.freetime.core.FreetimeCore
+import com.freetime.core.FreetimeAppInfo
+import com.freetime.core.FreetimeResult
+import com.freetime.browser.BrowserMode
+import com.freetime.browser.BrowserOptions
+import com.freetime.browser.FreetimeBrowser
+import com.freetime.donations.DonationTarget
+import com.freetime.donations.FreetimeDonationScreen
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -29,6 +39,7 @@ private fun SampleApp() {
     var slider by remember { mutableFloatStateOf(.62f) }
     var dialog by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableIntStateOf(0) }
+    val context = LocalContext.current
     val tint = if (tintEnabled) Color(0xFF6EA8FF) else Color.Unspecified
 
     FreetimeTheme(darkTheme = dark) {
@@ -104,6 +115,61 @@ private fun SampleApp() {
                             listOf("Glass" to "Liquid Glass", "Plain" to "Plain"),
                             choice,
                             { choice = it },
+                        )
+                    }
+
+                    FreetimeSectionHeader("Core", subtitle = "Shared SDK helpers and result models")
+                    FreetimeInfoCard(
+                        title = FreetimeCore.SDK_NAME,
+                        subtitle = "Core module",
+                    ) {
+                        val info = FreetimeAppInfo(
+                            packageName = context.packageName,
+                            versionName = "1.0",
+                            versionCode = 1,
+                        )
+                        val result: FreetimeResult<String> = FreetimeResult.Success(FreetimeCore.appName(context))
+                        FreetimeText("SDK: ${FreetimeCore.SDK_VERSION}")
+                        FreetimeText("Package: ${info.packageName}")
+                        FreetimeText("Result: ${(result as FreetimeResult.Success).value}")
+                    }
+
+                    FreetimeSectionHeader("Browser", subtitle = "URL validation and browser modes")
+                    FreetimeInfoCard("Freetime Browser") {
+                        val browserOptions = BrowserOptions(
+                            mode = BrowserMode.EXTERNAL,
+                            allowedHosts = setOf("free-time.me"),
+                        )
+                        val sampleUrl = "https://free-time.me"
+                        FreetimeText("Allowed: ${FreetimeBrowser.isAllowed(sampleUrl, browserOptions)}")
+                        FreetimeButton("Open free-time.me", {
+                            FreetimeBrowser.open(context, sampleUrl, browserOptions)
+                        }, tint = tint)
+                    }
+
+                    FreetimeSectionHeader("Donations", subtitle = "Donation targets rendered with Freetime Design")
+                    Box(Modifier.height(430.dp)) {
+                        FreetimeDonationScreen(
+                            targets = listOf(
+                                DonationTarget.Link("Support page", "https://free-time.me"),
+                                DonationTarget.Wallet("Example wallet", "LTC", "ltc1qexampleaddress"),
+                            ),
+                            onLinkClick = { link ->
+                                FreetimeBrowser.open(
+                                    context,
+                                    link.url,
+                                    BrowserOptions(allowedHosts = setOf("free-time.me")),
+                                )
+                            },
+                            onWalletClick = { wallet ->
+                                Toast.makeText(context, "${wallet.currency}: ${wallet.address}", Toast.LENGTH_SHORT).show()
+                            },
+                            onCopyWallet = { wallet ->
+                                Toast.makeText(context, "Copy: ${wallet.address}", Toast.LENGTH_SHORT).show()
+                            },
+                            onShowQr = { wallet ->
+                                Toast.makeText(context, "QR: ${wallet.qrPayload}", Toast.LENGTH_SHORT).show()
+                            },
                         )
                     }
 
