@@ -5,14 +5,12 @@ Reusable Compose donation UI built on Freetime Design.
 ## Dependency
 
 ```kotlin
-implementation("me.free-time:freetime-donations:<version>")
+implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.6.0")
 ```
 
-The module also uses the Core, Design and Browser modules.
+The module uses Core, Design and Browser.
 
 ## Donation targets
-
-Two target types are available:
 
 ```kotlin
 val targets = listOf(
@@ -42,6 +40,6 @@ FreetimeDonationScreen(
 )
 ```
 
-The SDK deliberately leaves actions to the host app. This allows an app to respect its own browser preference (for example in-app vs external) and decide whether a wallet click copies, displays or otherwise handles the address.
+The host app owns the actions, so it can respect its browser preference and decide whether a wallet click copies, displays or otherwise handles the address.
 
-The screen uses Freetime Liquid Glass cards/buttons and Material theme colors so text remains readable in light and dark mode.
+The screen uses Freetime Design and Liquid Glass for its UI. Readable light/dark colors now come from Freetime's own palette and typography rather than Material 3 theme colors.
