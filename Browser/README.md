@@ -1,11 +1,11 @@
 # Freetime Browser
 
-Common URL routing for Freetime Android apps without forcing a specific WebView implementation.
+Common URL routing for Freetime Android apps without forcing a particular WebView implementation or UI design system.
 
 ## Dependency
 
 ```kotlin
-implementation("me.free-time:freetime-browser:<version>")
+implementation("com.github.FreetimeMaker.Freetime-Core:Browser:1.6.0")
 ```
 
 ## External browser
@@ -42,3 +42,5 @@ BrowserOptions(
     allowExternalFallback = false,
 )
 ```
+
+The Browser module remains independent from Freetime Design and Material 3.
