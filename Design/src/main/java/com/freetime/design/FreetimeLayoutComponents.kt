@@ -26,7 +26,11 @@ fun FreetimeScaffold(
     floatingActionButton: @Composable (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    Box(modifier.fillMaxSize()) {
+    Box(
+        modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+    ) {
         Column(Modifier.fillMaxSize()) {
             if (topBar != null) Box(Modifier.fillMaxWidth()) { topBar() }
             Box(Modifier.weight(1f).fillMaxWidth(), content = content)
