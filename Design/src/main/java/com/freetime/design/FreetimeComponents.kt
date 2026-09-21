@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -366,73 +367,75 @@ fun FreetimeBottomBar(
     modifier: Modifier = Modifier,
     compact: Boolean = false,
 ) {
-    Row(
+    if (destinations.isEmpty()) return
+    val reducedMotion = rememberFreetimeReducedMotion()
+    val safeIndex = selectedIndex.coerceIn(destinations.indices)
+    val animatedIndex by animateFloatAsState(
+        targetValue = safeIndex.toFloat(),
+        animationSpec = if (reducedMotion) snap() else spring(dampingRatio = 0.72f, stiffness = 420f),
+        label = "freetime-bottom-blob-position",
+    )
+    val blobScaleX by animateFloatAsState(
+        targetValue = if (reducedMotion) 1f else 1.08f,
+        animationSpec = if (reducedMotion) snap() else spring(dampingRatio = 0.6f, stiffness = 250f),
+        label = "freetime-bottom-blob-x",
+    )
+    BoxWithConstraints(
         modifier = modifier
             .padding(horizontal = 18.dp, vertical = 12.dp)
             .freetimeGlassCapsule(interactive = false)
-            .padding(horizontal = 7.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
+            .padding(horizontal = 6.dp, vertical = 4.dp),
     ) {
-        destinations.forEachIndexed { index, destination ->
-            FreetimeBottomBarItem(
-                selected = index == selectedIndex,
-                destination = destination,
-                compact = compact,
-                onClick = { onDestinationSelected(index) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun RowScope.FreetimeBottomBarItem(
-    selected: Boolean,
-    destination: FreetimeNavigationDestination,
-    compact: Boolean,
-    onClick: () -> Unit,
-) {
-    val reducedMotion = rememberFreetimeReducedMotion()
-    val selectedScale by animateFloatAsState(
-        targetValue = if (selected && !reducedMotion) 1.06f else 1f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMediumLow),
-        label = "freetime-bottom-item-scale",
-    )
-    val color by animateColorAsState(
-        targetValue = if (selected) FreetimeDesign.colors.contentStrong else FreetimeDesign.colors.contentMuted,
-        animationSpec = tween(if (reducedMotion) 0 else FreetimeDesign.motion.normalMillis),
-        label = "freetime-bottom-item-color",
-    )
-
-    Column(
-        modifier = Modifier
-            .weight(1f)
-            .defaultMinSize(minWidth = 54.dp, minHeight = if (compact) 46.dp else 58.dp)
-            .clickable(role = Role.Tab, onClick = onClick)
-            .padding(horizontal = 3.dp, vertical = 3.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
+        val slotWidth = maxWidth / destinations.size
         Box(
-            modifier = (if (selected) {
-                Modifier.freetimeGlassCapsule(interactive = false)
-            } else Modifier)
-                .scale(selectedScale)
-                .padding(horizontal = if (compact) 12.dp else 16.dp, vertical = 6.dp),
-            contentAlignment = Alignment.Center,
+            Modifier
+                .width(slotWidth)
+                .height(if (compact) 42.dp else 56.dp)
+                .graphicsLayer {
+                    translationX = slotWidth.toPx() * animatedIndex
+                    scaleX = blobScaleX
+                }
+                .freetimeSelectedGlassCapsule(),
+        )
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            FreetimeIcon(destination.icon, destination.label, Modifier.size(if (compact) FreetimeDesign.sizes.navigationIcon - 2.dp else FreetimeDesign.sizes.navigationIcon), color)
-        }
-        AnimatedVisibility(
-            visible = !compact,
-            enter = fadeIn(tween(if (reducedMotion) 0 else 160)) + expandVertically(),
-            exit = fadeOut(tween(if (reducedMotion) 0 else 120)) + shrinkVertically(),
-        ) {
-            BasicText(
-                text = destination.label,
-                style = FreetimeDesign.typography.labelSmall.copy(color = color),
-                maxLines = 1,
-            )
+            destinations.forEachIndexed { index, destination ->
+                val selected = index == safeIndex
+                val color by animateColorAsState(
+                    targetValue = if (selected) FreetimeDesign.palette.primary else FreetimeDesign.colors.contentMuted,
+                    animationSpec = tween(if (reducedMotion) 0 else FreetimeDesign.motion.normalMillis),
+                    label = "freetime-bottom-item-color-$index",
+                )
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .defaultMinSize(minHeight = if (compact) 42.dp else 56.dp)
+                        .clickable(role = Role.Tab) { onDestinationSelected(index) }
+                        .padding(horizontal = 3.dp, vertical = 3.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    FreetimeIcon(
+                        destination.icon,
+                        destination.label,
+                        Modifier.size(if (compact) FreetimeDesign.sizes.navigationIcon - 2.dp else FreetimeDesign.sizes.navigationIcon),
+                        color,
+                    )
+                    AnimatedVisibility(
+                        visible = !compact,
+                        enter = fadeIn(tween(if (reducedMotion) 0 else 160)),
+                        exit = fadeOut(tween(if (reducedMotion) 0 else 120)),
+                    ) {
+                        BasicText(
+                            destination.label,
+                            style = FreetimeDesign.typography.labelSmall.copy(color = color),
+                            maxLines = 1,
+                        )
+                    }
+                }
+            }
         }
     }
 }
