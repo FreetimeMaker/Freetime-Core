@@ -4,6 +4,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import java.util.Calendar
+import com.freetime.core.FreetimePreferences
+import com.freetime.core.FreetimePreferencesState
+import com.freetime.core.FreetimeStoredThemeMode
 
 enum class FreetimeThemeMode {
     SYSTEM,
@@ -23,9 +26,13 @@ data class FreetimeAppConfig(
 )
 
 val LocalFreetimeReducedMotion = staticCompositionLocalOf { false }
+val LocalFreetimeReduceTransparency = staticCompositionLocalOf { false }
+val LocalFreetimeHighContrast = staticCompositionLocalOf { false }
 
 object FreetimeAppEnvironment {
     val reducedMotion: Boolean @Composable get() = LocalFreetimeReducedMotion.current
+    val reduceTransparency: Boolean @Composable get() = LocalFreetimeReduceTransparency.current
+    val highContrast: Boolean @Composable get() = LocalFreetimeHighContrast.current
 }
 
 @Composable
@@ -69,6 +76,58 @@ fun FreetimeApp(
         oledBlack = config.themeMode == FreetimeThemeMode.OLED,
     ) {
         CompositionLocalProvider(LocalFreetimeReducedMotion provides reducedMotion) {
+            if (config.backdropColors.isEmpty()) {
+                FreetimeGlassRoot { content() }
+            } else {
+                FreetimeGlassRoot(FreetimeDynamicBackdrop(config.backdropColors)) { content() }
+            }
+        }
+    }
+}
+
+
+private fun FreetimeStoredThemeMode.toDesignMode(): FreetimeThemeMode = when (this) {
+    FreetimeStoredThemeMode.SYSTEM -> FreetimeThemeMode.SYSTEM
+    FreetimeStoredThemeMode.LIGHT -> FreetimeThemeMode.LIGHT
+    FreetimeStoredThemeMode.DARK -> FreetimeThemeMode.DARK
+    FreetimeStoredThemeMode.OLED -> FreetimeThemeMode.OLED
+    FreetimeStoredThemeMode.AUTO_TIME -> FreetimeThemeMode.AUTO_TIME
+}
+
+@Composable
+fun rememberFreetimePreferencesState(
+    preferences: FreetimePreferences,
+): MutableState<FreetimePreferencesState> =
+    remember(preferences) { mutableStateOf(preferences.read()) }
+
+@Composable
+fun FreetimeApp(
+    preferences: FreetimePreferences,
+    modifierConfig: (FreetimeAppConfig) -> FreetimeAppConfig = { it },
+    content: @Composable () -> Unit,
+) {
+    val stored = rememberFreetimePreferencesState(preferences)
+    val state = stored.value
+    val config = modifierConfig(
+        FreetimeAppConfig(
+            themeMode = state.themeMode.toDesignMode(),
+            darkHour = state.darkHour,
+            lightHour = state.lightHour,
+        )
+    )
+    val systemReducedMotion = rememberFreetimeReducedMotion()
+    val dark = rememberFreetimeDarkTheme(config.themeMode, config.darkHour, config.lightHour)
+
+    FreetimeTheme(
+        darkTheme = dark,
+        dynamicColor = config.dynamicColor,
+        oledBlack = config.themeMode == FreetimeThemeMode.OLED,
+    ) {
+        CompositionLocalProvider(
+            LocalFreetimeReducedMotion provides (state.reduceMotion || systemReducedMotion),
+            LocalFreetimeReduceTransparency provides state.reduceTransparency,
+            LocalFreetimeHighContrast provides state.highContrast,
+        ) {
             if (config.backdropColors.isEmpty()) {
                 FreetimeGlassRoot { content() }
             } else {
