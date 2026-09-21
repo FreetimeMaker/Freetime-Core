@@ -8,6 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -16,8 +20,27 @@ fun FreetimeText(
     modifier: Modifier = Modifier,
     style: androidx.compose.ui.text.TextStyle = FreetimeDesign.typography.bodyLarge,
     color: Color = FreetimeDesign.colors.contentStrong,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontWeight: FontWeight? = null,
+    textAlign: TextAlign? = null,
+    overflow: TextOverflow = TextOverflow.Clip,
+    softWrap: Boolean = true,
     maxLines: Int = Int.MAX_VALUE,
-) = BasicText(text, modifier, style.copy(color = color), maxLines = maxLines)
+    minLines: Int = 1,
+) = BasicText(
+    text = text,
+    modifier = modifier,
+    style = style.copy(
+        color = color,
+        fontSize = if (fontSize != TextUnit.Unspecified) fontSize else style.fontSize,
+        fontWeight = fontWeight ?: style.fontWeight,
+        textAlign = textAlign ?: style.textAlign,
+    ),
+    overflow = overflow,
+    softWrap = softWrap,
+    maxLines = maxLines,
+    minLines = minLines,
+)
 
 @Composable
 fun FreetimeScreen(
