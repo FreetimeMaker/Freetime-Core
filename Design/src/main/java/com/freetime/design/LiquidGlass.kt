@@ -99,17 +99,21 @@ fun FreetimeGlassRoot(
 fun Modifier.freetimeGlass(
     shape: Shape = FreetimeGlassDefaults.shape,
     interactive: Boolean = true,
-): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, shape, interactive)
+    tint: Color = Color.Unspecified,
+): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, shape, interactive, tint)
 
 @Composable
-fun Modifier.freetimeGlassCapsule(interactive: Boolean = true): Modifier =
-    freetimeLiquidGlass(LocalFreetimeBackdrop.current, Capsule(), interactive)
+fun Modifier.freetimeGlassCapsule(
+    interactive: Boolean = true,
+    tint: Color = Color.Unspecified,
+): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, Capsule(), interactive, tint)
 
 @Composable
 fun Modifier.freetimeLiquidGlass(
     backdrop: Backdrop?,
     shape: Shape,
     interactive: Boolean = true,
+    tint: Color = Color.Unspecified,
 ): Modifier {
     val isDarkTheme = LocalFreetimePalette.current.background.luminance() < 0.5f
     val tokens = LocalFreetimeGlassTokens.current
@@ -123,7 +127,21 @@ fun Modifier.freetimeLiquidGlass(
     } else {
         Color.White.copy(alpha = tokens.lightFallbackAlpha)
     }
-    if (backdrop == null) return clip(shape).background(fallbackSurface)
+    val tintColor = tint.takeIf { it != Color.Unspecified }
+    if (backdrop == null) {
+        val fallback = if (tintColor != null) {
+            Brush.linearGradient(
+                listOf(
+                    tintColor.copy(alpha = tokens.tintFallbackAlpha),
+                    fallbackSurface,
+                    tintColor.copy(alpha = tokens.tintFallbackAlpha * .55f),
+                )
+            )
+        } else {
+            Brush.linearGradient(listOf(fallbackSurface, fallbackSurface))
+        }
+        return clip(shape).background(fallback)
+    }
 
     val scope = rememberCoroutineScope()
     val press = remember { Animatable(0f) }
@@ -161,6 +179,30 @@ fun Modifier.freetimeLiquidGlass(
         onDrawSurface = {
             val base = if (isDarkTheme) Color.Black else Color.White
             drawRect(base.copy(alpha = if (isDarkTheme) tokens.darkSurfaceAlpha else tokens.lightSurfaceAlpha))
+            if (tintColor != null) {
+                drawRect(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            tintColor.copy(alpha = tokens.tintAlpha),
+                            tintColor.copy(alpha = tokens.tintAlpha * .42f),
+                            Color.Transparent,
+                        ),
+                        start = Offset.Zero,
+                        end = Offset(size.width, size.height),
+                    ),
+                    blendMode = BlendMode.SrcOver,
+                )
+            }
+            drawRect(
+                brush = Brush.verticalGradient(
+                    listOf(
+                        designColors.glassHighlight.copy(alpha = tokens.edgeAlpha),
+                        Color.Transparent,
+                        Color.Black.copy(alpha = if (isDarkTheme) .08f else .025f),
+                    )
+                ),
+                blendMode = BlendMode.SrcOver,
+            )
             val p = press.value
             if (p > 0f) {
                 drawRect(
