@@ -45,6 +45,7 @@ private fun SampleApp() {
     var dialog by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableIntStateOf(0) }
     var sheet by remember { mutableStateOf(false) }
+    val messages = rememberFreetimeMessageHostState()
     val context = LocalContext.current
     val tint = if (tintEnabled) Color(0xFF6EA8FF) else Color.Unspecified
 
@@ -203,7 +204,15 @@ private fun SampleApp() {
                     }
 
                     FreetimeSectionHeader("Inputs", subtitle = "Text field, search and slider")
-                    FreetimeGlassSearchField(query, { query = it }, "Search components…")
+                    FreetimeSearchBar(
+                        value = query,
+                        onValueChange = { query = it },
+                        suggestions = listOf("Liquid Glass", "Scaffold", "Bottom Sheet", "Browser", "Donations"),
+                        onSuggestionSelected = { selected ->
+                            messages.show("Selected: $selected")
+                        },
+                        placeholder = "Search components…",
+                    )
                     FreetimeTextField(query, { query = it }, label = "Text field", placeholder = "Type something")
                     FreetimeSlider(slider, { slider = it })
 
@@ -236,6 +245,13 @@ private fun SampleApp() {
 
                 }
             }
+
+            FreetimeSnackbarHost(
+                state = messages,
+                modifier = Modifier
+                    .align(androidx.compose.ui.Alignment.BottomCenter)
+                    .padding(bottom = 104.dp, start = 20.dp, end = 20.dp),
+            )
 
             FreetimeBottomSheet(visible = sheet, onDismissRequest = { sheet = false }) {
                 FreetimeGlassTitle("Freetime Bottom Sheet", tint = tint)
