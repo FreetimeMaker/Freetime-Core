@@ -1,65 +1,52 @@
 # Freetime Core
 
-Shared Android libraries for Freetime Maker apps. Freetime Core keeps common design, browser and donation behavior reusable while every app remains independently installable and usable.
+Shared, open-source Android libraries for Freetime Maker apps. Freetime Core keeps common application infrastructure reusable while every consuming app remains independently installable and usable.
+
+Current release line: **1.6.x**
 
 ## Modules
 
 | Artifact | Purpose |
 | --- | --- |
-| `freetime-core` | Common models, results and lightweight utilities |
-| `freetime-design` | Material You and the current GeoWeather-style Liquid Glass system |
-| `freetime-browser` | External/in-app URL routing |
-| `freetime-donations` | Reusable donation models and Compose UI |
+| `Core` | Common models, results and lightweight Android utilities |
+| `Design` | Standalone Freetime UI system with Liquid Glass, theme tokens and reusable Compose controls |
+| `Browser` | External/in-app URL routing |
+| `Donations` | Reusable donation models and Compose UI based on Freetime Design |
 
-## JitPack
+## Dependency
 
-Releases are distributed through JitPack. Add the JitPack repository:
-
-```kotlin
-repositories {
-    google()
-    mavenCentral()
-    maven("https://jitpack.io")
-}
-```
-
-Then add only the modules your app needs:
+Add the repository used by your release distribution, then include only the modules your app needs:
 
 ```kotlin
 dependencies {
-    implementation("com.github.FreetimeMaker.Freetime-Core:Core:<version>")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Design:<version>")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:<version>")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:<version>")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Core:1.6.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.6.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:1.6.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.6.0")
 }
 ```
 
-## Liquid Glass
+## Freetime Design
 
-The Design module follows GeoWeather's current Liquid Glass implementation. On Android 13+ it uses Kyant Backdrop and Shapes for backdrop sampling, vibrancy, blur, lens distortion, capsules and interactive spring scaling. Older Android versions receive a Material color-aware fallback.
-
-Wrap the app content once so glass surfaces can sample a separate backdrop layer:
+`Design` is its own Compose design system. It does not use Material 3 as its UI foundation. It is built from Compose UI/Foundation, Freetime theme tokens and Kyant Backdrop/Shapes.
 
 ```kotlin
 FreetimeTheme {
     FreetimeGlassRoot {
-        // App UI
+        AppContent()
     }
 }
 ```
 
-Then use the reusable components or modifiers:
+The public design API includes Freetime palette, typography, shapes, spacing, sizing, motion and glass tokens plus reusable controls such as:
 
-```kotlin
-FreetimeGlassCard {
-    FreetimeGlassButton("Continue", onClick = ::continueFlow)
-}
+- `FreetimeButton`, `FreetimeIconButton`, `FreetimeCard`
+- `FreetimeTopBar`, `FreetimeBottomBar`, `FreetimeAdaptiveBottomBar`
+- `FreetimeTextField`, `FreetimeSwitch`, `FreetimeSlider`
+- `FreetimeChip`, `FreetimeDialog`, `FreetimeSnackbar`, `FreetimeProgressIndicator`
+- `FreetimeGlassPanel`, `FreetimeGlassAction` and Liquid Glass modifiers
 
-Modifier.freetimeGlass()
-Modifier.freetimeGlassCapsule()
-```
-
-The backdrop source is intentionally separated from the glass content to avoid RuntimeShader feedback loops seen on some Android GPU drivers.
+The glass engine uses Kyant Backdrop where supported and a translucent Freetime fallback otherwise. Its backdrop is separated from foreground glass content to avoid rendering feedback loops.
 
 ## Browser
 
@@ -78,22 +65,24 @@ val targets = listOf(
 )
 ```
 
-Apps keep control over link handling and wallet-copy behavior.
+Apps retain control over link handling and wallet behavior.
 
 ## Android versions
 
-`compileSdk` and `minSdk` are defined centrally in `gradle/libs.versions.toml`. The current minimum SDK is 24 and compile SDK is 37.
+SDK and dependency versions are centralized in `gradle/libs.versions.toml`. The current minimum SDK is 24 and compile SDK is 37.
 
-## Publishing
+## Versioning and releases
 
 The library version is defined once in `gradle/libs.versions.toml`:
 
 ```toml
 [versions]
-freetime = "1.3.0"
+freetime = "1.6.0"
 ```
 
-Changing this value on `master` runs the build and verifies all Maven publications locally. The release job then creates the matching Git tag, for example `v1.3.0`. JitPack builds that tag using `jitpack.yml` and publishes the multi-module artifacts. No Maven Central credentials or signing secrets are required.
+Freetime Core follows semantic versioning: patch releases fix compatible behavior, minor releases add compatible public functionality, and major releases are reserved for breaking public API changes.
+
+See [CHANGELOG.md](CHANGELOG.md) for the project history.
 
 ## Principles
 
@@ -101,7 +90,7 @@ Changing this value on `master` runs the build and verifies all Maven publicatio
 2. No mandatory Freetime account or Luma Store dependency.
 3. Dependencies remain open-source and F-Droid-friendly.
 4. Shared infrastructure uses interfaces/callbacks instead of hard-coded backends.
-5. Design follows Material color roles for readable light and dark themes.
+5. Freetime Design owns its palette, typography, shapes, motion and components rather than depending on Material 3 UI components.
 
 ## License
 
