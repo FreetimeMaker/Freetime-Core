@@ -2,12 +2,12 @@
 
 Freetime's standalone Compose UI system with Liquid Glass.
 
-Since **1.6.0**, the module is independent from Material 3 as its UI foundation. Version **1.7.0** expanded it with reusable app-level building blocks shared across Freetime apps. Version **1.8.0** expands Liquid Glass and the reusable showcase surface. Freetime Design now owns its theme, palette, typography, shapes, spacing, sizing, motion and reusable controls.
+Since **1.6.0**, the module is independent from Material 3 as its UI foundation. Version **1.7.0** expanded it with reusable app-level building blocks shared across Freetime apps. Version **1.9.0** expands Liquid Glass and the reusable showcase surface. Freetime Design now owns its theme, palette, typography, shapes, spacing, sizing, motion and reusable controls.
 
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.8.0")
+implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.9.0")
 ```
 
 ## Theme
@@ -104,3 +104,16 @@ Common patterns found across GeoWeather, Luma Store and SuperSMP Companion are a
 - `FreetimeInfoCard` — titled glass card for information and dashboard sections.
 
 All higher-level components expose generic data or composable slots rather than depending on GeoWeather, Luma Store, SuperSMP, Navigation Compose or Material Icons.
+
+
+## Layout and adaptive navigation
+
+Version **1.9.0** adds Freetime-native layout primitives that avoid Material Scaffold:
+
+- `FreetimeScaffold` for top/content/bottom/FAB screen structure.
+- `FreetimeTabRow` with a Liquid Glass selection surface.
+- `FreetimeFloatingActionButton` and `FreetimeExtendedFloatingActionButton`.
+- `FreetimeBottomSheet` for floating sheet content.
+- `FreetimeAdaptiveNavigation` to switch between bottom navigation and a navigation rail at a configurable width.
+- `FreetimeNavigationRail` for larger screens.
+- `FreetimePopupMenu` and `FreetimeMenuItem` for Material-free glass menus.
