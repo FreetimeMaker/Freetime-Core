@@ -264,6 +264,55 @@ fun Modifier.freetimeLiquidGlass(
 }
 
 @Composable
+fun Modifier.freetimeSelectedGlassCapsule(
+    tint: Color = FreetimeDesign.palette.primary,
+    backdropLuminance: Float = 0.5f,
+): Modifier {
+    val backdrop = LocalFreetimeBackdrop.current
+    val tokens = LocalFreetimeGlassTokens.current
+    val isDark = LocalFreetimePalette.current.background.luminance() < 0.5f
+    if (backdrop == null) {
+        return clip(Capsule()).background(
+            Brush.linearGradient(
+                listOf(
+                    tint.copy(alpha = tokens.tintFallbackAlpha),
+                    (if (isDark) Color.Black else Color.White).copy(alpha = .28f),
+                )
+            )
+        )
+    }
+    return drawBackdrop(
+        backdrop = backdrop,
+        shape = { Capsule() },
+        effects = {
+            vibrancy()
+            colorControls(brightness = .05f, contrast = 1f, saturation = 1.5f)
+            val normalized = (backdropLuminance * 2f - 1f).let { value ->
+                kotlin.math.sign(value) * value * value
+            }
+            val adaptive = if (normalized > 0f) {
+                lerp(tokens.blur.toPx(), tokens.maxBlur.toPx(), normalized)
+            } else {
+                lerp(tokens.blur.toPx(), tokens.minBlur.toPx(), -normalized)
+            }
+            blur(adaptive + tokens.selectedBlurBoost.toPx())
+            lens(0f, 0f, depthEffect = false, chromaticAberration = true)
+        },
+        highlight = { Highlight.Default.copy(alpha = tokens.selectedHighlightAlpha) },
+        onDrawSurface = {
+            val lumNorm = ((backdropLuminance - .3f) / .5f).coerceIn(0f, 1f)
+            val shade = if (isDark) lerp(.22f, .55f, lumNorm) else lerp(.06f, .14f, lumNorm)
+            drawRect(Color.Black.copy(alpha = shade))
+            drawRect(
+                Brush.linearGradient(
+                    listOf(tint.copy(alpha = tokens.tintAlpha), Color.Transparent)
+                )
+            )
+        },
+    )
+}
+
+@Composable
 fun FreetimeGlassCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Box(
         modifier = modifier
