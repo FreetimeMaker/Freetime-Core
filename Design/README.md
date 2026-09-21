@@ -2,12 +2,12 @@
 
 Freetime's standalone Compose UI system with Liquid Glass.
 
-Since **1.6.0**, the module is independent from Material 3 as its UI foundation. Version **1.7.0** expands it with reusable app-level building blocks shared across Freetime apps. Freetime Design now owns its theme, palette, typography, shapes, spacing, sizing, motion and reusable controls.
+Since **1.6.0**, the module is independent from Material 3 as its UI foundation. Version **1.7.0** expanded it with reusable app-level building blocks shared across Freetime apps. Version **1.8.0** expands Liquid Glass and the reusable showcase surface. Freetime Design now owns its theme, palette, typography, shapes, spacing, sizing, motion and reusable controls.
 
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.7.0")
+implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.8.0")
 ```
 
 ## Theme
