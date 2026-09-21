@@ -18,7 +18,10 @@ data class FreetimeGlassTokens(
     val saturation: Float = 1.55f,
     val brightness: Float = 0.05f,
     val pressedScale: Float = 1.10f,
-    val highlightAlpha: Float = 0.16f,
+    val highlightAlpha: Float = 0.22f,
+    val tintAlpha: Float = 0.20f,
+    val tintFallbackAlpha: Float = 0.28f,
+    val edgeAlpha: Float = 0.22f,
 )
 
 @Immutable
