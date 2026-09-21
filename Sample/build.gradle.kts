@@ -23,7 +23,10 @@ android {
 }
 
 dependencies {
+    implementation(project(":Core"))
     implementation(project(":Design"))
+    implementation(project(":Browser"))
+    implementation(project(":Donations"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.foundation)
