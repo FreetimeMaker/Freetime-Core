@@ -3,10 +3,8 @@ package com.freetime.design
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
@@ -43,10 +41,12 @@ fun FreetimeGlassText(
                 tint = glassTint,
                 backdropLuminance = backdropLuminance,
             )
-            .drawWithContent {
-                // Keep the glass only where the text glyphs are drawn.
-                drawContent()
-                drawRect(Color.White, blendMode = BlendMode.DstIn)
+            .drawWithCache {
+                onDrawWithContent {
+                    // BasicText supplies the glyph alpha; DstIn clips the glass surface to it.
+                    drawContent()
+                    drawRect(Color.White, blendMode = BlendMode.DstIn)
+                }
             },
         style = style.copy(color = fallback),
         maxLines = maxLines,
