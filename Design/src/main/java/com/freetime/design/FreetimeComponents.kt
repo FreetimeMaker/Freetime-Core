@@ -241,13 +241,14 @@ fun FreetimeButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     leadingIcon: ImageVector? = null,
+    tint: Color = Color.Unspecified,
 ) {
     val interaction = remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
     val alpha by animateFloatAsState(if (pressed) .82f else if (enabled) 1f else .45f, label = "freetime-button")
     Row(
         modifier.defaultMinSize(minHeight = FreetimeDesign.sizes.buttonHeight)
-            .freetimeGlassCapsule(enabled)
+            .freetimeGlassCapsule(enabled, tint = tint)
             .clickable(interactionSource = interaction, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 12.dp).alpha(alpha),
         verticalAlignment = Alignment.CenterVertically,
@@ -265,9 +266,10 @@ fun FreetimeIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    tint: Color = Color.Unspecified,
 ) {
     Box(
-        modifier.size(FreetimeDesign.sizes.iconButton).freetimeGlassCapsule(enabled)
+        modifier.size(FreetimeDesign.sizes.iconButton).freetimeGlassCapsule(enabled, tint = tint)
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .alpha(if (enabled) 1f else .45f),
         contentAlignment = Alignment.Center,
@@ -280,9 +282,10 @@ fun FreetimeIconButton(
 fun FreetimeCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
+    tint: Color = Color.Unspecified,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    val base = modifier.freetimeGlass(LocalFreetimeShapes.current.surface, interactive = onClick != null)
+    val base = modifier.freetimeGlass(LocalFreetimeShapes.current.surface, interactive = onClick != null, tint = tint)
     Box(
         modifier = (if (onClick != null) base.clickable(onClick = onClick) else base).padding(18.dp),
         content = content,
@@ -336,10 +339,11 @@ fun FreetimeChip(
     selected: Boolean = false,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    tint: Color = if (selected) FreetimeDesign.palette.primary else Color.Unspecified,
 ) {
     val color by animateColorAsState(if (selected) FreetimeDesign.colors.contentStrong else FreetimeDesign.colors.contentMuted, label = "freetime-chip-color")
     Box(
-        modifier.defaultMinSize(minHeight = 38.dp).freetimeGlassCapsule()
+        modifier.defaultMinSize(minHeight = 38.dp).freetimeGlassCapsule(tint = tint)
             .clickable(onClick = onClick).padding(horizontal = 15.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center,
     ) {
