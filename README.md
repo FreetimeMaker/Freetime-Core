@@ -2,7 +2,7 @@
 
 Shared, open-source Android libraries for Freetime Maker apps. Freetime Core keeps common application infrastructure reusable while every consuming app remains independently installable and usable.
 
-Current release line: **1.7.x**
+Current release line: **1.8.x**
 
 ## Modules
 
@@ -19,10 +19,10 @@ Add the repository used by your release distribution, then include only the modu
 
 ```kotlin
 dependencies {
-    implementation("com.github.FreetimeMaker.Freetime-Core:Core:1.7.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.7.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:1.7.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.7.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Core:1.8.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.8.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:1.8.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.8.0")
 }
 ```
 
@@ -77,7 +77,7 @@ The library version is defined once in `gradle/libs.versions.toml`:
 
 ```toml
 [versions]
-freetime = "1.7.0"
+freetime = "1.8.0"
 ```
 
 Freetime Core follows semantic versioning: patch releases fix compatible behavior, minor releases add compatible public functionality, and major releases are reserved for breaking public API changes.
