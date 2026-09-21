@@ -324,3 +324,113 @@ fun FreetimeChip(
         Text(text, color = color, style = MaterialTheme.typography.labelMedium)
     }
 }
+
+
+@Immutable
+data class FreetimeNavigationDestination(
+    val label: String,
+    val icon: ImageVector,
+)
+
+@Composable
+fun FreetimeBottomBar(
+    destinations: List<FreetimeNavigationDestination>,
+    selectedIndex: Int,
+    onDestinationSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    compact: Boolean = false,
+) {
+    Row(
+        modifier = modifier
+            .padding(horizontal = 18.dp, vertical = 12.dp)
+            .freetimeGlassCapsule(interactive = false)
+            .padding(horizontal = 7.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        destinations.forEachIndexed { index, destination ->
+            FreetimeBottomBarItem(
+                selected = index == selectedIndex,
+                destination = destination,
+                compact = compact,
+                onClick = { onDestinationSelected(index) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun RowScope.FreetimeBottomBarItem(
+    selected: Boolean,
+    destination: FreetimeNavigationDestination,
+    compact: Boolean,
+    onClick: () -> Unit,
+) {
+    val reducedMotion = rememberFreetimeReducedMotion()
+    val selectedScale by animateFloatAsState(
+        targetValue = if (selected && !reducedMotion) 1.06f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMediumLow),
+        label = "freetime-bottom-item-scale",
+    )
+    val color by animateColorAsState(
+        targetValue = if (selected) FreetimeDesign.colors.contentStrong else FreetimeDesign.colors.contentMuted,
+        animationSpec = tween(if (reducedMotion) 0 else 180),
+        label = "freetime-bottom-item-color",
+    )
+
+    Column(
+        modifier = Modifier
+            .weight(1f)
+            .defaultMinSize(minWidth = 54.dp, minHeight = if (compact) 46.dp else 58.dp)
+            .clickable(role = Role.Tab, onClick = onClick)
+            .padding(horizontal = 3.dp, vertical = 3.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Box(
+            modifier = (if (selected) {
+                Modifier.freetimeGlassCapsule(interactive = false)
+            } else Modifier)
+                .scale(selectedScale)
+                .padding(horizontal = if (compact) 12.dp else 16.dp, vertical = 6.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = destination.icon,
+                contentDescription = destination.label,
+                tint = color,
+                modifier = Modifier.size(if (compact) 21.dp else 23.dp),
+            )
+        }
+        AnimatedVisibility(
+            visible = !compact,
+            enter = fadeIn(tween(if (reducedMotion) 0 else 160)) + expandVertically(),
+            exit = fadeOut(tween(if (reducedMotion) 0 else 120)) + shrinkVertically(),
+        ) {
+            Text(
+                text = destination.label,
+                color = color,
+                style = MaterialTheme.typography.labelSmall,
+                maxLines = 1,
+            )
+        }
+    }
+}
+
+@Composable
+fun FreetimeAdaptiveBottomBar(
+    destinations: List<FreetimeNavigationDestination>,
+    selectedIndex: Int,
+    onDestinationSelected: (Int) -> Unit,
+    listState: LazyListState,
+    modifier: Modifier = Modifier,
+    thresholdPx: Int = 120,
+) {
+    FreetimeBottomBar(
+        destinations = destinations,
+        selectedIndex = selectedIndex,
+        onDestinationSelected = onDestinationSelected,
+        modifier = modifier,
+        compact = rememberFreetimeCompactNavigation(listState, thresholdPx),
+    )
+}
