@@ -39,8 +39,8 @@ fun FreetimeDesignShowcase(modifier: Modifier = Modifier) {
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.sm)) {
                     FreetimeButton("Primary", onClick = {})
-                    FreetimeChip("One", selectedChip == 0) { selectedChip = 0 }
-                    FreetimeChip("Two", selectedChip == 1) { selectedChip = 1 }
+                    FreetimeChip(text = "One", selected = selectedChip == 0, onClick = { selectedChip = 0 })
+                    FreetimeChip(text = "Two", selected = selectedChip == 1, onClick = { selectedChip = 1 })
                 }
             }
         }
