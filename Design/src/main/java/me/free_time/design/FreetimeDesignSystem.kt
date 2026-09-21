@@ -1,5 +1,6 @@
 package me.free_time.design
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
@@ -29,7 +30,6 @@ data class FreetimeDesignColors(
 )
 
 val LocalFreetimeGlassTokens = staticCompositionLocalOf { FreetimeGlassTokens() }
-
 val LocalFreetimeDesignColors = staticCompositionLocalOf {
     FreetimeDesignColors(
         glassHighlight = Color.White,
@@ -40,9 +40,12 @@ val LocalFreetimeDesignColors = staticCompositionLocalOf {
 }
 
 object FreetimeDesign {
-    val glass: FreetimeGlassTokens
-        @androidx.compose.runtime.Composable get() = LocalFreetimeGlassTokens.current
-
-    val colors: FreetimeDesignColors
-        @androidx.compose.runtime.Composable get() = LocalFreetimeDesignColors.current
+    val glass: FreetimeGlassTokens @Composable get() = LocalFreetimeGlassTokens.current
+    val colors: FreetimeDesignColors @Composable get() = LocalFreetimeDesignColors.current
+    val spacing: FreetimeSpacing @Composable get() = LocalFreetimeSpacing.current
+    val sizes: FreetimeSizes @Composable get() = LocalFreetimeSizes.current
+    val motion: FreetimeMotion @Composable get() = LocalFreetimeMotion.current
+    val shapes: FreetimeShapes @Composable get() = LocalFreetimeShapes.current
+    val typography: FreetimeTypography @Composable get() = LocalFreetimeTypography.current
+    val palette: FreetimePalette @Composable get() = LocalFreetimePalette.current
 }
