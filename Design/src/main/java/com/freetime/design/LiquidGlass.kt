@@ -107,7 +107,8 @@ fun Modifier.freetimeGlass(
     tint: Color = Color.Unspecified,
     backdropLuminance: Float = 0.5f,
     pressedScale: Float = 1.12f,
-): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, shape, interactive, tint, backdropLuminance, pressedScale)
+    highlight: Highlight = Highlight.Default,
+): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, shape, interactive, tint, backdropLuminance, pressedScale, highlight)
 
 @Composable
 fun Modifier.freetimeGlassCapsule(
@@ -115,7 +116,8 @@ fun Modifier.freetimeGlassCapsule(
     tint: Color = Color.Unspecified,
     backdropLuminance: Float = 0.5f,
     pressedScale: Float = 1.12f,
-): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, Capsule(), interactive, tint, backdropLuminance, pressedScale)
+    highlight: Highlight = Highlight.Default,
+): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, Capsule(), interactive, tint, backdropLuminance, pressedScale, highlight)
 
 @Composable
 fun Modifier.freetimeLiquidGlass(
@@ -125,6 +127,7 @@ fun Modifier.freetimeLiquidGlass(
     tint: Color = Color.Unspecified,
     backdropLuminance: Float = 0.5f,
     pressedScale: Float = 1.12f,
+    highlight: Highlight = Highlight.Default,
 ): Modifier {
     val isDarkTheme = LocalFreetimePalette.current.background.luminance() < 0.5f
     val tokens = LocalFreetimeGlassTokens.current
@@ -161,7 +164,7 @@ fun Modifier.freetimeLiquidGlass(
     val glass = drawBackdrop(
         backdrop = backdrop,
         shape = { shape },
-        highlight = { Highlight.Default },
+        highlight = { highlight },
         effects = {
             val p = press.value
             vibrancy()
@@ -281,6 +284,7 @@ fun Modifier.freetimeWideGlass(
     interactive: Boolean = true,
     tint: Color = Color.Unspecified,
     backdropLuminance: Float = 0.5f,
+    highlight: Highlight = Highlight.Default,
 ): Modifier = freetimeLiquidGlass(
     backdrop = LocalFreetimeBackdrop.current,
     shape = shape,
@@ -288,6 +292,20 @@ fun Modifier.freetimeWideGlass(
     tint = tint,
     backdropLuminance = backdropLuminance,
     pressedScale = 1.04f,
+    highlight = highlight,
+)
+
+@Composable
+fun Modifier.freetimeRoundGlass(
+    interactive: Boolean = true,
+    tint: Color = Color.Unspecified,
+    backdropLuminance: Float = 0.5f,
+): Modifier = freetimeGlassCapsule(
+    interactive = interactive,
+    tint = tint,
+    backdropLuminance = backdropLuminance,
+    pressedScale = 1.12f,
+    highlight = Highlight(width = 1.dp),
 )
 
 @Composable
