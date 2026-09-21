@@ -87,3 +87,20 @@ Legacy `FreetimeGlassDepth` and `FreetimeDesignTokens` APIs remain temporarily a
 ## Material 3
 
 The `Design` module does **not** depend on `androidx.compose.material3`. Applications can still use Material 3 alongside Freetime Design if they choose, but Freetime components themselves are implemented with Compose UI/Foundation and the Freetime design system.
+
+
+## App-level building blocks
+
+Common patterns found across GeoWeather, Luma Store and SuperSMP Companion are available as reusable Freetime components:
+
+- `FreetimeText` — Freetime typography and palette-aware text.
+- `FreetimeScreen` — lightweight top/content/bottom screen structure without Material Scaffold.
+- `FreetimeSectionHeader` — title/subtitle header with an optional trailing slot.
+- `FreetimeListItem` — reusable leading/content/trailing list row.
+- `FreetimeOptionGroup` — settings and filter choices backed by Freetime choice rows.
+- `FreetimeStatusBanner` — offline, cached-data, warning and informational state surface.
+- `FreetimeEmptyState`, `FreetimeLoadingState`, `FreetimeErrorState` — consistent screen states.
+- `FreetimeDivider` and `FreetimeBadge` — lightweight supporting primitives.
+- `FreetimeInfoCard` — titled glass card for information and dashboard sections.
+
+All higher-level components expose generic data or composable slots rather than depending on GeoWeather, Luma Store, SuperSMP, Navigation Compose or Material Icons.
