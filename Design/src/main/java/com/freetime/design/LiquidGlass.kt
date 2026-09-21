@@ -132,14 +132,16 @@ fun Modifier.freetimeLiquidGlass(
     val isDarkTheme = LocalFreetimePalette.current.background.luminance() < 0.5f
     val tokens = LocalFreetimeGlassTokens.current
     val designColors = LocalFreetimeDesignColors.current
+    val reduceTransparency = LocalFreetimeReduceTransparency.current
+    val highContrast = LocalFreetimeHighContrast.current
 
     // Keep the fallback translucent, but use the real Kyant backdrop path whenever
     // Android can provide one. The real path intentionally follows SimpMusic's
     // liquid-glass recipe instead of behaving like a blurred Material surface.
     val fallbackSurface = if (isDarkTheme) {
-        Color.Black.copy(alpha = tokens.darkFallbackAlpha)
+        Color.Black.copy(alpha = if (reduceTransparency) .88f else if (highContrast) maxOf(tokens.darkFallbackAlpha, .48f) else tokens.darkFallbackAlpha)
     } else {
-        Color.White.copy(alpha = tokens.lightFallbackAlpha)
+        Color.White.copy(alpha = if (reduceTransparency) .92f else if (highContrast) maxOf(tokens.lightFallbackAlpha, .52f) else tokens.lightFallbackAlpha)
     }
     val tintColor = tint.takeIf { it != Color.Unspecified }
     if (backdrop == null) {
@@ -167,11 +169,11 @@ fun Modifier.freetimeLiquidGlass(
         highlight = { highlight },
         effects = {
             val p = press.value
-            vibrancy()
+            if (!reduceTransparency) vibrancy()
             colorControls(
                 brightness = tokens.brightness,
-                contrast = 1f,
-                saturation = tokens.saturation,
+                contrast = if (highContrast) 1.22f else 1f,
+                saturation = if (reduceTransparency) 1f else tokens.saturation,
             )
             val normalized = (backdropLuminance * 2f - 1f).let { value ->
                 kotlin.math.sign(value) * value * value
@@ -181,14 +183,14 @@ fun Modifier.freetimeLiquidGlass(
             } else {
                 lerp(tokens.blur.toPx(), tokens.minBlur.toPx(), -normalized)
             }
-            blur(adaptiveBlur + tokens.pressedBlurBoost.toPx() * p)
-            // SimpMusic keeps refraction below the shape inradius. This produces
-            // the crisp curved edge instead of the old heavy 24dp blur.
-            lens(
-                size.minDimension / 4f + tokens.pressedBlurBoost.toPx() * p,
-                size.minDimension / 2f,
-                depthEffect = false,
-            )
+            blur((if (reduceTransparency) tokens.minBlur.toPx() else adaptiveBlur) + tokens.pressedBlurBoost.toPx() * p)
+            if (!reduceTransparency) {
+                lens(
+                    size.minDimension / 4f + tokens.pressedBlurBoost.toPx() * p,
+                    size.minDimension / 2f,
+                    depthEffect = false,
+                )
+            }
         },
         layerBlock = if (interactive) {
             {
@@ -202,10 +204,15 @@ fun Modifier.freetimeLiquidGlass(
             val base = if (isDarkTheme) Color.Black else Color.White
             val lumNorm = ((backdropLuminance - 0.3f) / 0.5f).coerceIn(0f, 1f)
             val adaptiveScrim = lerp(tokens.minScrimAlpha, tokens.maxScrimAlpha, lumNorm)
-            val baseAlpha = maxOf(
+            val normalBaseAlpha = maxOf(
                 adaptiveScrim,
                 if (isDarkTheme) tokens.darkSurfaceAlpha else tokens.lightSurfaceAlpha,
             )
+            val baseAlpha = when {
+                reduceTransparency -> if (isDarkTheme) .88f else .92f
+                highContrast -> maxOf(normalBaseAlpha, if (isDarkTheme) .48f else .56f)
+                else -> normalBaseAlpha
+            }
             drawRect(base.copy(alpha = baseAlpha))
             if (tintColor != null) {
                 drawRect(
@@ -224,7 +231,7 @@ fun Modifier.freetimeLiquidGlass(
             drawRect(
                 brush = Brush.verticalGradient(
                     listOf(
-                        designColors.glassHighlight.copy(alpha = tokens.edgeAlpha),
+                        designColors.glassHighlight.copy(alpha = if (highContrast) maxOf(tokens.edgeAlpha, .55f) else tokens.edgeAlpha),
                         Color.Transparent,
                         Color.Black.copy(alpha = if (isDarkTheme) .08f else .025f),
                     )
