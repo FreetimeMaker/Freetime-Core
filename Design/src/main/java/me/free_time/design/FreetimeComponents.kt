@@ -122,8 +122,8 @@ fun FreetimeGlassTopBar(
     ) {
         navigation()
         Column(Modifier.weight(1f).padding(horizontal = 8.dp)) {
-            Text(title, style = if (compact) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleLarge, maxLines = 1)
-            if (compact && !subtitle.isNullOrBlank()) Text(subtitle, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+            BasicText(title, style = if (compact) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleLarge, maxLines = 1)
+            if (compact && !subtitle.isNullOrBlank()) BasicText(subtitle, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
         }
         actions()
     }
@@ -156,7 +156,7 @@ fun rememberFreetimeCompactNavigation(state: LazyListState, thresholdPx: Int = 1
 fun FreetimeSettingsGroup(title: String, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     FreetimeGlassPanel(modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text(title, style = MaterialTheme.typography.titleMedium)
+            BasicText(title, style = MaterialTheme.typography.titleMedium)
             content()
         }
     }
@@ -166,8 +166,8 @@ fun FreetimeSettingsGroup(title: String, modifier: Modifier = Modifier, content:
 fun FreetimeSwitchSetting(title: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit, description: String? = null) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
-            Text(title)
-            if (description != null) Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            BasicText(title)
+            if (description != null) BasicText(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Switch(checked, onCheckedChange)
     }
@@ -176,21 +176,21 @@ fun FreetimeSwitchSetting(title: String, checked: Boolean, onCheckedChange: (Boo
 @Composable
 fun FreetimeChoiceSetting(title: String, selected: Boolean, onClick: () -> Unit) {
     FreetimeGlassAction(onClick, Modifier.fillMaxWidth(), haptic = FreetimeHaptic.LIGHT) {
-        Text(title, Modifier.weight(1f))
-        if (selected) Text("✓")
+        BasicText(title, Modifier.weight(1f))
+        if (selected) BasicText("✓")
     }
 }
 
 @Composable
 fun FreetimeGlassSearchField(value: String, onValueChange: (String) -> Unit, placeholder: String = "", modifier: Modifier = Modifier) {
-    OutlinedTextField(value, onValueChange, modifier.fillMaxWidth().freetimeGlass(RoundedCornerShape(24.dp), true), placeholder = { Text(placeholder) }, singleLine = true)
+    OutlinedTextField(value, onValueChange, modifier.fillMaxWidth().freetimeGlass(RoundedCornerShape(24.dp), true), placeholder = { BasicText(placeholder) }, singleLine = true)
 }
 
 @Composable
 fun FreetimeGlassSnackbar(message: String, modifier: Modifier = Modifier, actionLabel: String? = null, onAction: (() -> Unit)? = null) {
     Row(modifier.freetimeGlassCapsule(false).padding(horizontal = 18.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(message, Modifier.weight(1f))
-        if (actionLabel != null && onAction != null) TextButton(onClick = onAction) { Text(actionLabel) }
+        BasicText(message, Modifier.weight(1f))
+        if (actionLabel != null && onAction != null) TextButton(onClick = onAction) { BasicText(actionLabel) }
     }
 }
 
@@ -232,7 +232,7 @@ fun FreetimeButton(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         if (leadingIcon != null) Icon(leadingIcon, null, Modifier.size(20.dp), tint = FreetimeDesign.colors.contentStrong)
-        Text(text, style = MaterialTheme.typography.labelLarge, color = FreetimeDesign.colors.contentStrong)
+        BasicText(text, style = MaterialTheme.typography.labelLarge, color = FreetimeDesign.colors.contentStrong)
     }
 }
 
@@ -279,7 +279,7 @@ fun FreetimeTopBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         navigation?.invoke()
-        Text(title, Modifier.weight(1f).padding(horizontal = 12.dp), style = MaterialTheme.typography.titleMedium, color = FreetimeDesign.colors.contentStrong)
+        BasicText(title, Modifier.weight(1f).padding(horizontal = 12.dp), style = MaterialTheme.typography.titleMedium, color = FreetimeDesign.colors.contentStrong)
         actions()
     }
 }
@@ -304,7 +304,7 @@ fun RowScope.FreetimeNavigationItem(
         ) {
             Icon(icon, label, Modifier.size(22.dp), tint = color)
         }
-        Text(label, color = color, style = MaterialTheme.typography.labelSmall, maxLines = 1)
+        BasicText(label, color = color, style = MaterialTheme.typography.labelSmall, maxLines = 1)
     }
 }
 
@@ -321,7 +321,7 @@ fun FreetimeChip(
             .clickable(onClick = onClick).padding(horizontal = 15.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text, color = color, style = MaterialTheme.typography.labelMedium)
+        BasicText(text, color = color, style = MaterialTheme.typography.labelMedium)
     }
 }
 
@@ -407,7 +407,7 @@ private fun RowScope.FreetimeBottomBarItem(
             enter = fadeIn(tween(if (reducedMotion) 0 else 160)) + expandVertically(),
             exit = fadeOut(tween(if (reducedMotion) 0 else 120)) + shrinkVertically(),
         ) {
-            Text(
+            BasicText(
                 text = destination.label,
                 color = color,
                 style = MaterialTheme.typography.labelSmall,
@@ -474,8 +474,8 @@ fun FreetimeTextField(
         modifier = modifier.fillMaxWidth().freetimeGlass(LocalFreetimeShapes.current.control, interactive = true),
         enabled = enabled,
         singleLine = singleLine,
-        placeholder = { if (placeholder.isNotEmpty()) Text(placeholder, color = FreetimeDesign.colors.contentMuted) },
-        label = label?.let { { Text(it) } },
+        placeholder = { if (placeholder.isNotEmpty()) BasicText(placeholder, color = FreetimeDesign.colors.contentMuted) },
+        label = label?.let { { BasicText(it) } },
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
@@ -507,8 +507,8 @@ fun FreetimeDialog(
                 .padding(FreetimeDesign.spacing.xl),
             verticalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.lg),
         ) {
-            Text(title, style = MaterialTheme.typography.titleLarge, color = FreetimeDesign.colors.contentStrong)
-            if (!text.isNullOrBlank()) Text(text, style = MaterialTheme.typography.bodyMedium, color = FreetimeDesign.colors.contentMuted)
+            BasicText(title, style = MaterialTheme.typography.titleLarge, color = FreetimeDesign.colors.contentStrong)
+            if (!text.isNullOrBlank()) BasicText(text, style = MaterialTheme.typography.bodyMedium, color = FreetimeDesign.colors.contentMuted)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.sm, Alignment.End),
@@ -533,7 +533,7 @@ fun FreetimeSnackbar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.sm),
     ) {
-        Text(message, Modifier.weight(1f), color = FreetimeDesign.colors.contentStrong, style = MaterialTheme.typography.bodyMedium)
+        BasicText(message, Modifier.weight(1f), color = FreetimeDesign.colors.contentStrong, style = MaterialTheme.typography.bodyMedium)
         if (actionLabel != null && onAction != null) FreetimeButton(actionLabel, onAction)
     }
 }
