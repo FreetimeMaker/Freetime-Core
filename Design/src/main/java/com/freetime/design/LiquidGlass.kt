@@ -100,13 +100,15 @@ fun Modifier.freetimeGlass(
     shape: Shape = FreetimeGlassDefaults.shape,
     interactive: Boolean = true,
     tint: Color = Color.Unspecified,
-): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, shape, interactive, tint)
+    backdropLuminance: Float = 0.5f,
+): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, shape, interactive, tint, backdropLuminance)
 
 @Composable
 fun Modifier.freetimeGlassCapsule(
     interactive: Boolean = true,
     tint: Color = Color.Unspecified,
-): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, Capsule(), interactive, tint)
+    backdropLuminance: Float = 0.5f,
+): Modifier = freetimeLiquidGlass(LocalFreetimeBackdrop.current, Capsule(), interactive, tint, backdropLuminance)
 
 @Composable
 fun Modifier.freetimeLiquidGlass(
@@ -114,6 +116,7 @@ fun Modifier.freetimeLiquidGlass(
     shape: Shape,
     interactive: Boolean = true,
     tint: Color = Color.Unspecified,
+    backdropLuminance: Float = 0.5f,
 ): Modifier {
     val isDarkTheme = LocalFreetimePalette.current.background.luminance() < 0.5f
     val tokens = LocalFreetimeGlassTokens.current
@@ -159,7 +162,15 @@ fun Modifier.freetimeLiquidGlass(
                 contrast = 1f,
                 saturation = tokens.saturation,
             )
-            blur(tokens.blur.toPx() + tokens.pressedBlurBoost.toPx() * p)
+            val normalized = (backdropLuminance * 2f - 1f).let { value ->
+                kotlin.math.sign(value) * value * value
+            }
+            val adaptiveBlur = if (normalized > 0f) {
+                lerp(tokens.blur.toPx(), tokens.maxBlur.toPx(), normalized)
+            } else {
+                lerp(tokens.blur.toPx(), tokens.minBlur.toPx(), -normalized)
+            }
+            blur(adaptiveBlur + tokens.pressedBlurBoost.toPx() * p)
             // SimpMusic keeps refraction below the shape inradius. This produces
             // the crisp curved edge instead of the old heavy 24dp blur.
             lens(
@@ -178,7 +189,13 @@ fun Modifier.freetimeLiquidGlass(
         } else null,
         onDrawSurface = {
             val base = if (isDarkTheme) Color.Black else Color.White
-            drawRect(base.copy(alpha = if (isDarkTheme) tokens.darkSurfaceAlpha else tokens.lightSurfaceAlpha))
+            val lumNorm = ((backdropLuminance - 0.3f) / 0.5f).coerceIn(0f, 1f)
+            val adaptiveScrim = lerp(tokens.minScrimAlpha, tokens.maxScrimAlpha, lumNorm)
+            val baseAlpha = maxOf(
+                adaptiveScrim,
+                if (isDarkTheme) tokens.darkSurfaceAlpha else tokens.lightSurfaceAlpha,
+            )
+            drawRect(base.copy(alpha = baseAlpha))
             if (tintColor != null) {
                 drawRect(
                     brush = Brush.linearGradient(
