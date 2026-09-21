@@ -87,7 +87,7 @@ private fun SampleApp() {
             ) {
                 Column(
                     Modifier
-                        .weight(1f)
+                        .fillMaxSize()
                         .verticalScroll(rememberScrollState())
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(18.dp),
@@ -95,6 +95,12 @@ private fun SampleApp() {
                     FreetimeGlassTitle("Liquid Glass", tint = tint)
                     FreetimeGlassText(
                         "The text itself uses the same glass optics as the controls.",
+                        tint = tint,
+                    )
+                    FreetimeTabRow(
+                        tabs = listOf("Design", "Core", "Browser", "Donate"),
+                        selectedIndex = selectedTab,
+                        onTabSelected = { selectedTab = it },
                         tint = tint,
                     )
 
