@@ -4,6 +4,14 @@ All notable changes to Freetime Core are documented here.
 
 The project follows semantic versioning. Older entries summarize the known evolution of the repository; the latest release entries document the current public changes in detail.
 
+## 1.9.2
+
+### Freetime Design
+
+- Made Liquid Glass substantially more transparent by reducing surface, fallback and adaptive scrim opacity.
+- Strengthened the glass refraction effect with a deeper lens and chromatic aberration.
+- Updated `FreetimeScaffold` to respect safe drawing insets so content is not obscured by status or navigation bars.
+
 ## 1.9.1
 
 ### Freetime Design
