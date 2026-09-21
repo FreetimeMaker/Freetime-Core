@@ -21,10 +21,10 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-enum class FreetimeGlassDepth { SUBTLE, STANDARD, ELEVATED }
+@Deprecated("Use FreetimeDepth instead")\nenum class FreetimeGlassDepth { SUBTLE, STANDARD, ELEVATED }
 enum class FreetimeHaptic { NONE, LIGHT, CONFIRM, WARNING }
 
-object FreetimeDesignTokens {
+@Deprecated("Use FreetimeDesign.spacing, FreetimeDesign.sizes and FreetimeDesign.shapes")\nobject FreetimeDesignTokens {
     val spacingXs = 4.dp
     val spacingSm = 8.dp
     val spacingMd = 16.dp
@@ -224,7 +224,7 @@ fun FreetimeButton(
     val pressed by interaction.collectIsPressedAsState()
     val alpha by animateFloatAsState(if (pressed) .82f else if (enabled) 1f else .45f, label = "freetime-button")
     Row(
-        modifier.defaultMinSize(minHeight = 50.dp)
+        modifier.defaultMinSize(minHeight = FreetimeDesign.sizes.buttonHeight)
             .freetimeGlassCapsule(enabled)
             .clickable(interactionSource = interaction, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 12.dp).alpha(alpha),
@@ -245,7 +245,7 @@ fun FreetimeIconButton(
     enabled: Boolean = true,
 ) {
     Box(
-        modifier.size(48.dp).freetimeGlassCapsule(enabled)
+        modifier.size(FreetimeDesign.sizes.iconButton).freetimeGlassCapsule(enabled)
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .alpha(if (enabled) 1f else .45f),
         contentAlignment = Alignment.Center,
@@ -374,7 +374,7 @@ private fun RowScope.FreetimeBottomBarItem(
     )
     val color by animateColorAsState(
         targetValue = if (selected) FreetimeDesign.colors.contentStrong else FreetimeDesign.colors.contentMuted,
-        animationSpec = tween(if (reducedMotion) 0 else 180),
+        animationSpec = tween(if (reducedMotion) 0 else FreetimeDesign.motion.normalMillis),
         label = "freetime-bottom-item-color",
     )
 
@@ -399,7 +399,7 @@ private fun RowScope.FreetimeBottomBarItem(
                 imageVector = destination.icon,
                 contentDescription = destination.label,
                 tint = color,
-                modifier = Modifier.size(if (compact) 21.dp else 23.dp),
+                modifier = Modifier.size(if (compact) FreetimeDesign.sizes.navigationIcon - 2.dp else FreetimeDesign.sizes.navigationIcon),
             )
         }
         AnimatedVisibility(
