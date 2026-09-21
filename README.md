@@ -19,10 +19,10 @@ Add the repository used by your release distribution, then include only the modu
 
 ```kotlin
 dependencies {
-    implementation("com.github.FreetimeMaker.Freetime-Core:Core:1.9.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.9.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:1.9.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.9.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Core:1.9.1")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.9.1")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:1.9.1")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.9.1")
 }
 ```
 
