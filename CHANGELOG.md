@@ -4,6 +4,13 @@ All notable changes to Freetime Core are documented here.
 
 The project follows semantic versioning. Older entries summarize the known evolution of the repository; the 1.6.0 entry documents the current release in detail.
 
+## Unreleased
+
+### Freetime Design
+
+- Added reusable app-level components derived from common GeoWeather, Luma Store and SuperSMP Companion UI patterns: text, screen structure, section headers, list items, option groups, status banners, loading/empty/error states, dividers, badges and info cards.
+- Kept these components app-agnostic through generic values and composable slots, avoiding dependencies on Navigation Compose, Material Icons or app-specific models.
+
 ## 1.6.0
 
 ### Freetime Design
