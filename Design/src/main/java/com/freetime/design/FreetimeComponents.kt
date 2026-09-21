@@ -324,7 +324,7 @@ fun RowScope.FreetimeNavigationItem(
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Box(
-            (if (selected) Modifier.freetimeGlassCapsule(false) else Modifier).padding(horizontal = 15.dp, vertical = 5.dp),
+            (if (selected) Modifier.freetimeSelectedGlassCapsule() else Modifier).padding(horizontal = 15.dp, vertical = 5.dp),
             contentAlignment = Alignment.Center,
         ) {
             FreetimeIcon(icon, label, Modifier.size(22.dp), color)
