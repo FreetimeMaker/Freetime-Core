@@ -322,6 +322,7 @@ fun Modifier.freetimeRoundGlass(
 fun Modifier.freetimeSelectedGlassCapsule(
     tint: Color = FreetimeDesign.palette.primary,
     backdropLuminance: Float = 0.5f,
+    recordingLayer: GraphicsLayer? = null,
 ): Modifier {
     val backdrop = LocalFreetimeBackdrop.current
     val tokens = LocalFreetimeGlassTokens.current
@@ -356,6 +357,12 @@ fun Modifier.freetimeSelectedGlassCapsule(
             }
             blur(adaptive + tokens.selectedBlurBoost.toPx())
             lens(0f, 0f, depthEffect = false, chromaticAberration = true)
+        },
+        onDrawBackdrop = recordingLayer?.let { layer ->
+            { drawBackdrop ->
+                drawBackdrop()
+                layer.record { drawBackdrop() }
+            }
         },
         highlight = { Highlight.Default.copy(alpha = if (highContrast) 1f else tokens.selectedHighlightAlpha) },
         shadow = { Shadow(radius = 4.dp, alpha = .4f) },
