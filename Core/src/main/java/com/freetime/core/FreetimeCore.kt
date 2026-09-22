@@ -8,7 +8,7 @@ import android.content.Context
  */
 object FreetimeCore {
     const val SDK_NAME = "Freetime Core"
-    const val SDK_VERSION = "1.9.2"
+    const val SDK_VERSION = "1.10.0"
 
     fun appName(context: Context): String =
         context.applicationInfo.loadLabel(context.packageManager).toString()
