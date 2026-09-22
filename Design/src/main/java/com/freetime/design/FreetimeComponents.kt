@@ -394,7 +394,11 @@ fun FreetimeBottomBar(
     BoxWithConstraints(
         modifier = modifier
             .padding(horizontal = 18.dp, vertical = 12.dp)
-            .freetimeGlassCapsule(interactive = false)
+            .freetimeGlassCapsule(
+                interactive = true,
+                backdropLuminance = sampledLuminance,
+                pressedScale = if (reducedMotion) 1f else 1.04f,
+            )
             .padding(horizontal = 6.dp, vertical = 4.dp),
     ) {
         val slotWidth = maxWidth / destinations.size
@@ -415,6 +419,7 @@ fun FreetimeBottomBar(
                 .freetimeSelectedGlassCapsule(
                     backdropLuminance = sampledLuminance,
                     recordingLayer = backdropLayer,
+                    pressProgress = press.value,
                 )
         )
 
