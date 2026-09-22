@@ -139,9 +139,9 @@ fun Modifier.freetimeLiquidGlass(
     // Android can provide one. The real path intentionally follows SimpMusic's
     // liquid-glass recipe instead of behaving like a blurred Material surface.
     val fallbackSurface = if (isDarkTheme) {
-        Color.Black.copy(alpha = if (reduceTransparency) .88f else if (highContrast) maxOf(tokens.darkFallbackAlpha, .48f) else tokens.darkFallbackAlpha)
+        Color.Black.copy(alpha = if (reduceTransparency) .88f else tokens.darkFallbackAlpha)
     } else {
-        Color.White.copy(alpha = if (reduceTransparency) .92f else if (highContrast) maxOf(tokens.lightFallbackAlpha, .52f) else tokens.lightFallbackAlpha)
+        Color.White.copy(alpha = if (reduceTransparency) .92f else tokens.lightFallbackAlpha)
     }
     val tintColor = tint.takeIf { it != Color.Unspecified }
     if (backdrop == null) {
@@ -211,7 +211,7 @@ fun Modifier.freetimeLiquidGlass(
             )
             val baseAlpha = when {
                 reduceTransparency -> if (isDarkTheme) .88f else .92f
-                highContrast -> maxOf(normalBaseAlpha, if (isDarkTheme) .48f else .56f)
+                highContrast -> maxOf(normalBaseAlpha, if (isDarkTheme) .07f else .08f)
                 else -> normalBaseAlpha
             }
             drawRect(base.copy(alpha = baseAlpha))
@@ -332,7 +332,7 @@ fun Modifier.freetimeSelectedGlassCapsule(
                 listOf(
                     tint.copy(alpha = tokens.tintFallbackAlpha),
                     (if (isDark) Color.Black else Color.White).copy(
-                        alpha = if (reduceTransparency) .90f else if (highContrast) .55f else .28f
+                        alpha = if (reduceTransparency) .90f else .10f
                     ),
                 )
             )
@@ -360,7 +360,7 @@ fun Modifier.freetimeSelectedGlassCapsule(
         innerShadow = { InnerShadow(radius = 8.dp, alpha = .32f) },
         onDrawSurface = {
             val lumNorm = ((backdropLuminance - .3f) / .5f).coerceIn(0f, 1f)
-            val shade = if (isDark) lerp(.22f, .55f, lumNorm) else lerp(.06f, .14f, lumNorm)
+            val shade = if (isDark) lerp(.035f, .09f, lumNorm) else lerp(.015f, .045f, lumNorm)
             drawRect(Color.Black.copy(alpha = shade))
             drawRect(
                 Brush.linearGradient(
