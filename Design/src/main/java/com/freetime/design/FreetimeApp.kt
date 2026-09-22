@@ -28,11 +28,14 @@ data class FreetimeAppConfig(
 val LocalFreetimeReducedMotion = staticCompositionLocalOf { false }
 val LocalFreetimeReduceTransparency = staticCompositionLocalOf { false }
 val LocalFreetimeHighContrast = staticCompositionLocalOf { false }
+val LocalFreetimeLiquidGlassEnabled = staticCompositionLocalOf { true }
+val LocalFreetimePreferencesController = staticCompositionLocalOf<FreetimePreferencesController?> { null }
 
 object FreetimeAppEnvironment {
     val reducedMotion: Boolean @Composable get() = LocalFreetimeReducedMotion.current
     val reduceTransparency: Boolean @Composable get() = LocalFreetimeReduceTransparency.current
     val highContrast: Boolean @Composable get() = LocalFreetimeHighContrast.current
+    val liquidGlassEnabled: Boolean @Composable get() = LocalFreetimeLiquidGlassEnabled.current
 }
 
 @Composable
@@ -124,11 +127,10 @@ fun rememberFreetimePreferencesController(
 
 @Composable
 fun FreetimeApp(
-    preferences: FreetimePreferences,
+    controller: FreetimePreferencesController,
     modifierConfig: (FreetimeAppConfig) -> FreetimeAppConfig = { it },
     content: @Composable () -> Unit,
 ) {
-    val controller = rememberFreetimePreferencesController(preferences)
     val state = controller.state
     val config = modifierConfig(
         FreetimeAppConfig(
@@ -146,9 +148,11 @@ fun FreetimeApp(
         oledBlack = config.themeMode == FreetimeThemeMode.OLED,
     ) {
         CompositionLocalProvider(
+            LocalFreetimePreferencesController provides controller,
             LocalFreetimeReducedMotion provides (state.reduceMotion || systemReducedMotion),
             LocalFreetimeReduceTransparency provides state.reduceTransparency,
             LocalFreetimeHighContrast provides state.highContrast,
+            LocalFreetimeLiquidGlassEnabled provides state.liquidGlassEnabled,
         ) {
             if (config.backdropColors.isEmpty()) {
                 FreetimeGlassRoot { content() }
@@ -157,4 +161,17 @@ fun FreetimeApp(
             }
         }
     }
+}
+
+@Composable
+fun FreetimeApp(
+    preferences: FreetimePreferences,
+    modifierConfig: (FreetimeAppConfig) -> FreetimeAppConfig = { it },
+    content: @Composable () -> Unit,
+) {
+    FreetimeApp(
+        controller = rememberFreetimePreferencesController(preferences),
+        modifierConfig = modifierConfig,
+        content = content,
+    )
 }
