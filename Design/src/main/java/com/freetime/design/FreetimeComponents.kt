@@ -32,12 +32,14 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import android.os.SystemClock
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 import com.kyant.shapes.Capsule
 
 @Deprecated("Use FreetimeDepth instead")
@@ -384,6 +386,7 @@ fun FreetimeBottomBar(
     val velocity = remember { Animatable(0f) }
     val tracker = remember { VelocityTracker() }
     val backdropLayer = rememberGraphicsLayer()
+    val density = LocalDensity.current
     val sampledLuminance by rememberFreetimeBackdropLuminance(backdropLayer)
 
     LaunchedEffect(safeIndex, reducedMotion) {
@@ -402,7 +405,7 @@ fun FreetimeBottomBar(
             .padding(horizontal = 6.dp, vertical = 4.dp),
     ) {
         val slotWidth = maxWidth / destinations.size
-        val slotWidthPx = slotWidth.toPx()
+        val slotWidthPx = with(density) { slotWidth.toPx() }
         val maxIndex = (destinations.size - 1).toFloat()
 
         Box(
@@ -412,7 +415,8 @@ fun FreetimeBottomBar(
                 .graphicsLayer {
                     translationX = slotWidthPx * position.value
                     val velocityStretch = (velocity.value / 6000f).coerceIn(-.20f, .20f)
-                    val lifted = lerp(1f, if (compact) 1.20f else 76f / 56f, press.value)
+                    val targetScale = if (compact) 1.20f else 76f / 56f
+                    val lifted = 1f + (targetScale - 1f) * press.value
                     scaleX = lifted / (1f - velocityStretch * .75f)
                     scaleY = lifted * (1f - abs(velocityStretch) * .25f)
                 }
