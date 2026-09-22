@@ -7,7 +7,7 @@ Since **1.6.0**, the module is independent from Material 3 as its UI foundation.
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.9.2")
+implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.10.0")
 ```
 
 ## Theme
