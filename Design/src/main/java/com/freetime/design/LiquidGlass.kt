@@ -329,6 +329,7 @@ fun Modifier.freetimeSelectedGlassCapsule(
     tint: Color = FreetimeDesign.palette.primary,
     backdropLuminance: Float = 0.5f,
     recordingLayer: GraphicsLayer? = null,
+    pressProgress: Float = 0f,
 ): Modifier {
     val backdrop = LocalFreetimeBackdrop.current
     val tokens = LocalFreetimeGlassTokens.current
@@ -367,8 +368,13 @@ fun Modifier.freetimeSelectedGlassCapsule(
             } else {
                 lerp(tokens.blur.toPx(), tokens.minBlur.toPx(), -normalized)
             }
-            blur(adaptive + tokens.selectedBlurBoost.toPx())
-            lens(0f, 0f, depthEffect = false, chromaticAberration = true)
+            blur(adaptive + 20.dp.toPx())
+            lens(
+                10.dp.toPx() * pressProgress,
+                14.dp.toPx() * pressProgress,
+                depthEffect = false,
+                chromaticAberration = true,
+            )
         },
         onDrawBackdrop = recordingLayer?.let { layer ->
             { drawBackdrop ->
@@ -378,7 +384,12 @@ fun Modifier.freetimeSelectedGlassCapsule(
         },
         highlight = { Highlight.Default.copy(alpha = if (highContrast) 1f else tokens.selectedHighlightAlpha) },
         shadow = { Shadow(radius = 4.dp, alpha = .4f) },
-        innerShadow = { InnerShadow(radius = 8.dp, alpha = .32f) },
+        innerShadow = {
+            InnerShadow(
+                radius = 8.dp * pressProgress,
+                alpha = pressProgress,
+            )
+        },
         onDrawSurface = {
             val lumNorm = ((backdropLuminance - .3f) / .5f).coerceIn(0f, 1f)
             val shade = if (isDark) lerp(.035f, .09f, lumNorm) else lerp(.015f, .045f, lumNorm)
