@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -382,6 +383,8 @@ fun FreetimeBottomBar(
     val press = remember { Animatable(0f) }
     val velocity = remember { Animatable(0f) }
     val tracker = remember { VelocityTracker() }
+    val backdropLayer = rememberGraphicsLayer()
+    val sampledLuminance by rememberFreetimeBackdropLuminance(backdropLayer)
 
     LaunchedEffect(safeIndex, reducedMotion) {
         if (reducedMotion) position.snapTo(safeIndex.toFloat())
@@ -409,7 +412,10 @@ fun FreetimeBottomBar(
                     scaleX = lifted / (1f - velocityStretch * .75f)
                     scaleY = lifted * (1f - abs(velocityStretch) * .25f)
                 }
-                .freetimeSelectedGlassCapsule()
+                .freetimeSelectedGlassCapsule(
+                    backdropLuminance = sampledLuminance,
+                    recordingLayer = backdropLayer,
+                )
         )
 
         Row(
