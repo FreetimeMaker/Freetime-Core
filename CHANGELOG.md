@@ -4,10 +4,19 @@ All notable changes to Freetime Core are documented here.
 
 The project follows semantic versioning. Older entries summarize the known evolution of the repository; the latest release entries document the current public changes in detail.
 
-## 1.9.2
+## 1.10.0
 
 ### Freetime Design
 
+- Reworked Liquid Glass to closely follow SimpMusic-style optics and interaction while retaining Freetime's tintable glass colors.
+- Added recorded-backdrop luminance sampling with a lightweight 5×5 sample, Rec.709 luminance calculation and smooth luminance transitions.
+- Added GraphicsLayer backdrop recording support for reusable glass surfaces.
+- Upgraded bottom navigation with a draggable spring-driven selection blob, velocity-based squash/stretch, press bulge and snap-to-destination behavior.
+- Added stronger selected-glass frosting, chromatic lens refraction, highlights, shadow and press-driven inner shadow.
+- Added observe-only glass gesture tracking so liquid interactions do not consume normal control clicks.
+- Added a persistent Liquid Glass enable/disable preference and a non-glass fallback.
+- Added a shared Freetime preferences controller at the app root so appearance and accessibility changes update the renderer immediately.
+- Fixed Compose/Kyant compatibility issues in backdrop recording, luminance capture, density conversion and navigation coroutines.
 - Made Liquid Glass substantially more transparent by reducing surface, fallback and adaptive scrim opacity.
 - Strengthened the glass refraction effect with a deeper lens and chromatic aberration.
 - Updated `FreetimeScaffold` to respect safe drawing insets so content is not obscured by status or navigation bars.
