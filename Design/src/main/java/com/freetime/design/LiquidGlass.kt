@@ -214,11 +214,9 @@ fun Modifier.freetimeLiquidGlass(
                 scaleY = scale
             }
         } else null,
-        onDrawBackdrop = recordingLayer?.let { layer ->
-            { drawBackdrop ->
-                drawBackdrop()
-                layer.record { drawBackdrop() }
-            }
+        onDrawBackdrop = { drawBackdropContent ->
+            drawBackdropContent()
+            recordingLayer?.record { drawBackdropContent() }
         },
         onDrawSurface = {
             val base = if (isDarkTheme) Color.Black else Color.White
@@ -432,11 +430,9 @@ fun Modifier.freetimeSelectedGlassCapsule(
                 chromaticAberration = true,
             )
         },
-        onDrawBackdrop = recordingLayer?.let { layer ->
-            { drawBackdrop ->
-                drawBackdrop()
-                layer.record { drawBackdrop() }
-            }
+        onDrawBackdrop = { drawBackdropContent ->
+            drawBackdropContent()
+            recordingLayer?.record { drawBackdropContent() }
         },
         highlight = { Highlight.Default.copy(alpha = if (highContrast) 1f else tokens.selectedHighlightAlpha) },
         shadow = { Shadow(radius = 4.dp, alpha = .4f) },
