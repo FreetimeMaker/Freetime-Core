@@ -6,6 +6,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +25,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.platform.LocalContext
@@ -31,6 +34,9 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import android.os.SystemClock
+import kotlin.math.abs
+import kotlin.math.roundToInt
 import com.kyant.shapes.Capsule
 
 @Deprecated("Use FreetimeDepth instead")
@@ -369,18 +375,19 @@ fun FreetimeBottomBar(
     compact: Boolean = false,
 ) {
     if (destinations.isEmpty()) return
-    val reducedMotion = rememberFreetimeReducedMotion()
+    val reducedMotion = LocalFreetimeReducedMotion.current || rememberFreetimeReducedMotion()
     val safeIndex = selectedIndex.coerceIn(destinations.indices)
-    val animatedIndex by animateFloatAsState(
-        targetValue = safeIndex.toFloat(),
-        animationSpec = if (reducedMotion) snap() else spring(dampingRatio = 0.72f, stiffness = 420f),
-        label = "freetime-bottom-blob-position",
-    )
-    val blobScaleX by animateFloatAsState(
-        targetValue = if (reducedMotion) 1f else 1.08f,
-        animationSpec = if (reducedMotion) snap() else spring(dampingRatio = 0.6f, stiffness = 250f),
-        label = "freetime-bottom-blob-x",
-    )
+    val scope = rememberCoroutineScope()
+    val position = remember { Animatable(safeIndex.toFloat()) }
+    val press = remember { Animatable(0f) }
+    val velocity = remember { Animatable(0f) }
+    val tracker = remember { VelocityTracker() }
+
+    LaunchedEffect(safeIndex, reducedMotion) {
+        if (reducedMotion) position.snapTo(safeIndex.toFloat())
+        else position.animateTo(safeIndex.toFloat(), spring(dampingRatio = .72f, stiffness = 420f))
+    }
+
     BoxWithConstraints(
         modifier = modifier
             .padding(horizontal = 18.dp, vertical = 12.dp)
@@ -388,18 +395,59 @@ fun FreetimeBottomBar(
             .padding(horizontal = 6.dp, vertical = 4.dp),
     ) {
         val slotWidth = maxWidth / destinations.size
+        val slotWidthPx = slotWidth.toPx()
+        val maxIndex = (destinations.size - 1).toFloat()
+
         Box(
             Modifier
                 .width(slotWidth)
                 .height(if (compact) 42.dp else 56.dp)
                 .graphicsLayer {
-                    translationX = slotWidth.toPx() * animatedIndex
-                    scaleX = blobScaleX
+                    translationX = slotWidthPx * position.value
+                    val velocityStretch = (velocity.value / 6000f).coerceIn(-.20f, .20f)
+                    val lifted = lerp(1f, if (compact) 1.20f else 76f / 56f, press.value)
+                    scaleX = lifted / (1f - velocityStretch * .75f)
+                    scaleY = lifted * (1f - abs(velocityStretch) * .25f)
                 }
-                .freetimeSelectedGlassCapsule(),
+                .freetimeSelectedGlassCapsule()
         )
+
         Row(
-            Modifier.fillMaxWidth(),
+            Modifier
+                .fillMaxWidth()
+                .pointerInput(destinations.size, reducedMotion) {
+                    if (reducedMotion) return@pointerInput
+                    detectHorizontalDragGestures(
+                        onDragStart = {
+                            tracker.resetTracking()
+                            scope.launch { press.animateTo(1f, spring(1f, 1000f)) }
+                        },
+                        onHorizontalDrag = { change, dragAmount ->
+                            tracker.addPosition(SystemClock.uptimeMillis(), change.position)
+                            val next = (position.value + dragAmount / slotWidthPx).coerceIn(0f, maxIndex)
+                            scope.launch { position.snapTo(next) }
+                        },
+                        onDragCancel = {
+                            scope.launch {
+                                press.animateTo(0f, spring(.7f, 250f))
+                                position.animateTo(safeIndex.toFloat(), spring(.72f, 420f))
+                                velocity.animateTo(0f, spring(.5f, 300f))
+                            }
+                        },
+                        onDragEnd = {
+                            val targetVelocity = tracker.calculateVelocity().x
+                            val target = (position.value + targetVelocity / slotWidthPx / 12f)
+                                .roundToInt().coerceIn(destinations.indices)
+                            scope.launch {
+                                velocity.snapTo(targetVelocity)
+                                launch { velocity.animateTo(0f, spring(.5f, 300f)) }
+                                launch { press.animateTo(0f, spring(.7f, 250f)) }
+                                position.animateTo(target.toFloat(), spring(1f, 1000f))
+                            }
+                            onDestinationSelected(target)
+                        },
+                    )
+                },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             destinations.forEachIndexed { index, destination ->
