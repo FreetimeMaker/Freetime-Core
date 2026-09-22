@@ -128,6 +128,7 @@ fun Modifier.freetimeLiquidGlass(
     backdropLuminance: Float = 0.5f,
     pressedScale: Float = 1.12f,
     highlight: Highlight = Highlight.Default,
+    recordingLayer: GraphicsLayer? = null,
 ): Modifier {
     val isDarkTheme = LocalFreetimePalette.current.background.luminance() < 0.5f
     val tokens = LocalFreetimeGlassTokens.current
@@ -200,6 +201,12 @@ fun Modifier.freetimeLiquidGlass(
                 scaleY = scale
             }
         } else null,
+        onDrawBackdrop = recordingLayer?.let { layer ->
+            { drawBackdrop ->
+                drawBackdrop()
+                layer.record { drawBackdrop() }
+            }
+        },
         onDrawSurface = {
             val base = if (isDarkTheme) Color.Black else Color.White
             val lumNorm = ((backdropLuminance - 0.3f) / 0.5f).coerceIn(0f, 1f)
