@@ -186,10 +186,9 @@ fun Modifier.freetimeLiquidGlass(
             blur((if (reduceTransparency) tokens.minBlur.toPx() else adaptiveBlur) + tokens.pressedBlurBoost.toPx() * p)
             if (!reduceTransparency) {
                 lens(
-                    size.minDimension / 3.2f + tokens.pressedBlurBoost.toPx() * p,
-                    size.minDimension / 1.65f,
-                    depthEffect = true,
-                    chromaticAberration = true,
+                    size.minDimension / 4f + tokens.pressedBlurBoost.toPx() * p,
+                    size.minDimension / 2f,
+                    depthEffect = false,
                 )
             }
         },
@@ -205,14 +204,9 @@ fun Modifier.freetimeLiquidGlass(
             val base = if (isDarkTheme) Color.Black else Color.White
             val lumNorm = ((backdropLuminance - 0.3f) / 0.5f).coerceIn(0f, 1f)
             val adaptiveScrim = lerp(tokens.minScrimAlpha, tokens.maxScrimAlpha, lumNorm)
-            val normalBaseAlpha = maxOf(
-                adaptiveScrim,
-                if (isDarkTheme) tokens.darkSurfaceAlpha else tokens.lightSurfaceAlpha,
-            )
             val baseAlpha = when {
                 reduceTransparency -> if (isDarkTheme) .88f else .92f
-                highContrast -> maxOf(normalBaseAlpha, if (isDarkTheme) .07f else .08f)
-                else -> normalBaseAlpha
+                else -> adaptiveScrim
             }
             drawRect(base.copy(alpha = baseAlpha))
             if (tintColor != null) {
@@ -229,16 +223,17 @@ fun Modifier.freetimeLiquidGlass(
                     blendMode = BlendMode.SrcOver,
                 )
             }
-            drawRect(
-                brush = Brush.verticalGradient(
-                    listOf(
-                        designColors.glassHighlight.copy(alpha = if (highContrast) maxOf(tokens.edgeAlpha, .55f) else tokens.edgeAlpha),
-                        Color.Transparent,
-                        Color.Black.copy(alpha = if (isDarkTheme) .08f else .025f),
-                    )
-                ),
-                blendMode = BlendMode.SrcOver,
-            )
+            if (highContrast) {
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        listOf(
+                            designColors.glassHighlight.copy(alpha = maxOf(tokens.edgeAlpha, .55f)),
+                            Color.Transparent,
+                        )
+                    ),
+                    blendMode = BlendMode.SrcOver,
+                )
+            }
             val p = press.value
             if (p > 0f) {
                 drawRect(
