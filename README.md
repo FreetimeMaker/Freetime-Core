@@ -2,7 +2,7 @@
 
 Shared, open-source Android libraries for Freetime Maker apps. Freetime Core keeps common application infrastructure reusable while every consuming app remains independently installable and usable.
 
-Current release line: **1.9.x**
+Current release line: **1.10.x**
 
 ## Modules
 
