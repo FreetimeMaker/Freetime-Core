@@ -135,6 +135,12 @@ fun Modifier.freetimeLiquidGlass(
     val designColors = LocalFreetimeDesignColors.current
     val reduceTransparency = LocalFreetimeReduceTransparency.current
     val highContrast = LocalFreetimeHighContrast.current
+    val liquidGlassEnabled = LocalFreetimeLiquidGlassEnabled.current
+
+    if (!liquidGlassEnabled) {
+        val flat = (if (isDarkTheme) Color.Black else Color.White).copy(alpha = 0.80f)
+        return clip(shape).background(flat)
+    }
 
     // Keep the fallback translucent, but use the real Kyant backdrop path whenever
     // Android can provide one. The real path intentionally follows SimpMusic's
@@ -329,6 +335,12 @@ fun Modifier.freetimeSelectedGlassCapsule(
     val isDark = LocalFreetimePalette.current.background.luminance() < 0.5f
     val reduceTransparency = LocalFreetimeReduceTransparency.current
     val highContrast = LocalFreetimeHighContrast.current
+    val liquidGlassEnabled = LocalFreetimeLiquidGlassEnabled.current
+    if (!liquidGlassEnabled) {
+        return clip(Capsule()).background(
+            (if (isDark) Color.Black else Color.White).copy(alpha = .80f)
+        )
+    }
     if (backdrop == null || reduceTransparency) {
         return clip(Capsule()).background(
             Brush.linearGradient(
