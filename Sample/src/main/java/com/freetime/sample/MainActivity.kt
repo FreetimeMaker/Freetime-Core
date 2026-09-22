@@ -33,7 +33,7 @@ private fun SampleApp() {
     var selectedTab by remember { mutableIntStateOf(0) }
     val messages = rememberFreetimeMessageHostState()
     val tint = Color(0xFF6EA8FF)
-    FreetimeApp(preferences = preferences, modifierConfig = {
+    FreetimeApp(controller = controller, modifierConfig = {
         it.copy(backdropColors = listOf(Color(0xFF15233A), Color(0xFF513A70), Color(0xFF214F54)))
     }) {
         FreetimeScaffold(
@@ -52,7 +52,7 @@ private fun SampleApp() {
             Box(Modifier.fillMaxSize()) {
                 when (selectedTab) {
                     0 -> DesignSample(messages, tint)
-                    1 -> FreetimeAccessibilitySettings(controller)
+                    1 -> FreetimeAccessibilitySettings()
                     2 -> BrowserSample(messages, tint)
                     else -> DonationSample(messages)
                 }
