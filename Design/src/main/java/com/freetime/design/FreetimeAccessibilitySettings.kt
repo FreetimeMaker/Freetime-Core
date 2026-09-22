@@ -11,6 +11,15 @@ import com.freetime.core.FreetimeStoredThemeMode
 
 @Composable
 fun FreetimeAccessibilitySettings(
+    modifier: Modifier = Modifier,
+    title: String = "Appearance & accessibility",
+) {
+    val controller = LocalFreetimePreferencesController.current ?: return
+    FreetimeAccessibilitySettings(controller, modifier, title)
+}
+
+@Composable
+fun FreetimeAccessibilitySettings(
     controller: FreetimePreferencesController,
     modifier: Modifier = Modifier,
     title: String = "Appearance & accessibility",
@@ -64,6 +73,15 @@ fun FreetimeAccessibilitySettings(
             }
         }
 
+        FreetimeSettingsGroup("Liquid Glass") {
+            FreetimeSwitchSetting(
+                title = "Liquid Glass",
+                checked = state.liquidGlassEnabled,
+                onCheckedChange = { value -> controller.update { it.copy(liquidGlassEnabled = value) } },
+                description = "Uses live backdrop blur, refraction, luminance and interactive glass effects.",
+            )
+        }
+
         FreetimeSettingsGroup("Accessibility") {
             FreetimeSwitchSetting(
                 title = "Reduce motion",
@@ -89,7 +107,19 @@ fun FreetimeAccessibilitySettings(
 
         FreetimeButton(
             text = "Reset appearance settings",
-            onClick = controller::reset,
+            onClick = {
+                controller.update {
+                    it.copy(
+                        themeMode = com.freetime.core.FreetimeStoredThemeMode.SYSTEM,
+                        darkHour = 19,
+                        lightHour = 7,
+                        reduceMotion = false,
+                        reduceTransparency = false,
+                        highContrast = false,
+                        liquidGlassEnabled = true,
+                    )
+                }
+            },
         )
     }
 }
