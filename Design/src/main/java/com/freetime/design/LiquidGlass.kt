@@ -198,7 +198,10 @@ fun Modifier.freetimeLiquidGlass(
                 lerp(tokens.blur.toPx(), tokens.minBlur.toPx(), -normalized)
             }
             blur((if (reduceTransparency) tokens.minBlur.toPx() else adaptiveBlur) + tokens.pressedBlurBoost.toPx() * p)
-            if (!reduceTransparency) {
+            // Refraction is the most expensive part of the glass pipeline. Keep the
+            // idle surface blurred/vibrant, but only render the lens while the user is
+            // actually interacting with an interactive glass control.
+            if (!reduceTransparency && interactive && p > 0.001f) {
                 lens(
                     size.minDimension / 4f + tokens.pressedBlurBoost.toPx() * p,
                     size.minDimension / 2f,
