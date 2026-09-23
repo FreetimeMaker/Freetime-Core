@@ -77,7 +77,7 @@ The library version is defined once in `gradle/libs.versions.toml`:
 
 ```toml
 [versions]
-freetime = "1.10.0"
+freetime = "1.11.0"
 ```
 
 Freetime Core follows semantic versioning: patch releases fix compatible behavior, minor releases add compatible public functionality, and major releases are reserved for breaking public API changes.

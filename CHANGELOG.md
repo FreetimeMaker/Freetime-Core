@@ -4,6 +4,24 @@ All notable changes to Freetime Core are documented here.
 
 The project follows semantic versioning. Older entries summarize the known evolution of the repository; the latest release entries document the current public changes in detail.
 
+## 1.11.0
+
+### FreetimeWarn
+
+- Added the new `FreetimeWarn` Kotlin/Jetpack Compose library module.
+- Added mandatory `appName` configuration with compile-time enforcement through a required parameter and runtime rejection of blank values.
+- Added `FreetimeWarnState` with `show()`, `dismiss()`, `acknowledge()` and `reset()` lifecycle controls.
+- Added `ONCE`, `ONCE_PER_VERSION` and `ALWAYS` warning frequencies.
+- Added private SharedPreferences-backed acknowledgement persistence with independent `warningId` support.
+- Added customizable `FreetimeWarnContent` and a host-controlled Learn more callback so policy-specific wording and navigation remain replaceable.
+- Added `FreetimeWarnDialog` and `FreetimeWarn` composables using Freetime Design components and Liquid Glass instead of Material dialogs.
+- Added module-specific README documentation and registered FreetimeWarn in the multi-module build.
+
+### Version consistency
+
+- Updated the shared Freetime version catalog and `FreetimeCore.SDK_VERSION` to 1.11.0.
+- Updated the root dependency example to 1.11.0.
+
 ## 1.10.0
 
 ### Freetime Design
