@@ -396,11 +396,22 @@ fun FreetimeBottomBar(
 
     BoxWithConstraints(
         modifier = modifier
-            .padding(horizontal = 18.dp, vertical = 12.dp)
-            .freetimeGlassCapsule(
-                interactive = true,
-                backdropLuminance = sampledLuminance,
-                pressedScale = if (reducedMotion) 1f else 1.04f,
+            .padding(horizontal = if (capsule) 18.dp else 0.dp, vertical = if (capsule) 12.dp else 0.dp)
+            .then(
+                if (capsule) {
+                    Modifier.freetimeGlassCapsule(
+                        interactive = true,
+                        backdropLuminance = sampledLuminance,
+                        pressedScale = if (reducedMotion) 1f else 1.04f,
+                    )
+                } else {
+                    Modifier.freetimeGlass(
+                        shape = RoundedCornerShape(0.dp),
+                        interactive = true,
+                        backdropLuminance = sampledLuminance,
+                        pressedScale = if (reducedMotion) 1f else 1.01f,
+                    )
+                }
             )
             .padding(horizontal = 6.dp, vertical = 4.dp),
     ) {
