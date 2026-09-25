@@ -16,6 +16,22 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -236,12 +252,12 @@ fun FreetimeGlassPullRefreshIndicator(refreshing: Boolean, modifier: Modifier = 
 
 
 @Composable
-private fun FreetimeIcon(imageVector: ImageVector, contentDescription: String?, modifier: Modifier = Modifier, tint: Color = FreetimeDesign.colors.contentStrong) {
-    Image(
+private fun FreetimeIcon(imageVector: ImageVector, contentDescription: String?, modifier: Modifier = Modifier, tint: Color = MaterialTheme.colorScheme.onSurface) {
+    Icon(
         imageVector = imageVector,
         contentDescription = contentDescription,
         modifier = modifier,
-        colorFilter = ColorFilter.tint(tint),
+        tint = tint,
     )
 }
 
@@ -254,19 +270,25 @@ fun FreetimeButton(
     leadingIcon: ImageVector? = null,
     tint: Color = Color.Unspecified,
 ) {
-    val interaction = remember { MutableInteractionSource() }
-    val pressed by interaction.collectIsPressedAsState()
-    val alpha by animateFloatAsState(if (pressed) .82f else if (enabled) 1f else .45f, label = "freetime-button")
-    Row(
-        modifier.defaultMinSize(minHeight = FreetimeDesign.sizes.buttonHeight)
-            .freetimeGlassCapsule(enabled, tint = tint)
-            .clickable(interactionSource = interaction, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
-            .padding(horizontal = 20.dp, vertical = 12.dp).alpha(alpha),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .defaultMinSize(minHeight = FreetimeDesign.sizes.buttonHeight)
+            .freetimeGlassCapsule(interactive = enabled, tint = tint),
+        enabled = enabled,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            disabledContainerColor = Color.Transparent,
+            disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = .38f),
+        ),
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
     ) {
-        if (leadingIcon != null) FreetimeIcon(leadingIcon, null, Modifier.size(20.dp), FreetimeDesign.colors.contentStrong)
-        BasicText(text, style = FreetimeDesign.typography.labelLarge.copy(color = FreetimeDesign.colors.contentStrong))
+        if (leadingIcon != null) {
+            FreetimeIcon(leadingIcon, null, Modifier.size(20.dp), MaterialTheme.colorScheme.onSurface)
+            Spacer(Modifier.width(10.dp))
+        }
+        Text(text, style = MaterialTheme.typography.labelLarge)
     }
 }
 
@@ -279,13 +301,19 @@ fun FreetimeIconButton(
     enabled: Boolean = true,
     tint: Color = Color.Unspecified,
 ) {
-    Box(
-        modifier.size(FreetimeDesign.sizes.iconButton).freetimeRoundGlass(enabled, tint = tint)
-            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
-            .alpha(if (enabled) 1f else .45f),
-        contentAlignment = Alignment.Center,
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+            .size(FreetimeDesign.sizes.iconButton)
+            .freetimeRoundGlass(interactive = enabled, tint = tint),
+        enabled = enabled,
     ) {
-        FreetimeIcon(icon, contentDescription, Modifier.size(22.dp), FreetimeDesign.colors.contentStrong)
+        FreetimeIcon(
+            icon,
+            contentDescription,
+            Modifier.size(22.dp),
+            MaterialTheme.colorScheme.onSurface,
+        )
     }
 }
 
@@ -296,11 +324,18 @@ fun FreetimeCard(
     tint: Color = Color.Unspecified,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    val base = modifier.freetimeGlass(LocalFreetimeShapes.current.surface, interactive = onClick != null, tint = tint)
-    Box(
-        modifier = (if (onClick != null) base.clickable(onClick = onClick) else base).padding(18.dp),
-        content = content,
+    val glass = modifier.freetimeGlass(
+        shape = MaterialTheme.shapes.large,
+        interactive = onClick != null,
+        tint = tint,
     )
+    Card(
+        modifier = if (onClick != null) glass.clickable(onClick = onClick) else glass,
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+    ) {
+        Box(Modifier.padding(18.dp), content = content)
+    }
 }
 
 @Composable
@@ -376,6 +411,7 @@ fun FreetimeBottomBar(
     onDestinationSelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
     compact: Boolean = false,
+    capsule: Boolean = true,
 ) {
     if (destinations.isEmpty()) return
     val reducedMotion = LocalFreetimeReducedMotion.current || rememberFreetimeReducedMotion()
@@ -523,6 +559,7 @@ fun FreetimeAdaptiveBottomBar(
     listState: LazyListState,
     modifier: Modifier = Modifier,
     thresholdPx: Int = 120,
+    capsule: Boolean = true,
 ) {
     FreetimeBottomBar(
         destinations = destinations,
@@ -530,35 +567,50 @@ fun FreetimeAdaptiveBottomBar(
         onDestinationSelected = onDestinationSelected,
         modifier = modifier,
         compact = rememberFreetimeCompactNavigation(listState, thresholdPx),
+        capsule = capsule,
     )
 }
 
 
 @Composable
 fun FreetimeSwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
-    Row(
-        modifier = modifier.defaultMinSize(minWidth = 52.dp, minHeight = 32.dp)
-            .freetimeGlassCapsule(interactive = enabled)
-            .clickable(enabled = enabled, role = Role.Switch) { onCheckedChange(!checked) }
-            .padding(4.dp),
-        horizontalArrangement = if (checked) Arrangement.End else Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(Modifier.size(24.dp).background(FreetimeDesign.colors.contentStrong, RoundedCornerShape(12.dp)))
-    }
+    Switch(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        modifier = modifier.freetimeGlassCapsule(interactive = false),
+        enabled = enabled,
+        colors = SwitchDefaults.colors(
+            checkedThumbColor = MaterialTheme.colorScheme.primary,
+            checkedTrackColor = Color.Transparent,
+            uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            uncheckedTrackColor = Color.Transparent,
+        ),
+    )
 }
 
 @Composable
 fun FreetimeTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, placeholder: String = "", label: String? = null, singleLine: Boolean = true, enabled: Boolean = true) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.xs)) {
-        if (!label.isNullOrBlank()) BasicText(label, style = FreetimeDesign.typography.labelMedium.copy(color = FreetimeDesign.colors.contentMuted))
-        BasicTextField(
-            value = value, onValueChange = onValueChange, enabled = enabled, singleLine = singleLine,
-            textStyle = FreetimeDesign.typography.bodyLarge.copy(color = FreetimeDesign.colors.contentStrong),
-            modifier = Modifier.fillMaxWidth().freetimeGlass(FreetimeDesign.shapes.control, enabled).padding(horizontal = FreetimeDesign.spacing.lg, vertical = FreetimeDesign.spacing.md),
-            decorationBox = { inner -> Box { if (value.isEmpty() && placeholder.isNotEmpty()) BasicText(placeholder, style = FreetimeDesign.typography.bodyLarge.copy(color = FreetimeDesign.colors.contentMuted)); inner() } },
-        )
-    }
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier
+            .fillMaxWidth()
+            .freetimeGlass(MaterialTheme.shapes.medium, interactive = false),
+        enabled = enabled,
+        singleLine = singleLine,
+        textStyle = MaterialTheme.typography.bodyLarge,
+        label = if (label.isNullOrBlank()) null else ({ Text(label) }),
+        placeholder = if (placeholder.isEmpty()) null else ({ Text(placeholder) }),
+        shape = MaterialTheme.shapes.medium,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
+            disabledBorderColor = Color.Transparent,
+        ),
+    )
 }
 
 @Composable
@@ -622,44 +674,45 @@ fun FreetimeSnackbar(
     actionLabel: String? = null,
     onAction: (() -> Unit)? = null,
 ) {
-    Row(
-        modifier = modifier.freetimeWideGlass(Capsule(), interactive = false)
-            .padding(horizontal = FreetimeDesign.spacing.lg, vertical = FreetimeDesign.spacing.md),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FreetimeDesign.spacing.sm),
+    Snackbar(
+        modifier = modifier.freetimeWideGlass(Capsule(), interactive = false),
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        action = if (actionLabel != null && onAction != null) {
+            { FreetimeButton(actionLabel, onAction) }
+        } else {
+            null
+        },
     ) {
-        BasicText(message, Modifier.weight(1f), style = FreetimeDesign.typography.bodyMedium.copy(color = FreetimeDesign.colors.contentStrong))
-        if (actionLabel != null && onAction != null) FreetimeButton(actionLabel, onAction)
+        Text(message, style = MaterialTheme.typography.bodyMedium)
     }
 }
 
 @Composable
 fun FreetimeProgressIndicator(modifier: Modifier = Modifier, progress: Float? = null) {
     if (progress == null) {
-        val borderColor = FreetimeDesign.colors.glassBorder
-        val indicatorColor = FreetimeDesign.colors.contentStrong
-        Canvas(modifier.size(28.dp)) {
-            drawCircle(borderColor)
-            drawCircle(indicatorColor, radius = size.minDimension * .22f)
-        }
+        CircularProgressIndicator(
+            modifier = modifier.size(28.dp),
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
     } else {
-        Box(modifier.fillMaxWidth().height(6.dp).background(FreetimeDesign.colors.glassBorder, RoundedCornerShape(50))) {
-            Box(Modifier.fillMaxWidth(progress.coerceIn(0f, 1f)).fillMaxHeight().background(FreetimeDesign.colors.contentStrong, RoundedCornerShape(50)))
-        }
+        LinearProgressIndicator(
+            progress = { progress.coerceIn(0f, 1f) },
+            modifier = modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
     }
 }
 
 @Composable
 fun FreetimeSlider(value: Float, onValueChange: (Float) -> Unit, modifier: Modifier = Modifier, valueRange: ClosedFloatingPointRange<Float> = 0f..1f, enabled: Boolean = true) {
-    val fraction = ((value - valueRange.start) / (valueRange.endInclusive - valueRange.start)).coerceIn(0f, 1f)
-    Box(
-        modifier = modifier.fillMaxWidth().height(FreetimeDesign.sizes.touchTarget).clickable(enabled = enabled) {
-            val next = if (fraction < .5f) .75f else .25f
-            onValueChange(valueRange.start + (valueRange.endInclusive - valueRange.start) * next)
-        },
-        contentAlignment = Alignment.CenterStart,
-    ) {
-        Box(Modifier.fillMaxWidth().height(6.dp).background(FreetimeDesign.colors.glassBorder, RoundedCornerShape(50)))
-        Box(Modifier.fillMaxWidth(fraction).height(6.dp).background(FreetimeDesign.colors.contentStrong, RoundedCornerShape(50)))
-    }
+    Slider(
+        value = value.coerceIn(valueRange.start, valueRange.endInclusive),
+        onValueChange = onValueChange,
+        modifier = modifier.fillMaxWidth(),
+        enabled = enabled,
+        valueRange = valueRange,
+    )
 }
