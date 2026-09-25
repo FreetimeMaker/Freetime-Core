@@ -2,7 +2,8 @@ package com.freetime.design
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -77,7 +78,7 @@ fun rememberDarkTheme(
 }
 
 /**
- * Material 3 / Material You root theme.
+ * Material 3 Expressive / Material You root theme.
  *
  * Defaults:
  * - Material You dynamic colors on Android 12+
@@ -113,7 +114,10 @@ fun AppTheme(
         baseScheme
     }
 
-    MaterialTheme(colorScheme = colorScheme) {
+    MaterialExpressiveTheme(
+        colorScheme = colorScheme,
+        motionScheme = MotionScheme.expressive(),
+    ) {
         CompositionLocalProvider(
             LocalIsDarkTheme provides isDark,
             LocalLiquidGlassEnabled provides liquidGlassEnabled,

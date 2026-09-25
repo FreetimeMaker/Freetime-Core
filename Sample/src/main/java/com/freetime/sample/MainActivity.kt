@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.weight
@@ -181,7 +182,10 @@ private fun GlassButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.liquidGlassCapsule(),
+        modifier = modifier
+            .heightIn(min = ButtonDefaults.MediumContainerHeight)
+            .liquidGlassCapsule(),
+        contentPadding = ButtonDefaults.MediumContentPadding,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onSurface,
@@ -205,16 +209,16 @@ private fun DesignSample(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Material 3 + Liquid Glass", style = MaterialTheme.typography.headlineMedium)
+        Text("Material 3 Expressive + Liquid Glass", style = MaterialTheme.typography.headlineMedium)
         Text(
-            "The Design module no longer wraps Material components in Freetime-prefixed controls.",
+            "Material 3 Expressive provides the component, shape, typography and motion system; Liquid Glass stays a shared effect layer.",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .liquidGlass(MaterialTheme.shapes.large, interactive = false),
+                .liquidGlass(MaterialTheme.shapes.largeIncreased, interactive = false),
             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         ) {
             Column(
@@ -258,7 +262,7 @@ private fun SettingsSample(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .liquidGlass(MaterialTheme.shapes.large, interactive = false),
+                .liquidGlass(MaterialTheme.shapes.largeIncreased, interactive = false),
             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         ) {
             Row(

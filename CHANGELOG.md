@@ -2,6 +2,10 @@
 
 ### Design
 
+- Switched the Material foundation to Material 3 Expressive via `MaterialExpressiveTheme` and `MotionScheme.expressive()`.
+- Pinned Compose Material 3 to `1.5.0-alpha29`, because the stable 1.4.0 line does not ship the current Expressive APIs.
+- Updated the Sample app to use expressive increased shapes and medium expressive button sizing.
+
 - Removed the legacy Freetime-prefixed Design API, including custom buttons, cards, typography, shapes, spacing, layout, settings, picker, feedback and scaffold wrappers.
 - Reduced the Design module to Material 3 / Material You theming plus reusable Liquid Glass primitives.
 - Added `AppTheme`, `ThemeMode`, `LocalIsDarkTheme` and the global `LocalLiquidGlassEnabled` setting.

@@ -9,7 +9,7 @@ Current release line: **1.11.x**
 | Artifact | Purpose |
 | --- | --- |
 | `Core` | Common models, results and lightweight Android utilities |
-| `Design` | Material 3 / Material You theme helpers and reusable Liquid Glass |
+| `Design` | Material 3 Expressive / Material You theme helpers and reusable Liquid Glass |
 | `Browser` | External/in-app URL routing |
 | `Donations` | Reusable donation models and Material 3 Compose UI |
 
@@ -28,7 +28,7 @@ dependencies {
 
 ## Design
 
-The Design module no longer ships a parallel Freetime-prefixed component system. Use Material 3 directly.
+The Design module no longer ships a parallel Freetime-prefixed component system. Use Material 3 Expressive directly.
 
 ```kotlin
 AppTheme(
@@ -40,7 +40,7 @@ AppTheme(
 }
 ```
 
-`AppTheme` enables Material You dynamic colors on Android 12+, defaults to light from 07:00 and dark from 19:00, and provides one global Liquid Glass flag.
+`AppTheme` installs `MaterialExpressiveTheme` with expressive motion, enables Material You dynamic colors on Android 12+, defaults to light from 07:00 and dark from 19:00, and provides one global Liquid Glass flag.
 
 Liquid Glass is exposed as reusable effect primitives:
 
@@ -94,7 +94,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the project history.
 2. No mandatory Freetime account or Luma Store dependency.
 3. Dependencies remain open-source and F-Droid-friendly.
 4. Shared infrastructure uses interfaces/callbacks instead of hard-coded backends.
-5. Material 3 is the UI foundation; Liquid Glass remains a focused reusable effect layer rather than a second component framework.
+5. Material 3 Expressive is the UI foundation; Liquid Glass remains a focused reusable effect layer rather than a second component framework.
 
 ## License
 

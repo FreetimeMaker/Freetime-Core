@@ -1,6 +1,6 @@
 # Design
 
-The Freetime Core Design module is now a thin **Material 3 / Material You + Liquid Glass** layer.
+The Freetime Core Design module is now a thin **Material 3 Expressive / Material You + Liquid Glass** layer.
 
 The old Freetime-prefixed design system has been removed. There are no custom `FreetimeButton`, `FreetimeCard`, `FreetimeTheme`, `FreetimeDesign`, typography, shape, spacing or layout wrappers anymore. Use Material 3 directly and apply Liquid Glass only where it improves the surface.
 
@@ -18,7 +18,7 @@ AppTheme {
 }
 ```
 
-`AppTheme` uses Material You dynamic colors on Android 12+ and regular Material 3 schemes below Android 12.
+`AppTheme` uses `MaterialExpressiveTheme`, the expressive Material motion scheme and Material You dynamic colors on Android 12+. Older devices use the same M3 Expressive component/motion system with regular light/dark color schemes.
 
 The default time mode is:
 
@@ -100,4 +100,4 @@ rememberLiquidGlassBackdrop()
 Modifier.liquidGlassSource(...)
 ```
 
-Use Material 3 for buttons, cards, text fields, navigation, dialogs, switches, sliders and every other normal UI component. Liquid Glass is an effect layer, not a second design system.
+Use Material 3 Expressive for buttons, cards, text fields, navigation, dialogs, switches, sliders and every other normal UI component. The module currently pins `androidx.compose.material3:material3:1.5.0-alpha29` because the stable 1.4.0 line does not include the current M3 Expressive APIs. Liquid Glass is an effect layer, not a second design system.
