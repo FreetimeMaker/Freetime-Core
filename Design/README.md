@@ -1,8 +1,8 @@
 # Freetime Design
 
-Freetime's standalone Compose UI system with Liquid Glass.
+Freetime's Material 3 / Material You Compose UI layer with reusable Liquid Glass.
 
-Since **1.6.0**, the module is independent from Material 3 as its UI foundation. Version **1.7.0** expanded it with reusable app-level building blocks shared across Freetime apps. Version **1.9.0** expands Liquid Glass and the reusable showcase surface. Freetime Design now owns its theme, palette, typography, shapes, spacing, sizing, motion and reusable controls.
+Material 3 is the UI foundation again. `FreetimeTheme` installs `MaterialTheme`, uses Material You dynamic colors on Android 12+ by default, keeps Freetime Liquid Glass as a reusable modifier/component layer, and preserves the older Freetime token APIs as a compatibility bridge for existing apps.
 
 ## Dependency
 
@@ -13,22 +13,19 @@ implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.10.0")
 ## Theme
 
 ```kotlin
-FreetimeTheme(
-    darkTheme = isSystemInDarkTheme(),
-    oledBlack = false,
-) {
+FreetimeTheme {
     FreetimeGlassRoot {
         AppContent()
     }
 }
 ```
 
-`FreetimeTheme` provides `FreetimePalette`, `FreetimeTypography`, `FreetimeShapes`, `FreetimeSpacing`, `FreetimeSizes`, `FreetimeMotion` and `FreetimeGlassTokens` through the `FreetimeDesign` API.
+`FreetimeTheme` now uses Material 3 as the source of truth. Access `MaterialTheme.colorScheme`, `MaterialTheme.typography` and `MaterialTheme.shapes` directly, or use `FreetimeDesign.colorScheme`, `FreetimeDesign.materialTypography` and `FreetimeDesign.materialShapes`. The older Freetime palette/typography accessors remain available for source compatibility.
 
 ```kotlin
 val spacing = FreetimeDesign.spacing.lg
-val title = FreetimeDesign.typography.titleLarge
-val foreground = FreetimeDesign.colors.contentStrong
+val title = MaterialTheme.typography.titleLarge
+val foreground = MaterialTheme.colorScheme.onSurface
 ```
 
 ## Liquid Glass
@@ -84,9 +81,13 @@ Navigation components include `FreetimeTopBar`, `FreetimeNavigationItem`, `Freet
 
 Legacy `FreetimeGlassDepth` and `FreetimeDesignTokens` APIs remain temporarily available but are deprecated in favor of the typed `FreetimeDesign` token API.
 
-## Material 3
+## Material 3 and Material You
 
-The `Design` module does **not** depend on `androidx.compose.material3`. Applications can still use Material 3 alongside Freetime Design if they choose, but Freetime components themselves are implemented with Compose UI/Foundation and the Freetime design system.
+The `Design` module directly exposes Material 3. Core controls such as buttons, cards, switches, text fields, snackbars, sliders and progress indicators are backed by Material 3 while Liquid Glass is applied as the transparent visual surface where appropriate.
+
+Dynamic Material You colors are enabled by default on Android 12 and newer. Devices below Android 12 use the standard Material 3 light/dark color schemes.
+
+`FreetimeApp()` defaults to `AUTO_TIME`: light mode starts at **07:00** and dark mode starts at **19:00**. The time state is refreshed while the app stays open, and the hours can still be overridden through `FreetimeAppConfig` or persisted Freetime preferences.
 
 
 ## App-level building blocks
