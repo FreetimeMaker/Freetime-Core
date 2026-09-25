@@ -1,14 +1,29 @@
 package com.freetime.design
 
-import androidx.compose.foundation.isSystemInDarkTheme
+import android.os.Build
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
+import androidx.compose.material3.Typography
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 
+/**
+ * Material 3 / Material You theme for all Freetime UI.
+ *
+ * MaterialTheme is the actual design-system source of truth. The legacy
+ * Freetime palette/typography locals are kept as a compatibility bridge for
+ * existing Freetime apps while they migrate to MaterialTheme directly.
+ */
 @Composable
 fun FreetimeTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false,
+    darkTheme: Boolean = rememberFreetimeDarkTheme(FreetimeThemeMode.AUTO_TIME),
+    dynamicColor: Boolean = true,
     oledBlack: Boolean = false,
     glassTokens: FreetimeGlassTokens = FreetimeGlassTokens(),
     shapes: FreetimeShapes = FreetimeShapes(),
@@ -18,43 +33,76 @@ fun FreetimeTheme(
     typography: FreetimeTypography = FreetimeTypography(),
     content: @Composable () -> Unit,
 ) {
-    val palette = if (darkTheme) {
-        FreetimePalette(
-            background = if (oledBlack) Color.Black else Color(0xFF090909),
-            surface = if (oledBlack) Color.Black else Color(0xFF101010),
-            primary = Color(0xFFF2F2F2),
-            onPrimary = Color(0xFF171717),
-            contentStrong = Color(0xFFF7F7F7),
-            contentMuted = Color(0xFFC9C9C9),
-            outline = Color.White.copy(alpha = .16f),
+    val context = LocalContext.current
+    val baseScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        darkTheme -> darkColorScheme()
+        else -> lightColorScheme()
+    }
+    val colorScheme = if (oledBlack && darkTheme) {
+        baseScheme.copy(
+            background = Color.Black,
+            surface = Color.Black,
         )
     } else {
-        FreetimePalette(
-            background = Color(0xFFF4F4F4),
-            surface = Color(0xFFF8F8F8),
-            primary = Color(0xFF171717),
-            onPrimary = Color.White,
-            contentStrong = Color(0xFF111111),
-            contentMuted = Color(0xFF555555),
-            outline = Color.Black.copy(alpha = .10f),
-        )
+        baseScheme
     }
-    val designColors = FreetimeDesignColors(
-        glassHighlight = Color.White,
-        glassBorder = palette.outline,
-        contentStrong = palette.contentStrong,
-        contentMuted = palette.contentMuted,
+
+    val materialTypography = Typography(
+        displayLarge = typography.displayLarge,
+        displayMedium = typography.displayMedium,
+        headlineLarge = typography.headlineLarge,
+        headlineMedium = typography.headlineMedium,
+        titleLarge = typography.titleLarge,
+        titleMedium = typography.titleMedium,
+        bodyLarge = typography.bodyLarge,
+        bodyMedium = typography.bodyMedium,
+        bodySmall = typography.bodySmall,
+        labelLarge = typography.labelLarge,
+        labelMedium = typography.labelMedium,
+        labelSmall = typography.labelSmall,
+    )
+    val materialShapes = Shapes(
+        extraSmall = shapes.compact,
+        small = shapes.compact,
+        medium = shapes.control,
+        large = shapes.surface,
+        extraLarge = shapes.dialog,
     )
 
-    CompositionLocalProvider(
-        LocalFreetimeGlassTokens provides glassTokens,
-        LocalFreetimeShapes provides shapes,
-        LocalFreetimeDesignColors provides designColors,
-        LocalFreetimeSpacing provides spacing,
-        LocalFreetimeSizes provides sizes,
-        LocalFreetimeMotion provides motion,
-        LocalFreetimeTypography provides typography,
-        LocalFreetimePalette provides palette,
-        content = content,
-    )
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = materialTypography,
+        shapes = materialShapes,
+    ) {
+        val scheme = MaterialTheme.colorScheme
+        val palette = FreetimePalette(
+            background = scheme.background,
+            surface = scheme.surface,
+            primary = scheme.primary,
+            onPrimary = scheme.onPrimary,
+            contentStrong = scheme.onSurface,
+            contentMuted = scheme.onSurfaceVariant,
+            outline = scheme.outlineVariant,
+        )
+        val designColors = FreetimeDesignColors(
+            glassHighlight = Color.White,
+            glassBorder = scheme.outlineVariant,
+            contentStrong = scheme.onSurface,
+            contentMuted = scheme.onSurfaceVariant,
+        )
+
+        CompositionLocalProvider(
+            LocalFreetimeGlassTokens provides glassTokens,
+            LocalFreetimeShapes provides shapes,
+            LocalFreetimeDesignColors provides designColors,
+            LocalFreetimeSpacing provides spacing,
+            LocalFreetimeSizes provides sizes,
+            LocalFreetimeMotion provides motion,
+            LocalFreetimeTypography provides typography,
+            LocalFreetimePalette provides palette,
+            content = content,
+        )
+    }
 }
