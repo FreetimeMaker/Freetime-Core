@@ -77,7 +77,10 @@ fun FreetimeDonationScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item(key = "donation-title") {
-            Text(title, style = MaterialTheme.typography.headlineMedium)
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineMedium,
+            )
         }
 
         items(
@@ -100,36 +103,47 @@ fun FreetimeDonationScreen(
                 colors = CardDefaults.cardColors(containerColor = Color.Transparent),
             ) {
                 Column(
-                    Modifier.fillMaxWidth().padding(18.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(18.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
-                            target.label,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
+                        text = target.label,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
 
-                        when (target) {
-                            is DonationTarget.Link -> {
-                                DonationAction("Open") { onLinkClick(target) }
+                    when (target) {
+                        is DonationTarget.Link -> {
+                            DonationAction("Open") {
+                                onLinkClick(target)
                             }
+                        }
 
-                            is DonationTarget.Wallet -> {
-                                Text(
-                                    target.currency,
-                                    style = MaterialTheme.typography.labelMedium,
-                                )
-                                Text(
-                                    target.address,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    maxLines = 4,
-                                )
-                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    DonationAction("Use") { onWalletClick(target) }
-                                    if (onCopyWallet != null) {
-                                        DonationAction("Copy") { onCopyWallet(target) }
+                        is DonationTarget.Wallet -> {
+                            Text(
+                                text = target.currency,
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+                            Text(
+                                text = target.address,
+                                style = MaterialTheme.typography.bodyMedium,
+                                maxLines = 4,
+                            )
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                DonationAction("Use") {
+                                    onWalletClick(target)
+                                }
+                                onCopyWallet?.let { copyWallet ->
+                                    DonationAction("Copy") {
+                                        copyWallet(target)
                                     }
-                                    if (onShowQr != null) {
-                                        DonationAction("QR") { onShowQr(target) }
+                                }
+                                onShowQr?.let { showQr ->
+                                    DonationAction("QR") {
+                                        showQr(target)
                                     }
                                 }
                             }
