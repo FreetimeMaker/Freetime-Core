@@ -1,11 +1,11 @@
 # Freetime Browser
 
-Common URL routing for Freetime Android apps without forcing a particular WebView implementation or UI design system.
+Common URL routing for Freetime Android apps without forcing a particular navigation stack or browser implementation.
 
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:Browser:1.10.0")
+implementation("com.github.FreetimeMaker.Freetime-Core:Browser:2.0.0")
 ```
 
 ## External browser
@@ -18,7 +18,7 @@ This starts an Android `ACTION_VIEW` intent.
 
 ## In-app browser
 
-The host app owns its WebView or Custom Tabs implementation:
+The host app can own its WebView or Custom Tabs implementation:
 
 ```kotlin
 FreetimeBrowser.open(
@@ -43,4 +43,6 @@ BrowserOptions(
 )
 ```
 
-The Browser module remains independent from Freetime Design and Material 3.
+The module also provides `FreetimeBrowserScreen` for apps that want the reusable Compose browser UI.
+
+Browser remains independent from the Design module; its UI uses Material 3 directly.

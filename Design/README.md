@@ -1,13 +1,13 @@
-# Design
+# Freetime Core Design
 
-The Freetime Core Design module is now a thin **Material 3 Expressive / Material You + Liquid Glass** layer.
+Material 3 Expressive, Material You and reusable Liquid Glass for Freetime Android apps.
 
-The old Freetime-prefixed design system has been removed. There are no custom `FreetimeButton`, `FreetimeCard`, `FreetimeTheme`, `FreetimeDesign`, typography, shape, spacing or layout wrappers anymore. Use Material 3 directly and apply Liquid Glass only where it improves the surface.
+Version 2.0 removes the old Freetime-prefixed component system. Use Material 3 Expressive directly for normal UI and apply Liquid Glass only where the backdrop effect is useful.
 
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.11.0")
+implementation("com.github.FreetimeMaker.Freetime-Core:Design:2.0.0")
 ```
 
 ## Theme
@@ -18,18 +18,21 @@ AppTheme {
 }
 ```
 
-`AppTheme` uses `MaterialExpressiveTheme`, the expressive Material motion scheme and Material You dynamic colors on Android 12+. Older devices use the same M3 Expressive component/motion system with regular light/dark color schemes.
+`AppTheme` uses `MaterialExpressiveTheme`, `MotionScheme.expressive()` and Material You dynamic colors on Android 12+. Older devices keep the same Expressive component and motion system with regular Material light/dark color schemes.
 
-The default time mode is:
+Available modes:
 
-- light from **07:00**
-- dark from **19:00**
+- `SYSTEM`
+- `LIGHT`
+- `DARK`
+- `OLED`
+- `AUTO_TIME`
 
-You can still select `SYSTEM`, `LIGHT`, `DARK`, `OLED` or `AUTO_TIME`.
+`AUTO_TIME` defaults to light from **07:00** and dark from **19:00**.
 
 ## Global Liquid Glass setting
 
-Liquid Glass follows the same architecture as SimpMusic: one boolean is provided at the app theme and every glass surface reads it from the shared composition local.
+One boolean controls every shared glass surface:
 
 ```kotlin
 AppTheme(
@@ -41,7 +44,9 @@ AppTheme(
 }
 ```
 
-The global value is available as `LocalLiquidGlassEnabled`. Apps that already own their Material theme can use:
+The value is available through `LocalLiquidGlassEnabled`.
+
+Apps that already own their Material theme can provide only the glass setting:
 
 ```kotlin
 ProvideLiquidGlass(enabled = settings.liquidGlassEnabled) {
@@ -49,26 +54,26 @@ ProvideLiquidGlass(enabled = settings.liquidGlassEnabled) {
 }
 ```
 
-When the setting is disabled, `Modifier.liquidGlass()` automatically keeps the same shape and switches to a flat Material 3 `surfaceContainerHighest` fallback at 80% opacity. Call sites do not need their own `if (liquidGlassEnabled)` branches.
+When disabled, `Modifier.liquidGlass()` keeps the requested shape and automatically uses a Material `surfaceContainerHighest` fallback at 80% opacity.
 
 ## Glass optics
 
-The shared recipe follows SimpMusic's current Liquid Glass behavior:
+The shared Liquid Glass recipe uses:
 
 - backdrop vibrancy
 - saturation **1.5**
 - brightness **0.05**
-- adaptive blur from **2dp to 16dp**, centered around 8dp
+- adaptive blur from **2dp to 16dp**
 - refraction up to half the surface height
-- adaptive surface scrim from **0.12 to 0.50**
-- press glow following the pointer
+- adaptive scrim from **0.12 to 0.50**
+- pointer-following press glow
 - spring press interaction
 - **1.12x** press bulge for compact controls
 - **1.04x** press bulge for wide surfaces
 
 ## Usage
 
-Keep the sampled source and glass foreground separate:
+Keep the sampled background source and glass foreground separate:
 
 ```kotlin
 LiquidGlassRoot(
@@ -100,4 +105,4 @@ rememberLiquidGlassBackdrop()
 Modifier.liquidGlassSource(...)
 ```
 
-Use Material 3 Expressive for buttons, cards, text fields, navigation, dialogs, switches, sliders and every other normal UI component. The module currently pins `androidx.compose.material3:material3:1.5.0-alpha29` because the stable 1.4.0 line does not include the current M3 Expressive APIs. Liquid Glass is an effect layer, not a second design system.
+Use Material 3 Expressive for buttons, cards, text fields, navigation, dialogs, switches, sliders and other normal UI components. The module currently pins `androidx.compose.material3:material3:1.5.0-alpha29` for the current Expressive APIs.

@@ -1,101 +1,232 @@
 # Freetime Core
 
-Shared, open-source Android libraries for Freetime Maker apps. Freetime Core keeps common application infrastructure reusable while every consuming app remains independently installable and usable.
+Reusable, open-source Android libraries for Freetime Maker apps.
 
-Current release line: **1.11.x**
+**Current version: 2.0.0**
+
+Freetime Core keeps shared Android functionality in small modules that apps can adopt independently. Version 2.0 moves the UI layer to **Material 3 Expressive + Material You**, keeps Liquid Glass as an optional reusable effect, and removes the former Freetime-prefixed component system.
+
+## Highlights
+
+- **Material 3 Expressive** as the UI foundation
+- **Material You** dynamic colors on Android 12+
+- automatic light mode from **07:00** and dark mode from **19:00**
+- one global **Liquid Glass** switch for every glass surface
+- reusable browser, donation and warning modules
+- no mandatory Freetime account, Luma Store installation or proprietary backend
+- F-Droid-friendly, open-source dependencies
+- minimum Android SDK **24**, compile SDK **37**
 
 ## Modules
 
-| Artifact | Purpose |
+| Module | Purpose |
 | --- | --- |
-| `Core` | Common models, results and lightweight Android utilities |
-| `Design` | Material 3 Expressive / Material You theme helpers and reusable Liquid Glass |
-| `Browser` | External/in-app URL routing |
-| `Donations` | Reusable donation models and Material 3 Compose UI |
+| `Core` | Shared models, results, SDK metadata and lightweight Android helpers |
+| `Design` | Material 3 Expressive / Material You theme helpers and Liquid Glass |
+| `Browser` | External and in-app URL routing plus reusable browser UI |
+| `Donations` | Donation targets, wallet helpers and Compose donation UI |
+| `FreetimeWarn` | Reusable acknowledgement/warning flow for Compose apps |
+| `Sample` | Example application demonstrating the libraries together |
 
-## Dependency
+## Installation
 
-Add the repository used by your release distribution, then include only the modules your app needs:
+Freetime Core is published as a JitPack multi-module project.
 
-```kotlin
-dependencies {
-    implementation("com.github.FreetimeMaker.Freetime-Core:Core:1.11.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.11.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:1.11.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.11.0")
-}
-```
-
-## Design
-
-The Design module no longer ships a parallel Freetime-prefixed component system. Use Material 3 Expressive directly.
+Add JitPack:
 
 ```kotlin
-AppTheme(
-    liquidGlassEnabled = true,
-) {
-    LiquidGlassRoot {
-        AppContent()
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io")
     }
 }
 ```
 
-`AppTheme` installs `MaterialExpressiveTheme` with expressive motion, enables Material You dynamic colors on Android 12+, defaults to light from 07:00 and dark from 19:00, and provides one global Liquid Glass flag.
+Then add only the modules your app needs:
 
-Liquid Glass is exposed as reusable effect primitives:
+```kotlin
+dependencies {
+    implementation("com.github.FreetimeMaker.Freetime-Core:Core:2.0.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Design:2.0.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:2.0.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:2.0.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:FreetimeWarn:2.0.0")
+}
+```
+
+## Material 3 Expressive + Material You
+
+The Design module no longer provides a second component framework. Use AndroidX Material 3 components directly and let `AppTheme` provide the shared Expressive theme.
+
+```kotlin
+AppTheme(
+    themeMode = ThemeMode.AUTO_TIME,
+    liquidGlassEnabled = true,
+) {
+    AppContent()
+}
+```
+
+`AppTheme` provides:
+
+- `MaterialExpressiveTheme`
+- `MotionScheme.expressive()`
+- Material You dynamic colors on Android 12+
+- regular Material color schemes on older Android versions
+- `SYSTEM`, `LIGHT`, `DARK`, `OLED` and `AUTO_TIME` modes
+- automatic light/dark switching at 07:00 and 19:00 by default
+- the global Liquid Glass state
+
+The project currently pins `androidx.compose.material3:material3:1.5.0-alpha29` for the current Material 3 Expressive APIs.
+
+## Liquid Glass
+
+Liquid Glass is an effect layer on top of Material 3 Expressive rather than a separate design system.
+
+Wrap a screen that needs backdrop-aware glass:
+
+```kotlin
+LiquidGlassRoot(
+    source = {
+        AppBackground()
+    },
+) {
+    AppContent()
+}
+```
+
+Apply glass only where useful:
+
+```kotlin
+Button(
+    onClick = ::continueFlow,
+    modifier = Modifier.liquidGlassCapsule(),
+    colors = ButtonDefaults.buttonColors(
+        containerColor = Color.Transparent,
+    ),
+) {
+    Text("Continue")
+}
+```
+
+Available primitives include:
 
 - `Modifier.liquidGlass()`
 - `Modifier.liquidGlassCapsule()`
 - `Modifier.liquidGlassCircle()`
 - `LiquidGlassContainer`
 - `LiquidGlassIconButton`
+- `rememberLiquidGlassBackdrop()`
+- `Modifier.liquidGlassSource()`
 
-The glass renderer follows the same shared-setting architecture and core optical recipe as SimpMusic. Turning Liquid Glass off globally automatically changes every glass surface to a Material 3 fallback without requiring per-screen branching.
+The global setting is provided through `LocalLiquidGlassEnabled`. When disabled, glass surfaces automatically use a Material fallback instead of requiring separate UI branches.
+
+Apps that already own their Material theme can provide only the glass setting:
+
+```kotlin
+ProvideLiquidGlass(enabled = settings.liquidGlassEnabled) {
+    AppContent()
+}
+```
 
 ## Browser
 
-```kotlin
-FreetimeBrowser.openExternal(context, "https://example.org")
-```
-
-For app-owned WebView or custom-tab behavior, use `BrowserMode.IN_APP` and provide an `openInApp` callback.
-
-## Donations
+Open a URL externally:
 
 ```kotlin
-val targets = listOf(
-    DonationTarget.Link("OpenCollective", "https://opencollective.com/example"),
-    DonationTarget.Wallet("Bitcoin", "BTC", "wallet-address"),
+FreetimeBrowser.openExternal(
+    context,
+    "https://example.org",
 )
 ```
 
-Apps retain control over link handling and wallet behavior.
+For app-owned browsing, use `BrowserMode.IN_APP` with the routing options or the reusable browser screen.
 
-## Android versions
+## Donations
 
-SDK and dependency versions are centralized in `gradle/libs.versions.toml`. The current minimum SDK is 24 and compile SDK is 37.
+Donation targets remain host-controlled:
 
-## Versioning and releases
+```kotlin
+val targets = listOf(
+    DonationTarget.Link(
+        label = "OpenCollective",
+        url = "https://opencollective.com/example",
+    ),
+    DonationTarget.Wallet(
+        label = "Bitcoin",
+        currency = "BTC",
+        address = "wallet-address",
+    ),
+)
+```
 
-The library version is defined once in `gradle/libs.versions.toml`:
+The host decides how links, wallets, clipboard actions and QR payloads are handled.
+
+## FreetimeWarn
+
+Create a warning state with a required application name:
+
+```kotlin
+val warning = rememberFreetimeWarnState(
+    context = context,
+    appName = "GeoWeather",
+    versionCode = BuildConfig.VERSION_CODE.toLong(),
+)
+
+FreetimeWarn(
+    state = warning,
+    onLearnMore = {
+        // Open your current information page.
+    },
+)
+```
+
+Supported frequencies are `ONCE`, `ONCE_PER_VERSION` and `ALWAYS`.
+
+## Migrating from 1.x
+
+Version 2.0 is a breaking release.
+
+The old Freetime-prefixed Design components have been removed. Replace wrappers such as old Freetime buttons, cards, typography, shapes, scaffolds and settings controls with their Material 3 equivalents.
+
+The recommended structure is:
+
+```kotlin
+AppTheme {
+    LiquidGlassRoot(
+        source = { AppBackground() },
+    ) {
+        Material3AppContent()
+    }
+}
+```
+
+Use Material 3 Expressive for normal UI and the Liquid Glass modifiers only for surfaces that should visually sample the backdrop.
+
+## Versioning
+
+The shared release version lives in `gradle/libs.versions.toml`:
 
 ```toml
 [versions]
-freetime = "1.11.0"
+freetime = "2.0.0"
 ```
 
-Freetime Core follows semantic versioning. Removing the old Freetime-prefixed Design API is a breaking API change and should be released on a major version before consumers migrate.
+The root Gradle build applies that value to all published library modules. `FreetimeCore.SDK_VERSION` uses the same release number, and the GitHub Actions release workflow creates `v2.0.0` when the version does not already have a tag.
 
-See [CHANGELOG.md](CHANGELOG.md) for the project history.
+See [CHANGELOG.md](CHANGELOG.md) for release history.
 
-## Principles
+## Project principles
 
-1. Consuming apps continue to work independently.
-2. No mandatory Freetime account or Luma Store dependency.
-3. Dependencies remain open-source and F-Droid-friendly.
-4. Shared infrastructure uses interfaces/callbacks instead of hard-coded backends.
-5. Material 3 Expressive is the UI foundation; Liquid Glass remains a focused reusable effect layer rather than a second component framework.
+1. Apps remain independently installable and usable.
+2. No mandatory Freetime account, Luma Store dependency or hard-coded backend.
+3. Dependencies should remain open-source and F-Droid-friendly.
+4. Shared functionality should stay modular and host-controlled.
+5. Material 3 Expressive is the component system; Liquid Glass is an optional visual effect layer.
+6. Breaking API changes use semantic-versioning major releases.
 
 ## License
 
-Freetime Core is licensed under the GNU General Public License v3.0 (GPL-3.0).
+Freetime Core is licensed under the **GNU General Public License v3.0 (GPL-3.0)**.

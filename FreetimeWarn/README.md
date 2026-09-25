@@ -1,20 +1,18 @@
 # FreetimeWarn
 
-A Kotlin/Jetpack Compose warning library inspired by FreeDroidWarn.
+A Kotlin/Jetpack Compose acknowledgement and warning library inspired by FreeDroidWarn.
 
-The UI now uses Material 3 directly; it no longer depends on the removed Freetime-prefixed Design component wrappers.
-
-The warning mechanism is intentionally separate from the warning text. Platform policies can change, so apps can replace the copy without replacing the persistence/UI implementation.
+The UI uses Material 3 directly and stays independent from the removed Freetime-prefixed Design component system.
 
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:FreetimeWarn:<version>")
+implementation("com.github.FreetimeMaker.Freetime-Core:FreetimeWarn:2.0.0")
 ```
 
 ## Required app name
 
-The application name is mandatory. There is no default:
+The application name is mandatory:
 
 ```kotlin
 val warning = rememberFreetimeWarnState(
@@ -26,17 +24,17 @@ val warning = rememberFreetimeWarnState(
 FreetimeWarn(
     state = warning,
     onLearnMore = {
-        // Open the current information page with your preferred browser flow.
+        // Open the current information page.
     },
 )
 ```
 
-Calling `rememberFreetimeWarnState` without `appName` does not compile. A blank runtime value is rejected with `require`.
+A missing `appName` does not compile and a blank runtime value is rejected.
 
 ## Frequency
 
-- `ONCE` — persists acknowledgement permanently for this warning ID/app.
-- `ONCE_PER_VERSION` — default; shows once for each app version code.
+- `ONCE` — persists acknowledgement for this warning ID/app.
+- `ONCE_PER_VERSION` — default; shows once per application version code.
 - `ALWAYS` — persistence is disabled and the host controls visibility.
 
 ## Custom text
@@ -47,7 +45,10 @@ val content = FreetimeWarnContent(
     message = { appName -> "Current information affecting $appName." },
 )
 
-FreetimeWarn(state = warning, content = content)
+FreetimeWarn(
+    state = warning,
+    content = content,
+)
 ```
 
 Keep policy-specific wording current rather than relying indefinitely on text embedded in an old library release.

@@ -1,24 +1,46 @@
-## Unreleased
-
-### Design
-
-- Switched the Material foundation to Material 3 Expressive via `MaterialExpressiveTheme` and `MotionScheme.expressive()`.
-- Pinned Compose Material 3 to `1.5.0-alpha29`, because the stable 1.4.0 line does not ship the current Expressive APIs.
-- Updated the Sample app to use expressive increased shapes and medium expressive button sizing.
-
-- Removed the legacy Freetime-prefixed Design API, including custom buttons, cards, typography, shapes, spacing, layout, settings, picker, feedback and scaffold wrappers.
-- Reduced the Design module to Material 3 / Material You theming plus reusable Liquid Glass primitives.
-- Added `AppTheme`, `ThemeMode`, `LocalIsDarkTheme` and the global `LocalLiquidGlassEnabled` setting.
-- Matched the shared Liquid Glass recipe to SimpMusic's current implementation: 1.5 saturation, 0.05 brightness, adaptive 2–16dp blur, half-height refraction, 0.12–0.50 scrim, pointer glow and spring press bulge.
-- Made the shared `liquidGlass` primitive own the on/off behavior globally. Disabled glass now automatically falls back to Material 3 `surfaceContainerHighest` at 80% opacity.
-- Kept automatic theming with light from 07:00 and dark from 19:00, plus Material You dynamic colors on Android 12+.
-- Migrated Browser, Donations, FreetimeWarn and the Sample app away from the removed Design wrappers and onto Material 3.
-
 # Changelog
 
 All notable changes to Freetime Core are documented here.
 
-The project follows semantic versioning. Older entries summarize the known evolution of the repository; the latest release entries document the current public changes in detail.
+The project follows semantic versioning.
+
+## Unreleased
+
+No unreleased changes yet.
+
+## 2.0.0 - 2026-09-25
+
+### Breaking Design migration
+
+- Removed the legacy Freetime-prefixed Design component API, including the custom button, card, typography, shape, spacing, layout, settings, picker, feedback and scaffold wrappers.
+- Material 3 Expressive is now the component foundation through `MaterialExpressiveTheme` and `MotionScheme.expressive()`.
+- Material You dynamic colors remain enabled on Android 12+.
+- Kept automatic light/dark behavior with light mode from 07:00 and dark mode from 19:00 by default.
+- Reduced the Design module to theming plus reusable Liquid Glass primitives.
+- Updated Browser, Donations, FreetimeWarn and Sample to use Material 3 directly instead of the removed Design wrappers.
+
+### Liquid Glass
+
+- Added one global `LocalLiquidGlassEnabled` setting controlled through `AppTheme` or `ProvideLiquidGlass`.
+- Made shared `liquidGlass` modifiers own their enabled/disabled behavior so screens do not need individual branches.
+- Added Material fallback surfaces when Liquid Glass is disabled.
+- Matched the shared optics to the SimpMusic-inspired recipe with vibrancy, 1.5 saturation, 0.05 brightness, adaptive 2–16dp blur, refraction, adaptive scrim, pointer glow and spring press behavior.
+
+### Material 3 Expressive
+
+- Pinned Compose Material 3 to `1.5.0-alpha29` for the current Expressive APIs.
+- Updated the Sample app to demonstrate increased Expressive shapes, Expressive motion and medium button sizing.
+
+### Version consistency
+
+- Updated the shared version catalog to `2.0.0`.
+- Updated `FreetimeCore.SDK_VERSION` to `2.0.0`.
+- Updated all current module dependency examples to `2.0.0`.
+- Updated the Sample app version to `2.0.0`.
+
+### Migration
+
+Applications migrating from 1.x should replace removed Freetime-prefixed Design components with Material 3 equivalents and use Liquid Glass only as a modifier/effect layer.
 
 ## 1.11.0
 
@@ -153,3 +175,4 @@ Freetime Core began as a shared Android foundation for Freetime Maker applicatio
 - Open-source and F-Droid-friendly dependency choices as a project principle.
 
 From that base, the Design module evolved from Material-themed reusable glass components into the independent Freetime Design system introduced in 1.6.0.
+

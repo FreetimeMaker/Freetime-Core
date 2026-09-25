@@ -5,7 +5,7 @@ Reusable Compose donation UI built with Material 3 and the Design module's optio
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.11.0")
+implementation("com.github.FreetimeMaker.Freetime-Core:Donations:2.0.0")
 ```
 
 The module uses Core, Design and Browser.
@@ -40,4 +40,4 @@ FreetimeDonationScreen(
 )
 ```
 
-The host app owns all actions. The screen uses Material 3 components; cards and action surfaces automatically follow the global `LocalLiquidGlassEnabled` value when hosted under `AppTheme` or `ProvideLiquidGlass`.
+The host app owns all actions. The screen uses Material 3 components; cards and action surfaces follow the global `LocalLiquidGlassEnabled` value when hosted under `AppTheme` or `ProvideLiquidGlass`.
