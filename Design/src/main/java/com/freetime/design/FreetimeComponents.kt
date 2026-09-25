@@ -599,7 +599,7 @@ fun FreetimeTextField(value: String, onValueChange: (String) -> Unit, modifier: 
         enabled = enabled,
         singleLine = singleLine,
         textStyle = MaterialTheme.typography.bodyLarge,
-        label = if (label.isNullOrBlank()) null else ({ Text(label) }),
+        label = if (label.isNullOrBlank()) null else ({ Text(label.orEmpty()) }),
         placeholder = if (placeholder.isEmpty()) null else ({ Text(placeholder) }),
         shape = MaterialTheme.shapes.medium,
         colors = OutlinedTextFieldDefaults.colors(
@@ -674,12 +674,14 @@ fun FreetimeSnackbar(
     actionLabel: String? = null,
     onAction: (() -> Unit)? = null,
 ) {
+    val safeActionLabel = actionLabel
+    val safeOnAction = onAction
     Snackbar(
         modifier = modifier.freetimeWideGlass(Capsule(), interactive = false),
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onSurface,
-        action = if (actionLabel != null && onAction != null) {
-            { FreetimeButton(actionLabel, onAction) }
+        action = if (safeActionLabel != null && safeOnAction != null) {
+            { FreetimeButton(safeActionLabel, safeOnAction) }
         } else {
             null
         },
@@ -697,8 +699,9 @@ fun FreetimeProgressIndicator(modifier: Modifier = Modifier, progress: Float? = 
             trackColor = MaterialTheme.colorScheme.surfaceVariant,
         )
     } else {
+        val fraction = progress.coerceIn(0f, 1f)
         LinearProgressIndicator(
-            progress = { progress.coerceIn(0f, 1f) },
+            progress = { fraction },
             modifier = modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.primary,
             trackColor = MaterialTheme.colorScheme.surfaceVariant,
