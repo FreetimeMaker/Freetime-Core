@@ -4,7 +4,7 @@ Reusable, open-source Android libraries for Freetime Maker apps.
 
 **Current version: 2.0.0**
 
-Freetime Core keeps shared Android functionality in small modules that apps can adopt independently. Version 2.0 moves the UI layer to **Material 3 Expressive + Material You**, keeps Liquid Glass as an optional reusable effect, and removes the former Freetime-prefixed component system.
+Freetime Core keeps shared Android functionality in small modules that apps can adopt independently. Version 2.x moves the UI layer to **Material 3 Expressive + Material You**, keeps Liquid Glass as an optional reusable effect, and removes the former Freetime-prefixed component system.
 
 ## Highlights
 
@@ -187,7 +187,7 @@ Supported frequencies are `ONCE`, `ONCE_PER_VERSION` and `ALWAYS`.
 
 ## Migrating from 1.x
 
-Version 2.0 is a breaking release.
+Version 2.x is a breaking release.
 
 The old Freetime-prefixed Design components have been removed. Replace wrappers such as old Freetime buttons, cards, typography, shapes, scaffolds and settings controls with their Material 3 equivalents.
 
