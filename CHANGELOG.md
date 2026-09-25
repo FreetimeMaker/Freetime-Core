@@ -1,3 +1,11 @@
+## Unreleased
+
+- Switched Freetime Design back to Material 3 as the UI foundation while retaining Liquid Glass as a reusable transparent surface layer.
+- Added Material You dynamic colors by default on Android 12+ with standard Material 3 fallback schemes on older Android versions.
+- Changed the default Freetime app theme mode to time-based theming: light from 07:00 and dark from 19:00, including live refresh while the app remains open.
+- Backed core Freetime controls such as buttons, cards, icon buttons, switches, text fields, snackbars, sliders and progress indicators with Material 3 components.
+- Exposed Material 3 color schemes, typography and shapes through `FreetimeDesign` while keeping legacy Freetime theme accessors for compatibility.
+
 # Changelog
 
 All notable changes to Freetime Core are documented here.
