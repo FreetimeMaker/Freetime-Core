@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
@@ -137,7 +139,7 @@ fun Modifier.freetimeLiquidGlass(
     highlight: Highlight = Highlight.Default,
     recordingLayer: GraphicsLayer? = null,
 ): Modifier {
-    val isDarkTheme = LocalFreetimePalette.current.background.luminance() < 0.5f
+    val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val tokens = LocalFreetimeGlassTokens.current
     val designColors = LocalFreetimeDesignColors.current
     val reduceTransparency = LocalFreetimeReduceTransparency.current
@@ -383,14 +385,14 @@ fun Modifier.freetimeRoundGlass(
 
 @Composable
 fun Modifier.freetimeSelectedGlassCapsule(
-    tint: Color = FreetimeDesign.palette.primary,
+    tint: Color = MaterialTheme.colorScheme.primary,
     backdropLuminance: Float = 0.5f,
     recordingLayer: GraphicsLayer? = null,
     pressProgress: Float = 0f,
 ): Modifier {
     val backdrop = LocalFreetimeBackdrop.current
     val tokens = LocalFreetimeGlassTokens.current
-    val isDark = LocalFreetimePalette.current.background.luminance() < 0.5f
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val reduceTransparency = LocalFreetimeReduceTransparency.current
     val highContrast = LocalFreetimeHighContrast.current
     val liquidGlassEnabled = LocalFreetimeLiquidGlassEnabled.current
@@ -462,7 +464,7 @@ fun Modifier.freetimeSelectedGlassCapsule(
 fun FreetimeGlassCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Box(
         modifier = modifier
-            .freetimeGlass(LocalFreetimeShapes.current.surface, interactive = false)
+            .freetimeGlass(MaterialTheme.shapes.large, interactive = false)
             .padding(16.dp)
     ) { content() }
 }
@@ -477,7 +479,7 @@ fun FreetimeGlassButton(text: String, onClick: () -> Unit, modifier: Modifier = 
             .padding(horizontal = 20.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {
-        BasicText(text, style = FreetimeDesign.typography.labelLarge.copy(color = FreetimeDesign.colors.contentStrong))
+        Text(text, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurface)
     }
 }
 
