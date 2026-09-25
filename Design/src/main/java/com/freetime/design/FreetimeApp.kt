@@ -4,6 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import java.util.Calendar
+import kotlinx.coroutines.delay
 import com.freetime.core.FreetimePreferences
 import com.freetime.core.FreetimePreferencesState
 import com.freetime.core.FreetimeStoredThemeMode
@@ -18,10 +19,10 @@ enum class FreetimeThemeMode {
 
 @Immutable
 data class FreetimeAppConfig(
-    val themeMode: FreetimeThemeMode = FreetimeThemeMode.SYSTEM,
+    val themeMode: FreetimeThemeMode = FreetimeThemeMode.AUTO_TIME,
     val darkHour: Int = 19,
     val lightHour: Int = 7,
-    val dynamicColor: Boolean = false,
+    val dynamicColor: Boolean = true,
     val backdropColors: List<Color> = emptyList(),
 )
 
@@ -45,15 +46,29 @@ fun rememberFreetimeDarkTheme(
     lightHour: Int = 7,
 ): Boolean {
     val systemDark = isSystemInDarkTheme()
+    val safeDarkHour = darkHour.coerceIn(0, 23)
+    val safeLightHour = lightHour.coerceIn(0, 23)
+    val currentHour by produceState(
+        initialValue = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+        mode,
+        safeDarkHour,
+        safeLightHour,
+    ) {
+        if (mode != FreetimeThemeMode.AUTO_TIME) return@produceState
+        while (true) {
+            value = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+            delay(60_000L)
+        }
+    }
+
     return when (mode) {
         FreetimeThemeMode.SYSTEM -> systemDark
         FreetimeThemeMode.LIGHT -> false
         FreetimeThemeMode.DARK, FreetimeThemeMode.OLED -> true
         FreetimeThemeMode.AUTO_TIME -> {
-            val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-            if (darkHour == lightHour) systemDark
-            else if (darkHour > lightHour) hour >= darkHour || hour < lightHour
-            else hour in darkHour until lightHour
+            if (safeDarkHour == safeLightHour) systemDark
+            else if (safeDarkHour > safeLightHour) currentHour >= safeDarkHour || currentHour < safeLightHour
+            else currentHour in safeDarkHour until safeLightHour
         }
     }
 }
