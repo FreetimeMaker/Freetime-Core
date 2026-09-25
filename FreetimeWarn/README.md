@@ -1,6 +1,8 @@
 # FreetimeWarn
 
-A Kotlin/Jetpack Compose warning library inspired by FreeDroidWarn, using Freetime Design instead of Android/Material dialogs.
+A Kotlin/Jetpack Compose warning library inspired by FreeDroidWarn.
+
+The UI now uses Material 3 directly; it no longer depends on the removed Freetime-prefixed Design component wrappers.
 
 The warning mechanism is intentionally separate from the warning text. Platform policies can change, so apps can replace the copy without replacing the persistence/UI implementation.
 

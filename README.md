@@ -2,16 +2,16 @@
 
 Shared, open-source Android libraries for Freetime Maker apps. Freetime Core keeps common application infrastructure reusable while every consuming app remains independently installable and usable.
 
-Current release line: **1.10.x**
+Current release line: **1.11.x**
 
 ## Modules
 
 | Artifact | Purpose |
 | --- | --- |
 | `Core` | Common models, results and lightweight Android utilities |
-| `Design` | Standalone Freetime UI system with Liquid Glass, theme tokens and reusable Compose controls |
+| `Design` | Material 3 / Material You theme helpers and reusable Liquid Glass |
 | `Browser` | External/in-app URL routing |
-| `Donations` | Reusable donation models and Compose UI based on Freetime Design |
+| `Donations` | Reusable donation models and Material 3 Compose UI |
 
 ## Dependency
 
@@ -19,34 +19,38 @@ Add the repository used by your release distribution, then include only the modu
 
 ```kotlin
 dependencies {
-    implementation("com.github.FreetimeMaker.Freetime-Core:Core:1.10.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.10.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:1.10.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.10.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Core:1.11.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.11.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:1.11.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.11.0")
 }
 ```
 
-## Freetime Design
+## Design
 
-`Design` is its own Compose design system. It does not use Material 3 as its UI foundation. It is built from Compose UI/Foundation, Freetime theme tokens and Kyant Backdrop/Shapes.
+The Design module no longer ships a parallel Freetime-prefixed component system. Use Material 3 directly.
 
 ```kotlin
-FreetimeTheme {
-    FreetimeGlassRoot {
+AppTheme(
+    liquidGlassEnabled = true,
+) {
+    LiquidGlassRoot {
         AppContent()
     }
 }
 ```
 
-The public design API includes Freetime palette, typography, shapes, spacing, sizing, motion and glass tokens plus reusable controls such as:
+`AppTheme` enables Material You dynamic colors on Android 12+, defaults to light from 07:00 and dark from 19:00, and provides one global Liquid Glass flag.
 
-- `FreetimeButton`, `FreetimeIconButton`, `FreetimeCard`
-- `FreetimeTopBar`, `FreetimeBottomBar`, `FreetimeAdaptiveBottomBar`
-- `FreetimeTextField`, `FreetimeSwitch`, `FreetimeSlider`
-- `FreetimeChip`, `FreetimeDialog`, `FreetimeSnackbar`, `FreetimeProgressIndicator`
-- `FreetimeGlassPanel`, `FreetimeGlassAction` and Liquid Glass modifiers
+Liquid Glass is exposed as reusable effect primitives:
 
-The glass engine uses Kyant Backdrop where supported and a translucent Freetime fallback otherwise. Its backdrop is separated from foreground glass content to avoid rendering feedback loops.
+- `Modifier.liquidGlass()`
+- `Modifier.liquidGlassCapsule()`
+- `Modifier.liquidGlassCircle()`
+- `LiquidGlassContainer`
+- `LiquidGlassIconButton`
+
+The glass renderer follows the same shared-setting architecture and core optical recipe as SimpMusic. Turning Liquid Glass off globally automatically changes every glass surface to a Material 3 fallback without requiring per-screen branching.
 
 ## Browser
 
@@ -80,7 +84,7 @@ The library version is defined once in `gradle/libs.versions.toml`:
 freetime = "1.11.0"
 ```
 
-Freetime Core follows semantic versioning: patch releases fix compatible behavior, minor releases add compatible public functionality, and major releases are reserved for breaking public API changes.
+Freetime Core follows semantic versioning. Removing the old Freetime-prefixed Design API is a breaking API change and should be released on a major version before consumers migrate.
 
 See [CHANGELOG.md](CHANGELOG.md) for the project history.
 
@@ -90,7 +94,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the project history.
 2. No mandatory Freetime account or Luma Store dependency.
 3. Dependencies remain open-source and F-Droid-friendly.
 4. Shared infrastructure uses interfaces/callbacks instead of hard-coded backends.
-5. Freetime Design owns its palette, typography, shapes, motion and components rather than depending on Material 3 UI components.
+5. Material 3 is the UI foundation; Liquid Glass remains a focused reusable effect layer rather than a second component framework.
 
 ## License
 

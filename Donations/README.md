@@ -1,11 +1,11 @@
 # Freetime Donations
 
-Reusable Compose donation UI built on Freetime Design.
+Reusable Compose donation UI built with Material 3 and the Design module's optional Liquid Glass effect.
 
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.10.0")
+implementation("com.github.FreetimeMaker.Freetime-Core:Donations:1.11.0")
 ```
 
 The module uses Core, Design and Browser.
@@ -40,6 +40,4 @@ FreetimeDonationScreen(
 )
 ```
 
-The host app owns the actions, so it can respect its browser preference and decide whether a wallet click copies, displays or otherwise handles the address.
-
-The screen uses Freetime Design and Liquid Glass for its UI. Readable light/dark colors now come from Freetime's own palette and typography rather than Material 3 theme colors.
+The host app owns all actions. The screen uses Material 3 components; cards and action surfaces automatically follow the global `LocalLiquidGlassEnabled` value when hosted under `AppTheme` or `ProvideLiquidGlass`.

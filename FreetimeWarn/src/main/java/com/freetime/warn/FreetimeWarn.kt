@@ -3,37 +3,23 @@ package com.freetime.warn
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
-import com.freetime.design.FreetimeButton
-import com.freetime.design.FreetimeDesign
-import com.freetime.design.FreetimeDialog
-import com.freetime.design.FreetimeText
 
-/**
- * Controls how often a warning is shown.
- */
 enum class FreetimeWarnFrequency {
-    /** Show until the user acknowledges the warning. */
     ONCE,
-
-    /** Show once for every app version code. */
     ONCE_PER_VERSION,
-
-    /** Let the host decide when to show it; no acknowledgement is persisted. */
     ALWAYS,
 }
 
-/**
- * Content displayed by [FreetimeWarnDialog].
- *
- * The app name is intentionally not part of this model. It is a mandatory
- * argument of the public API so integrations cannot accidentally omit it.
- */
 data class FreetimeWarnContent(
     val title: String = "Important information",
     val message: (appName: String) -> String = { appName ->
@@ -44,11 +30,6 @@ data class FreetimeWarnContent(
     val acknowledgeLabel: String = "I understand",
 )
 
-/**
- * Persistent state for a Freetime warning.
- *
- * [appName] is mandatory and has no default value by design.
- */
 class FreetimeWarnState internal constructor(
     context: Context,
     val appName: String,
@@ -70,7 +51,8 @@ class FreetimeWarnState internal constructor(
     private fun shouldShow(): Boolean = when (frequency) {
         FreetimeWarnFrequency.ALWAYS -> true
         FreetimeWarnFrequency.ONCE -> !preferences.getBoolean(key, false)
-        FreetimeWarnFrequency.ONCE_PER_VERSION -> preferences.getLong(key, Long.MIN_VALUE) != versionCode
+        FreetimeWarnFrequency.ONCE_PER_VERSION ->
+            preferences.getLong(key, Long.MIN_VALUE) != versionCode
     }
 
     fun show() {
@@ -84,8 +66,10 @@ class FreetimeWarnState internal constructor(
     fun acknowledge() {
         when (frequency) {
             FreetimeWarnFrequency.ALWAYS -> Unit
-            FreetimeWarnFrequency.ONCE -> preferences.edit().putBoolean(key, true).apply()
-            FreetimeWarnFrequency.ONCE_PER_VERSION -> preferences.edit().putLong(key, versionCode).apply()
+            FreetimeWarnFrequency.ONCE ->
+                preferences.edit().putBoolean(key, true).apply()
+            FreetimeWarnFrequency.ONCE_PER_VERSION ->
+                preferences.edit().putLong(key, versionCode).apply()
         }
         visible = false
     }
@@ -96,12 +80,6 @@ class FreetimeWarnState internal constructor(
     }
 }
 
-/**
- * Creates persistent warning state.
- *
- * There is deliberately no default for [appName]. Every integrating developer
- * must provide the real user-facing application name.
- */
 @Composable
 fun rememberFreetimeWarnState(
     context: Context,
@@ -122,13 +100,6 @@ fun rememberFreetimeWarnState(
     }
 }
 
-/**
- * Freetime Design based warning dialog.
- *
- * [appName] is mandatory even when a custom [content] object is supplied.
- * The host owns navigation for [onLearnMore], keeping this library independent
- * from a particular browser or website.
- */
 @Composable
 fun FreetimeWarnDialog(
     appName: String,
@@ -141,41 +112,40 @@ fun FreetimeWarnDialog(
     require(appName.isNotBlank()) { "FreetimeWarn requires a non-blank appName." }
     if (!visible) return
 
-    FreetimeDialog(
-        title = content.title,
+    AlertDialog(
         onDismissRequest = onDismissRequest,
-        content = {
+        title = { Text(content.title) },
+        text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                FreetimeText(
+                Text(
                     text = content.message(appName.trim()),
-                    style = FreetimeDesign.typography.bodyMedium,
-                    color = FreetimeDesign.colors.contentMuted,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                FreetimeText(
+                Text(
                     text = "App: ${appName.trim()}",
-                    style = FreetimeDesign.typography.labelMedium,
-                    color = FreetimeDesign.colors.contentStrong,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
         },
-        actions = {
-            if (onLearnMore != null) {
-                FreetimeButton(
-                    text = content.detailsLabel,
-                    onClick = onLearnMore,
-                )
+        dismissButton = if (onLearnMore != null) {
+            {
+                TextButton(onClick = onLearnMore) {
+                    Text(content.detailsLabel)
+                }
             }
-            FreetimeButton(
-                text = content.acknowledgeLabel,
-                onClick = onAcknowledge,
-            )
+        } else {
+            null
+        },
+        confirmButton = {
+            TextButton(onClick = onAcknowledge) {
+                Text(content.acknowledgeLabel)
+            }
         },
     )
 }
 
-/**
- * Convenience wrapper that wires [FreetimeWarnState] to [FreetimeWarnDialog].
- */
 @Composable
 fun FreetimeWarn(
     state: FreetimeWarnState,

@@ -1,10 +1,14 @@
 ## Unreleased
 
-- Switched Freetime Design back to Material 3 as the UI foundation while retaining Liquid Glass as a reusable transparent surface layer.
-- Added Material You dynamic colors by default on Android 12+ with standard Material 3 fallback schemes on older Android versions.
-- Changed the default Freetime app theme mode to time-based theming: light from 07:00 and dark from 19:00, including live refresh while the app remains open.
-- Backed core Freetime controls such as buttons, cards, icon buttons, switches, text fields, snackbars, sliders and progress indicators with Material 3 components.
-- Exposed Material 3 color schemes, typography and shapes through `FreetimeDesign` while keeping legacy Freetime theme accessors for compatibility.
+### Design
+
+- Removed the legacy Freetime-prefixed Design API, including custom buttons, cards, typography, shapes, spacing, layout, settings, picker, feedback and scaffold wrappers.
+- Reduced the Design module to Material 3 / Material You theming plus reusable Liquid Glass primitives.
+- Added `AppTheme`, `ThemeMode`, `LocalIsDarkTheme` and the global `LocalLiquidGlassEnabled` setting.
+- Matched the shared Liquid Glass recipe to SimpMusic's current implementation: 1.5 saturation, 0.05 brightness, adaptive 2–16dp blur, half-height refraction, 0.12–0.50 scrim, pointer glow and spring press bulge.
+- Made the shared `liquidGlass` primitive own the on/off behavior globally. Disabled glass now automatically falls back to Material 3 `surfaceContainerHighest` at 80% opacity.
+- Kept automatic theming with light from 07:00 and dark from 19:00, plus Material You dynamic colors on Android 12+.
+- Migrated Browser, Donations, FreetimeWarn and the Sample app away from the removed Design wrappers and onto Material 3.
 
 # Changelog
 

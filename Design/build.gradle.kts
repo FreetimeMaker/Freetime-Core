@@ -19,7 +19,6 @@ android {
     }
 }
 dependencies {
-    api(project(":Core"))
     implementation(platform(libs.androidx.compose.bom))
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.foundation)

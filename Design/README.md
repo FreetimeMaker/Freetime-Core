@@ -1,120 +1,103 @@
-# Freetime Design
+# Design
 
-Freetime's Material 3 / Material You Compose UI layer with reusable Liquid Glass.
+The Freetime Core Design module is now a thin **Material 3 / Material You + Liquid Glass** layer.
 
-Material 3 is the UI foundation again. `FreetimeTheme` installs `MaterialTheme`, uses Material You dynamic colors on Android 12+ by default, keeps Freetime Liquid Glass as a reusable modifier/component layer, and preserves the older Freetime token APIs as a compatibility bridge for existing apps.
+The old Freetime-prefixed design system has been removed. There are no custom `FreetimeButton`, `FreetimeCard`, `FreetimeTheme`, `FreetimeDesign`, typography, shape, spacing or layout wrappers anymore. Use Material 3 directly and apply Liquid Glass only where it improves the surface.
 
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.10.0")
+implementation("com.github.FreetimeMaker.Freetime-Core:Design:1.11.0")
 ```
 
 ## Theme
 
 ```kotlin
-FreetimeTheme {
-    FreetimeGlassRoot {
+AppTheme {
+    AppContent()
+}
+```
+
+`AppTheme` uses Material You dynamic colors on Android 12+ and regular Material 3 schemes below Android 12.
+
+The default time mode is:
+
+- light from **07:00**
+- dark from **19:00**
+
+You can still select `SYSTEM`, `LIGHT`, `DARK`, `OLED` or `AUTO_TIME`.
+
+## Global Liquid Glass setting
+
+Liquid Glass follows the same architecture as SimpMusic: one boolean is provided at the app theme and every glass surface reads it from the shared composition local.
+
+```kotlin
+AppTheme(
+    liquidGlassEnabled = settings.liquidGlassEnabled,
+) {
+    LiquidGlassRoot {
         AppContent()
     }
 }
 ```
 
-`FreetimeTheme` now uses Material 3 as the source of truth. Access `MaterialTheme.colorScheme`, `MaterialTheme.typography` and `MaterialTheme.shapes` directly, or use `FreetimeDesign.colorScheme`, `FreetimeDesign.materialTypography` and `FreetimeDesign.materialShapes`. The older Freetime palette/typography accessors remain available for source compatibility.
+The global value is available as `LocalLiquidGlassEnabled`. Apps that already own their Material theme can use:
 
 ```kotlin
-val spacing = FreetimeDesign.spacing.lg
-val title = MaterialTheme.typography.titleLarge
-val foreground = MaterialTheme.colorScheme.onSurface
+ProvideLiquidGlass(enabled = settings.liquidGlassEnabled) {
+    AppContent()
+}
 ```
 
-## Liquid Glass
+When the setting is disabled, `Modifier.liquidGlass()` automatically keeps the same shape and switches to a flat Material 3 `surfaceContainerHighest` fallback at 80% opacity. Call sites do not need their own `if (liquidGlassEnabled)` branches.
 
-The glass engine is based on Compose UI/Foundation plus Kyant Backdrop and Shapes. The default glass recipe uses a transparent surface, backdrop blur, increased saturation, subtle brightness, highlights and interactive press scaling.
+## Glass optics
 
-Where a sampled backdrop is unavailable, Freetime Design falls back to its own translucent light/dark glass surface instead of a Material surface.
+The shared recipe follows SimpMusic's current Liquid Glass behavior:
 
-Keep the backdrop source and foreground glass content separated:
+- backdrop vibrancy
+- saturation **1.5**
+- brightness **0.05**
+- adaptive blur from **2dp to 16dp**, centered around 8dp
+- refraction up to half the surface height
+- adaptive surface scrim from **0.12 to 0.50**
+- press glow following the pointer
+- spring press interaction
+- **1.12x** press bulge for compact controls
+- **1.04x** press bulge for wide surfaces
+
+## Usage
+
+Keep the sampled source and glass foreground separate:
 
 ```kotlin
-FreetimeGlassRoot {
-    FreetimeCard {
-        // Content
+LiquidGlassRoot(
+    source = {
+        ArtworkOrGradient()
+    },
+) {
+    Button(
+        onClick = ::continueFlow,
+        modifier = Modifier.liquidGlassCapsule(),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+        ),
+    ) {
+        Text("Continue")
     }
 }
 ```
 
-Available modifiers include:
+Available primitives:
 
 ```kotlin
-Modifier.freetimeGlass()
-Modifier.freetimeGlass(shape = FreetimeDesign.shapes.surface)
-Modifier.freetimeGlassCapsule()
+Modifier.liquidGlass()
+Modifier.liquidGlassCapsule()
+Modifier.liquidGlassCircle()
+LiquidGlassContainer(...)
+LiquidGlassIconButton(...)
+rememberLiquidGlassBackdrop()
+Modifier.liquidGlassSource(...)
 ```
 
-Use `interactive = false` for non-clickable surfaces.
-
-## Components
-
-The module provides reusable Freetime-native controls:
-
-```kotlin
-FreetimeButton("Continue", onClick = ::continueFlow)
-
-FreetimeCard {
-    // Content
-}
-
-FreetimeTextField(
-    value = query,
-    onValueChange = { query = it },
-    placeholder = "Search",
-)
-
-FreetimeSwitch(
-    checked = enabled,
-    onCheckedChange = { enabled = it },
-)
-```
-
-Navigation components include `FreetimeTopBar`, `FreetimeNavigationItem`, `FreetimeBottomBar` and `FreetimeAdaptiveBottomBar`. Other controls include `FreetimeIconButton`, `FreetimeChip`, `FreetimeDialog`, `FreetimeSnackbar`, `FreetimeProgressIndicator` and `FreetimeSlider`.
-
-Legacy `FreetimeGlassDepth` and `FreetimeDesignTokens` APIs remain temporarily available but are deprecated in favor of the typed `FreetimeDesign` token API.
-
-## Material 3 and Material You
-
-The `Design` module directly exposes Material 3. Core controls such as buttons, cards, switches, text fields, snackbars, sliders and progress indicators are backed by Material 3 while Liquid Glass is applied as the transparent visual surface where appropriate.
-
-Dynamic Material You colors are enabled by default on Android 12 and newer. Devices below Android 12 use the standard Material 3 light/dark color schemes.
-
-`FreetimeApp()` defaults to `AUTO_TIME`: light mode starts at **07:00** and dark mode starts at **19:00**. The time state is refreshed while the app stays open, and the hours can still be overridden through `FreetimeAppConfig` or persisted Freetime preferences.
-
-
-## App-level building blocks
-
-Common patterns found across GeoWeather, Luma Store and SuperSMP Companion are available as reusable Freetime components:
-
-- `FreetimeText` — Freetime typography and palette-aware text.
-- `FreetimeScreen` — lightweight top/content/bottom screen structure without Material Scaffold.
-- `FreetimeSectionHeader` — title/subtitle header with an optional trailing slot.
-- `FreetimeListItem` — reusable leading/content/trailing list row.
-- `FreetimeOptionGroup` — settings and filter choices backed by Freetime choice rows.
-- `FreetimeStatusBanner` — offline, cached-data, warning and informational state surface.
-- `FreetimeEmptyState`, `FreetimeLoadingState`, `FreetimeErrorState` — consistent screen states.
-- `FreetimeDivider` and `FreetimeBadge` — lightweight supporting primitives.
-- `FreetimeInfoCard` — titled glass card for information and dashboard sections.
-
-All higher-level components expose generic data or composable slots rather than depending on GeoWeather, Luma Store, SuperSMP, Navigation Compose or Material Icons.
-
-
-## Layout and adaptive navigation
-
-Version **1.9.0** adds Freetime-native layout primitives that avoid Material Scaffold:
-
-- `FreetimeScaffold` for top/content/bottom/FAB screen structure.
-- `FreetimeTabRow` with a Liquid Glass selection surface.
-- `FreetimeFloatingActionButton` and `FreetimeExtendedFloatingActionButton`.
-- `FreetimeBottomSheet` for floating sheet content.
-- `FreetimeAdaptiveNavigation` to switch between bottom navigation and a navigation rail at a configurable width.
-- `FreetimeNavigationRail` for larger screens.
-- `FreetimePopupMenu` and `FreetimeMenuItem` for Material-free glass menus.
+Use Material 3 for buttons, cards, text fields, navigation, dialogs, switches, sliders and every other normal UI component. Liquid Glass is an effect layer, not a second design system.
