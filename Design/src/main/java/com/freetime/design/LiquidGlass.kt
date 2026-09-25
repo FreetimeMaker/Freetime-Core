@@ -264,20 +264,20 @@ private fun rememberGlassInteraction(): GlassInteraction {
  * vibrancy + 1.5 saturation, 0.05 brightness, adaptive 2..16dp blur,
  * half-height refraction, 0.12..0.50 scrim and press-to-bulge interaction.
  */
-fun Modifier.drawInteractiveGlass(
+private fun Modifier.drawInteractiveGlass(
     isDark: Boolean,
     backdrop: LayerBackdrop,
     layer: GraphicsLayer,
     luminanceAnimation: Float,
     shape: Shape,
-    interaction: Any?,
+    interaction: GlassInteraction?,
     pressedScale: Float = 1.12f,
     highlight: Highlight = Highlight.Default,
     blurScale: Float = 1f,
     minScrim: Float = 0.12f,
     maxScrim: Float = 0.5f,
 ): Modifier {
-    val glassInteraction = interaction as? GlassInteraction
+    val glassInteraction = interaction
 
     return drawBackdrop(
         backdrop = backdrop,
