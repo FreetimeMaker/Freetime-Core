@@ -3,6 +3,10 @@ package com.freetime.design
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
+import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -49,6 +53,9 @@ val LocalFreetimeDesignColors = staticCompositionLocalOf {
 }
 
 object FreetimeDesign {
+    val colorScheme: ColorScheme @Composable get() = MaterialTheme.colorScheme
+    val materialTypography: Typography @Composable get() = MaterialTheme.typography
+    val materialShapes: Shapes @Composable get() = MaterialTheme.shapes
     val glass: FreetimeGlassTokens @Composable get() = LocalFreetimeGlassTokens.current
     val colors: FreetimeDesignColors @Composable get() = LocalFreetimeDesignColors.current
     val spacing: FreetimeSpacing @Composable get() = LocalFreetimeSpacing.current
