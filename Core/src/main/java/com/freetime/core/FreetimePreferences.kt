@@ -7,7 +7,7 @@ enum class FreetimeStoredThemeMode { SYSTEM, LIGHT, DARK, OLED, AUTO_TIME }
 enum class FreetimeStoredBrowserMode { EXTERNAL, IN_APP }
 
 data class FreetimePreferencesState(
-    val themeMode: FreetimeStoredThemeMode = FreetimeStoredThemeMode.SYSTEM,
+    val themeMode: FreetimeStoredThemeMode = FreetimeStoredThemeMode.AUTO_TIME,
     val browserMode: FreetimeStoredBrowserMode = FreetimeStoredBrowserMode.EXTERNAL,
     val darkHour: Int = 19,
     val lightHour: Int = 7,
@@ -21,7 +21,7 @@ class FreetimePreferences private constructor(
     private val preferences: SharedPreferences,
 ) {
     fun read(): FreetimePreferencesState = FreetimePreferencesState(
-        themeMode = enumValueOrDefault(preferences.getString(KEY_THEME, null), FreetimeStoredThemeMode.SYSTEM),
+        themeMode = enumValueOrDefault(preferences.getString(KEY_THEME, null), FreetimeStoredThemeMode.AUTO_TIME),
         browserMode = enumValueOrDefault(preferences.getString(KEY_BROWSER, null), FreetimeStoredBrowserMode.EXTERNAL),
         darkHour = preferences.getInt(KEY_DARK_HOUR, 19).coerceIn(0, 23),
         lightHour = preferences.getInt(KEY_LIGHT_HOUR, 7).coerceIn(0, 23),
