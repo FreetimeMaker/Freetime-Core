@@ -40,15 +40,15 @@ One boolean controls the bottom-navigation effect:
 
 ```kotlin
 AppTheme(
-    liquidGlassEnabled = settings.liquidGlassEnabled,
+    floatingBottomNavigationGlassEnabled = settings.floatingBottomNavigationGlassEnabled,
 ) {
-    LiquidGlassRoot(
+    FloatingBottomNavigationGlassRoot(
         source = { AppBackground() },
     ) {
         NavigationBar(
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 12.dp)
-                .liquidGlassCapsule(interactive = false),
+                .floatingBottomNavigationGlass(interactive = false),
             containerColor = Color.Transparent,
         ) {
             // NavigationBarItem(...)
@@ -57,12 +57,12 @@ AppTheme(
 }
 ```
 
-The value is available through `LocalLiquidGlassEnabled`.
+The value is available through `LocalFloatingBottomNavigationGlassEnabled`.
 
 Apps that already own their Material theme can provide only the navigation glass setting:
 
 ```kotlin
-ProvideLiquidGlass(enabled = settings.liquidGlassEnabled) {
+ProvideFloatingBottomNavigationGlass(enabled = settings.floatingBottomNavigationGlassEnabled) {
     AppContent()
 }
 ```
@@ -80,6 +80,6 @@ The floating navigation uses the shared SimpMusic-inspired recipe:
 - refraction up to half the surface height
 - adaptive scrim from **0.12 to 0.50**
 
-The low-level Liquid Glass primitives remain available for compatibility, but Freetime Core's supported design pattern applies them only to the floating bottom navigation.
+There are no public generic Liquid Glass modifiers, containers, icon buttons, circle helpers or capsule helpers. The only public glass modifier is `Modifier.floatingBottomNavigationGlass()`.
 
 The module currently pins `androidx.compose.material3:material3:1.5.0-alpha29` for the current Expressive APIs.

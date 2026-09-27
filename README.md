@@ -63,7 +63,7 @@ The Design module no longer provides a second component framework. Use AndroidX 
 ```kotlin
 AppTheme(
     themeMode = ThemeMode.AUTO_TIME,
-    liquidGlassEnabled = true,
+    floatingBottomNavigationGlassEnabled = true,
 ) {
     AppContent()
 }
@@ -85,10 +85,10 @@ The project currently pins `androidx.compose.material3:material3:1.5.0-alpha29` 
 
 Liquid Glass is reserved for the floating bottom navigation. All other UI uses normal Material 3 Expressive surfaces.
 
-Wrap a screen that needs backdrop-aware glass:
+Wrap the app only to provide the backdrop used by the floating bottom navigation:
 
 ```kotlin
-LiquidGlassRoot(
+FloatingBottomNavigationGlassRoot(
     source = {
         AppBackground()
     },
@@ -100,13 +100,13 @@ LiquidGlassRoot(
 Use it on the floating Material 3 navigation bar:
 
 ```kotlin
-LiquidGlassRoot(
+FloatingBottomNavigationGlassRoot(
     source = { AppBackground() },
 ) {
     NavigationBar(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 12.dp)
-            .liquidGlassCapsule(interactive = false),
+            .floatingBottomNavigationGlass(interactive = false),
         containerColor = Color.Transparent,
     ) {
         // NavigationBarItem(...)
@@ -116,12 +116,12 @@ LiquidGlassRoot(
 
 Do not apply Liquid Glass to cards, buttons, text fields, dialogs, top bars or content surfaces. Those should keep the normal Material 3 Expressive appearance.
 
-The global setting is provided through `LocalLiquidGlassEnabled`. When disabled, the floating bottom navigation automatically uses the Material fallback.
+The navigation-only setting is provided through `LocalFloatingBottomNavigationGlassEnabled`. When disabled, the floating bottom navigation automatically uses the Material fallback.
 
 Apps that already own their Material theme can provide only the glass setting:
 
 ```kotlin
-ProvideLiquidGlass(enabled = settings.liquidGlassEnabled) {
+ProvideFloatingBottomNavigationGlass(enabled = settings.floatingBottomNavigationGlassEnabled) {
     AppContent()
 }
 ```

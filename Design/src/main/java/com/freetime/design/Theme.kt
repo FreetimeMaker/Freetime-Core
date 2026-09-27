@@ -29,16 +29,15 @@ enum class ThemeMode {
     AUTO_TIME,
 }
 
-/** Shared by the glass renderer so every surface resolves the same light/dark state. */
+/** Shared by the floating bottom-navigation glass renderer. */
 val LocalIsDarkTheme = staticCompositionLocalOf { true }
 
 /**
- * Global Liquid Glass switch.
+ * Floating bottom-navigation Liquid Glass switch.
  *
- * The app theme provides one boolean for the floating bottom navigation.
- * Other Material 3 Expressive surfaces intentionally remain non-glass.
+ * No other Material 3 Expressive surface reads this value.
  */
-val LocalLiquidGlassEnabled = staticCompositionLocalOf { true }
+val LocalFloatingBottomNavigationGlassEnabled = staticCompositionLocalOf { true }
 
 @Composable
 fun rememberDarkTheme(
@@ -84,7 +83,7 @@ fun rememberDarkTheme(
  * - Material You dynamic colors on Android 12+
  * - light theme from 07:00
  * - dark theme from 19:00
- * - Liquid Glass enabled for the floating bottom navigation
+ * - optional Liquid Glass only for the floating bottom navigation
  */
 @Composable
 fun AppTheme(
@@ -92,7 +91,7 @@ fun AppTheme(
     lightHour: Int = 7,
     darkHour: Int = 19,
     dynamicColor: Boolean = true,
-    liquidGlassEnabled: Boolean = true,
+    floatingBottomNavigationGlassEnabled: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
@@ -120,17 +119,17 @@ fun AppTheme(
     ) {
         CompositionLocalProvider(
             LocalIsDarkTheme provides isDark,
-            LocalLiquidGlassEnabled provides liquidGlassEnabled,
+            LocalFloatingBottomNavigationGlassEnabled provides floatingBottomNavigationGlassEnabled,
             content = content,
         )
     }
 }
 
-/** Use this when an app already owns its MaterialTheme but still wants the bottom-navigation glass toggle. */
+/** Use this when an app owns its MaterialTheme but still wants the floating-nav glass toggle. */
 @Composable
-fun ProvideLiquidGlass(
+fun ProvideFloatingBottomNavigationGlass(
     enabled: Boolean,
     content: @Composable () -> Unit,
 ) {
-    CompositionLocalProvider(LocalLiquidGlassEnabled provides enabled, content = content)
+    CompositionLocalProvider(LocalFloatingBottomNavigationGlassEnabled provides enabled, content = content)
 }

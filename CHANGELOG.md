@@ -8,10 +8,12 @@ The project follows semantic versioning.
 
 ### Design
 
-- Restricted the supported Liquid Glass treatment to the floating bottom navigation.
-- Removed Liquid Glass from Sample top bars, cards, buttons and text fields.
-- Removed Liquid Glass from Donations and dropped Donations' dependency on the Design module.
-- Updated documentation so normal surfaces use Material 3 Expressive and only the floating bottom navigation samples the backdrop.
+- Removed the generic Liquid Glass API surface entirely.
+- Removed `Modifier.liquidGlass()`, `liquidGlassCapsule()`, `liquidGlassCircle()`, `LiquidGlassContainer`, `LiquidGlassIconButton`, public backdrop helpers and the generic `LiquidGlassRoot`.
+- Kept Liquid Glass only for the floating bottom navigation through `FloatingBottomNavigationGlassRoot` and `Modifier.floatingBottomNavigationGlass()`.
+- Renamed the theme/provider state to `LocalFloatingBottomNavigationGlassEnabled`, `floatingBottomNavigationGlassEnabled` and `ProvideFloatingBottomNavigationGlass`.
+- Renamed the stored preference to `floatingBottomNavigationGlassEnabled`.
+- Normal cards, buttons, text fields, dialogs, top bars, donation surfaces and content remain pure Material 3 Expressive.
 
 ## 2.0.0 - 2026-09-25
 

@@ -14,7 +14,7 @@ data class FreetimePreferencesState(
     val reduceMotion: Boolean = false,
     val reduceTransparency: Boolean = false,
     val highContrast: Boolean = false,
-    val liquidGlassEnabled: Boolean = true,
+    val floatingBottomNavigationGlassEnabled: Boolean = true,
 )
 
 class FreetimePreferences private constructor(
@@ -28,7 +28,7 @@ class FreetimePreferences private constructor(
         reduceMotion = preferences.getBoolean(KEY_REDUCE_MOTION, false),
         reduceTransparency = preferences.getBoolean(KEY_REDUCE_TRANSPARENCY, false),
         highContrast = preferences.getBoolean(KEY_HIGH_CONTRAST, false),
-        liquidGlassEnabled = preferences.getBoolean(KEY_LIQUID_GLASS, true),
+        floatingBottomNavigationGlassEnabled = preferences.getBoolean(KEY_FLOATING_BOTTOM_NAVIGATION_GLASS, true),
     )
 
     fun update(transform: (FreetimePreferencesState) -> FreetimePreferencesState): FreetimePreferencesState {
@@ -41,7 +41,7 @@ class FreetimePreferences private constructor(
             .putBoolean(KEY_REDUCE_MOTION, state.reduceMotion)
             .putBoolean(KEY_REDUCE_TRANSPARENCY, state.reduceTransparency)
             .putBoolean(KEY_HIGH_CONTRAST, state.highContrast)
-            .putBoolean(KEY_LIQUID_GLASS, state.liquidGlassEnabled)
+            .putBoolean(KEY_FLOATING_BOTTOM_NAVIGATION_GLASS, state.floatingBottomNavigationGlassEnabled)
             .apply()
         return state
     }
@@ -57,7 +57,7 @@ class FreetimePreferences private constructor(
         private const val KEY_REDUCE_MOTION = "reduce_motion"
         private const val KEY_REDUCE_TRANSPARENCY = "reduce_transparency"
         private const val KEY_HIGH_CONTRAST = "high_contrast"
-        private const val KEY_LIQUID_GLASS = "liquid_glass_enabled"
+        private const val KEY_FLOATING_BOTTOM_NAVIGATION_GLASS = "floating_bottom_navigation_glass_enabled"
 
         fun from(context: Context, name: String = FILE): FreetimePreferences =
             FreetimePreferences(context.applicationContext.getSharedPreferences(name, Context.MODE_PRIVATE))

@@ -51,9 +51,9 @@ import com.freetime.browser.BrowserOptions
 import com.freetime.browser.FreetimeBrowser
 import com.freetime.core.FreetimeCore
 import com.freetime.design.AppTheme
-import com.freetime.design.LiquidGlassRoot
+import com.freetime.design.FloatingBottomNavigationGlassRoot
 import com.freetime.design.ThemeMode
-import com.freetime.design.liquidGlassCapsule
+import com.freetime.design.floatingBottomNavigationGlass
 import com.freetime.donations.DonationTarget
 import com.freetime.donations.FreetimeDonationActions
 import com.freetime.donations.FreetimeDonationScreen
@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun SampleApp() {
-    var liquidGlassEnabled by remember { mutableStateOf(true) }
+    var floatingBottomNavigationGlassEnabled by remember { mutableStateOf(true) }
     var selectedTab by remember { mutableIntStateOf(0) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -81,9 +81,9 @@ private fun SampleApp() {
         themeMode = ThemeMode.AUTO_TIME,
         lightHour = 7,
         darkHour = 19,
-        liquidGlassEnabled = liquidGlassEnabled,
+        floatingBottomNavigationGlassEnabled = floatingBottomNavigationGlassEnabled,
     ) {
-        LiquidGlassRoot(
+        FloatingBottomNavigationGlassRoot(
             modifier = Modifier.fillMaxSize(),
             source = {
                 Box(
@@ -126,7 +126,7 @@ private fun SampleApp() {
                     NavigationBar(
                         modifier = Modifier
                             .padding(horizontal = 16.dp, vertical = 12.dp)
-                            .liquidGlassCapsule(interactive = false),
+                            .floatingBottomNavigationGlass(),
                         containerColor = Color.Transparent,
                     ) {
                         val items = listOf(
@@ -153,8 +153,8 @@ private fun SampleApp() {
                     )
                     1 -> SettingsSample(
                         modifier = Modifier.padding(innerPadding),
-                        liquidGlassEnabled = liquidGlassEnabled,
-                        onLiquidGlassEnabledChange = { liquidGlassEnabled = it },
+                        floatingBottomNavigationGlassEnabled = floatingBottomNavigationGlassEnabled,
+                        onLiquidGlassEnabledChange = { floatingBottomNavigationGlassEnabled = it },
                     )
                     2 -> BrowserSample(
                         modifier = Modifier.padding(innerPadding),
@@ -201,7 +201,7 @@ private fun DesignSample(
     ) {
         Text("Material 3 Expressive", style = MaterialTheme.typography.headlineMedium)
         Text(
-            "Normal surfaces use Material 3 Expressive. Liquid Glass is reserved for the floating bottom navigation.",
+            "Normal surfaces use Material 3 Expressive. Floating nav glass is reserved for the floating bottom navigation.",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
@@ -232,7 +232,7 @@ private fun DesignSample(
 @Composable
 private fun SettingsSample(
     modifier: Modifier,
-    liquidGlassEnabled: Boolean,
+    floatingBottomNavigationGlassEnabled: Boolean,
     onLiquidGlassEnabledChange: (Boolean) -> Unit,
 ) {
     Column(
@@ -252,15 +252,15 @@ private fun SettingsSample(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text("Bottom navigation Liquid Glass", style = MaterialTheme.typography.titleMedium)
+                    Text("Bottom navigation Floating nav glass", style = MaterialTheme.typography.titleMedium)
                     Text(
-                        "Only the floating bottom navigation uses Liquid Glass.",
+                        "Only the floating bottom navigation uses Floating nav glass.",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 Spacer(Modifier.width(16.dp))
                 Switch(
-                    checked = liquidGlassEnabled,
+                    checked = floatingBottomNavigationGlassEnabled,
                     onCheckedChange = onLiquidGlassEnabledChange,
                 )
             }
