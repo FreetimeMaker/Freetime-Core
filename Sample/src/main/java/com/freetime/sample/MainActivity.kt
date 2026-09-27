@@ -26,8 +26,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -53,7 +51,8 @@ import com.freetime.core.FreetimeCore
 import com.freetime.design.AppTheme
 import com.freetime.design.FloatingBottomNavigationGlassRoot
 import com.freetime.design.ThemeMode
-import com.freetime.design.floatingBottomNavigationGlass
+import com.freetime.design.FloatingBottomNavigationBar
+import com.freetime.design.FloatingBottomNavigationItem
 import com.freetime.donations.DonationTarget
 import com.freetime.donations.FreetimeDonationActions
 import com.freetime.donations.FreetimeDonationScreen
@@ -123,27 +122,43 @@ private fun SampleApp() {
                     }
                 },
                 bottomBar = {
-                    NavigationBar(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp, vertical = 12.dp)
-                            .floatingBottomNavigationGlass(),
-                        containerColor = Color.Transparent,
-                    ) {
-                        val items = listOf(
-                            Triple("Design", Icons.Default.Home, 0),
-                            Triple("Settings", Icons.Default.Settings, 1),
-                            Triple("Browser", Icons.Default.Search, 2),
-                            Triple("Donate", Icons.Default.Add, 3),
-                        )
-                        items.forEach { (label, icon, index) ->
-                            NavigationBarItem(
-                                selected = selectedTab == index,
-                                onClick = { selectedTab = index },
-                                icon = { Icon(icon, contentDescription = label) },
-                                label = { Text(label) },
-                            )
-                        }
-                    }
+                    val barItems = listOf(
+                        FloatingBottomNavigationItem(
+                            label = "Design",
+                            icon = { Icon(Icons.Default.Home, contentDescription = "Design") },
+                        ),
+                        FloatingBottomNavigationItem(
+                            label = "Settings",
+                            icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
+                        ),
+                        FloatingBottomNavigationItem(
+                            label = "Donate",
+                            icon = { Icon(Icons.Default.Add, contentDescription = "Donate") },
+                        ),
+                    )
+
+                    FloatingBottomNavigationBar(
+                        items = barItems,
+                        selectedItemIndex = when (selectedTab) {
+                            0 -> 0
+                            1 -> 1
+                            3 -> 2
+                            else -> 0
+                        },
+                        onItemSelected = { position ->
+                            selectedTab = when (position) {
+                                0 -> 0
+                                1 -> 1
+                                else -> 3
+                            }
+                        },
+                        searchItem = FloatingBottomNavigationItem(
+                            label = "Browser",
+                            icon = { Icon(Icons.Default.Search, contentDescription = "Browser") },
+                        ),
+                        searchSelected = selectedTab == 2,
+                        onSearchSelected = { selectedTab = 2 },
+                    )
                 },
             ) { innerPadding ->
                 when (selectedTab) {

@@ -97,24 +97,23 @@ FloatingBottomNavigationGlassRoot(
 }
 ```
 
-Use it on the floating Material 3 navigation bar:
+Use the dedicated floating bar:
 
 ```kotlin
 FloatingBottomNavigationGlassRoot(
     source = { AppBackground() },
 ) {
-    NavigationBar(
-        modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-            .floatingBottomNavigationGlass(interactive = false),
-        containerColor = Color.Transparent,
-    ) {
-        // NavigationBarItem(...)
-    }
+    FloatingBottomNavigationBar(
+        items = tabs,
+        selectedItemIndex = selectedIndex,
+        onItemSelected = { selectedIndex = it },
+        searchItem = searchItem,
+        onSearchSelected = ::openSearch,
+    )
 }
 ```
 
-Do not apply Liquid Glass to cards, buttons, text fields, dialogs, top bars or content surfaces. Those should keep the normal Material 3 Expressive appearance.
+Its layout mirrors SimpMusic's Android bar: 64dp capsule, 56dp sliding frosted selection pill, up-to-96dp tabs, 6dp inset, 12dp gap and a separate 56dp circular search button. Do not apply Liquid Glass to cards, buttons, text fields, dialogs, top bars or content surfaces. Those should keep the normal Material 3 Expressive appearance.
 
 The navigation-only setting is provided through `LocalFloatingBottomNavigationGlassEnabled`. When disabled, the floating bottom navigation automatically uses the Material fallback.
 

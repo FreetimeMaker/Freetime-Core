@@ -10,9 +10,10 @@ The project follows semantic versioning.
 
 - Removed the generic Liquid Glass API surface entirely.
 - Removed `Modifier.liquidGlass()`, `liquidGlassCapsule()`, `liquidGlassCircle()`, `LiquidGlassContainer`, `LiquidGlassIconButton`, public backdrop helpers and the generic `LiquidGlassRoot`.
-- Kept Liquid Glass only for the floating bottom navigation through `FloatingBottomNavigationGlassRoot` and `Modifier.floatingBottomNavigationGlass()`.
+- Kept Liquid Glass only for the floating bottom navigation through `FloatingBottomNavigationGlassRoot` and the dedicated `FloatingBottomNavigationBar`.
 - Renamed the theme/provider state to `LocalFloatingBottomNavigationGlassEnabled`, `floatingBottomNavigationGlassEnabled` and `ProvideFloatingBottomNavigationGlass`.
 - Renamed the stored preference to `floatingBottomNavigationGlassEnabled`.
+- Restyled the floating bar to match SimpMusic's current Android layout: 64dp capsule, 56dp sliding frosted indicator, 96dp tab cap, 6dp inset, 12dp gap, separate 56dp search button, adaptive luminance sampling and spring drag/press motion.
 - Normal cards, buttons, text fields, dialogs, top bars, donation surfaces and content remain pure Material 3 Expressive.
 
 ## 2.0.0 - 2026-09-25
