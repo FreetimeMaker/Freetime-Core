@@ -371,6 +371,7 @@ private fun FloatingNavigationCapsule(
                             if (dragging && delta != 0f) {
                                 change.consume()
                                 motion.dragBy(
+                                    scope = scope,
                                     deltaPx = delta,
                                     tabWidthPx = tabWidthPx,
                                     direction = if (ltr) 1f else -1f,
@@ -538,6 +539,7 @@ private fun Modifier.navigationGlass(
     )
 }
 
+@Composable
 private fun Modifier.selectionGlass(
     enabled: Boolean,
     isDark: Boolean,
@@ -711,7 +713,8 @@ private class NavigationIndicatorMotion(
     val scale: Float
         get() = scaleAnimation.value
 
-    suspend fun dragBy(
+    fun dragBy(
+        scope: kotlinx.coroutines.CoroutineScope,
         deltaPx: Float,
         tabWidthPx: Float,
         direction: Float,
@@ -719,9 +722,11 @@ private class NavigationIndicatorMotion(
         if (tabWidthPx <= 0f) return
         val deltaTabs = deltaPx / tabWidthPx * direction
         velocity = deltaTabs * 10f
-        positionAnimation.snapTo(
-            (positionAnimation.value + deltaTabs).coerceIn(0f, maxIndex.toFloat()),
-        )
+        val target = (positionAnimation.value + deltaTabs)
+            .coerceIn(0f, maxIndex.toFloat())
+        scope.launch {
+            positionAnimation.snapTo(target)
+        }
     }
 
     fun nearestIndex(): Int =
