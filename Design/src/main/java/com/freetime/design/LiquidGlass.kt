@@ -306,6 +306,8 @@ private fun FloatingNavigationCapsule(
 
         Box(
             modifier = Modifier
+                .width(tabWidth)
+                .height(NavigationIndicatorHeight)
                 .graphicsLayer {
                     val value = if (ltr) motion.position else (count - 1) - motion.position
                     translationX = value * tabWidthPx + insetPx
@@ -313,6 +315,12 @@ private fun FloatingNavigationCapsule(
                     val velocityWarp = (indicatorVelocity / 10f).coerceIn(-0.2f, 0.2f)
                     scaleX = motion.scale / (1f - velocityWarp * 0.75f)
                     scaleY = motion.scale * (1f - velocityWarp * 0.25f)
+
+                    // Keep the composited selection layer capsule-shaped while it
+                    // scales and stretches. Without this, Android can expose the
+                    // rectangular offscreen layer as a grey square.
+                    shape = NavigationCapsuleShape
+                    clip = true
                 }
                 .selectionGlass(
                     enabled = glassEnabled,
@@ -320,9 +328,7 @@ private fun FloatingNavigationCapsule(
                     backdrop = backdrop,
                     luminance = luminance,
                     pressProgress = indicatorPress,
-                )
-                .width(tabWidth)
-                .height(NavigationIndicatorHeight),
+                ),
         )
 
         Row(
@@ -544,7 +550,8 @@ private fun Modifier.selectionGlass(
             .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.88f))
     }
 
-    return drawBackdrop(
+    return clip(NavigationCapsuleShape)
+        .drawBackdrop(
         backdrop = backdrop,
         shape = { NavigationCapsuleShape },
         effects = {
