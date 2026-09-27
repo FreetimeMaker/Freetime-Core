@@ -6,15 +6,55 @@ The project follows semantic versioning.
 
 ## Unreleased
 
-### Design
+No unreleased changes yet.
 
-- Removed the generic Liquid Glass API surface entirely.
-- Removed `Modifier.liquidGlass()`, `liquidGlassCapsule()`, `liquidGlassCircle()`, `LiquidGlassContainer`, `LiquidGlassIconButton`, public backdrop helpers and the generic `LiquidGlassRoot`.
-- Kept Liquid Glass only for the floating bottom navigation through `FloatingBottomNavigationGlassRoot` and the dedicated `FloatingBottomNavigationBar`.
-- Renamed the theme/provider state to `LocalFloatingBottomNavigationGlassEnabled`, `floatingBottomNavigationGlassEnabled` and `ProvideFloatingBottomNavigationGlass`.
-- Renamed the stored preference to `floatingBottomNavigationGlassEnabled`.
-- Restyled the floating bar to match SimpMusic's current Android layout: 64dp capsule, 56dp sliding frosted indicator, 96dp tab cap, 6dp inset, 12dp gap, separate 56dp search button, adaptive luminance sampling and spring drag/press motion.
-- Normal cards, buttons, text fields, dialogs, top bars, donation surfaces and content remain pure Material 3 Expressive.
+## 3.0.0 - 2026-09-27
+
+### Breaking Design API
+
+- Removed the generic Liquid Glass API surface introduced in 2.0.0.
+- Removed `Modifier.liquidGlass()`, `liquidGlassCapsule()`, `liquidGlassCircle()`, `LiquidGlassContainer`, `LiquidGlassIconButton`, public generic backdrop helpers and the generic `LiquidGlassRoot`.
+- Replaced the global glass API with navigation-specific `LocalFloatingBottomNavigationGlassEnabled`, `floatingBottomNavigationGlassEnabled` and `ProvideFloatingBottomNavigationGlass`.
+- Renamed the stored glass preference to `floatingBottomNavigationGlassEnabled`.
+- Liquid Glass is now supported only by the floating bottom navigation; other surfaces remain Material 3 Expressive.
+
+### Floating bottom navigation
+
+- Added the dedicated `FloatingBottomNavigationBar` and `FloatingBottomNavigationItem` APIs.
+- Added `FloatingBottomNavigationGlassRoot` as the navbar-only backdrop host.
+- Matched the current SimpMusic Android geometry: 64dp capsule, 56dp sliding frosted selection indicator, tabs capped at 96dp, 6dp inset, 12dp gap and a separate 56dp circular search action.
+- Added adaptive backdrop luminance sampling for blur and scrim behavior.
+- Added draggable selection with spring scale, squash/stretch and snap-to-tab behavior.
+- Added navbar-only Material fallback when Liquid Glass is disabled.
+- Fixed a grey rectangular selection artifact by enforcing capsule clipping on the composited selection layer.
+
+### Material 3 Expressive
+
+- Kept normal cards, buttons, text fields, dialogs, top bars, donation surfaces and content on Material 3 Expressive.
+- Kept Material You dynamic colors, OLED mode and automatic 07:00/19:00 light/dark switching.
+
+### Donations
+
+- Removed Liquid Glass from the donation screen.
+- Removed the Donations module's dependency on Design.
+
+### Build and sample
+
+- Updated the Sample app to demonstrate only the navbar-specific Liquid Glass API.
+- Fixed Compose restricted-suspension errors in the navigation drag handler.
+- Fixed Compose annotation errors in the selection renderer.
+- Confirmed the complete build and test workflow succeeds before the 3.0.0 version bump.
+
+### Version consistency
+
+- Updated the shared Freetime version catalog to `3.0.0`.
+- Updated `FreetimeCore.SDK_VERSION` to `3.0.0`.
+- Updated all current dependency examples to `3.0.0`.
+- Updated the Sample app to version `3.0.0`.
+
+### Migration from 2.x
+
+Replace generic Liquid Glass usages with `FloatingBottomNavigationGlassRoot` and `FloatingBottomNavigationBar`. Keep all non-navigation UI on Material 3 Expressive.
 
 ## 2.0.0 - 2026-09-25
 

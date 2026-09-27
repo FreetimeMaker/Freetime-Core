@@ -2,9 +2,9 @@
 
 Reusable, open-source Android libraries for Freetime Maker apps.
 
-**Current version: 2.0.0**
+**Current version: 3.0.0**
 
-Freetime Core keeps shared Android functionality in small modules that apps can adopt independently. Version 2.x moves the UI layer to **Material 3 Expressive + Material You**, uses Liquid Glass only for the floating bottom navigation, and removes the former Freetime-prefixed component system.
+Freetime Core keeps shared Android functionality in small modules that apps can adopt independently. Version 3.x keeps **Material 3 Expressive + Material You** as the UI foundation and restricts Liquid Glass to the dedicated floating bottom navigation API.
 
 ## Highlights
 
@@ -48,11 +48,11 @@ Then add only the modules your app needs:
 
 ```kotlin
 dependencies {
-    implementation("com.github.FreetimeMaker.Freetime-Core:Core:2.0.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Design:2.0.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:2.0.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:2.0.0")
-    implementation("com.github.FreetimeMaker.Freetime-Core:FreetimeWarn:2.0.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Core:3.0.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Design:3.0.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Browser:3.0.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:Donations:3.0.0")
+    implementation("com.github.FreetimeMaker.Freetime-Core:FreetimeWarn:3.0.0")
 }
 ```
 
@@ -179,13 +179,23 @@ FreetimeWarn(
 
 Supported frequencies are `ONCE`, `ONCE_PER_VERSION` and `ALWAYS`.
 
-## Migrating from 1.x
+## Migrating to 3.x
 
-Version 2.x is a breaking release.
+Version 3.0.0 is a breaking release for apps that used the generic Liquid Glass APIs from 2.0.0.
 
-The old Freetime-prefixed Design components have been removed. Replace wrappers such as old Freetime buttons, cards, typography, shapes, scaffolds and settings controls with their Material 3 equivalents.
+Remove usages of:
 
-The recommended structure is to keep all normal UI on Material 3 Expressive and apply Liquid Glass only to the floating bottom navigation.
+- `Modifier.liquidGlass()`
+- `Modifier.liquidGlassCapsule()`
+- `Modifier.liquidGlassCircle()`
+- `LiquidGlassContainer`
+- `LiquidGlassIconButton`
+- the generic `LiquidGlassRoot`
+- `LocalLiquidGlassEnabled` / `ProvideLiquidGlass`
+
+Use `FloatingBottomNavigationGlassRoot` together with `FloatingBottomNavigationBar` instead. Normal cards, buttons, text fields, dialogs and top bars should use Material 3 Expressive directly.
+
+Apps migrating from 1.x should also replace the removed Freetime-prefixed Design component wrappers with Material 3 equivalents.
 
 ## Versioning
 
@@ -193,10 +203,10 @@ The shared release version lives in `gradle/libs.versions.toml`:
 
 ```toml
 [versions]
-freetime = "2.0.0"
+freetime = "3.0.0"
 ```
 
-The root Gradle build applies that value to all published library modules. `FreetimeCore.SDK_VERSION` uses the same release number, and the GitHub Actions release workflow creates `v2.0.0` when the version does not already have a tag.
+The root Gradle build applies that value to all published library modules. `FreetimeCore.SDK_VERSION` uses the same release number, and the GitHub Actions release workflow creates `v3.0.0` when the version does not already have a tag.
 
 See [CHANGELOG.md](CHANGELOG.md) for release history.
 

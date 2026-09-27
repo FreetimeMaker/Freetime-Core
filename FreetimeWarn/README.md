@@ -7,7 +7,7 @@ The UI uses Material 3 directly and stays independent from the removed Freetime-
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:FreetimeWarn:2.0.0")
+implementation("com.github.FreetimeMaker.Freetime-Core:FreetimeWarn:3.0.0")
 ```
 
 ## Required app name

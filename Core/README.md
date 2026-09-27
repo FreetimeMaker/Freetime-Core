@@ -5,7 +5,7 @@ Small, dependency-light base module shared by the other Freetime Core libraries.
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:Core:2.0.0")
+implementation("com.github.FreetimeMaker.Freetime-Core:Core:3.0.0")
 ```
 
 ## What it provides

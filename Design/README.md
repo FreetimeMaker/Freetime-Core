@@ -2,12 +2,12 @@
 
 Material 3 Expressive, Material You and a focused Liquid Glass treatment for the floating bottom navigation.
 
-Version 2.x removes the old Freetime-prefixed component system. Normal UI uses Material 3 Expressive directly. Liquid Glass is intentionally limited to the floating bottom navigation.
+Version 3.x exposes Liquid Glass only through the dedicated floating bottom navigation. Normal UI uses Material 3 Expressive directly.
 
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:Design:2.0.0")
+implementation("com.github.FreetimeMaker.Freetime-Core:Design:3.0.0")
 ```
 
 ## Theme

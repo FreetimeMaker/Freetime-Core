@@ -5,7 +5,7 @@ Reusable Compose donation UI built with Material 3 Expressive-compatible compone
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:Donations:2.0.0")
+implementation("com.github.FreetimeMaker.Freetime-Core:Donations:3.0.0")
 ```
 
 The module uses Core and Browser and no longer depends on Design.

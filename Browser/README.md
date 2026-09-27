@@ -5,7 +5,7 @@ Common URL routing for Freetime Android apps without forcing a particular naviga
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:Browser:2.0.0")
+implementation("com.github.FreetimeMaker.Freetime-Core:Browser:3.0.0")
 ```
 
 ## External browser

@@ -11,8 +11,8 @@ android {
         applicationId = "com.freetime.sample"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.compileSdk.get().toInt()
-        versionCode = 2
-        versionName = "2.0.0"
+        versionCode = 3
+        versionName = "3.0.0"
     }
 
     buildFeatures { compose = true }
