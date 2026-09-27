@@ -154,7 +154,7 @@ private fun SampleApp() {
                     1 -> SettingsSample(
                         modifier = Modifier.padding(innerPadding),
                         floatingBottomNavigationGlassEnabled = floatingBottomNavigationGlassEnabled,
-                        onLiquidGlassEnabledChange = { floatingBottomNavigationGlassEnabled = it },
+                        onFloatingBottomNavigationGlassEnabledChange = { floatingBottomNavigationGlassEnabled = it },
                     )
                     2 -> BrowserSample(
                         modifier = Modifier.padding(innerPadding),
@@ -201,7 +201,7 @@ private fun DesignSample(
     ) {
         Text("Material 3 Expressive", style = MaterialTheme.typography.headlineMedium)
         Text(
-            "Normal surfaces use Material 3 Expressive. Floating nav glass is reserved for the floating bottom navigation.",
+            "Normal surfaces use Material 3 Expressive. Liquid Glass is reserved for the floating bottom navigation.",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
@@ -233,7 +233,7 @@ private fun DesignSample(
 private fun SettingsSample(
     modifier: Modifier,
     floatingBottomNavigationGlassEnabled: Boolean,
-    onLiquidGlassEnabledChange: (Boolean) -> Unit,
+    onFloatingBottomNavigationGlassEnabledChange: (Boolean) -> Unit,
 ) {
     Column(
         modifier
@@ -252,16 +252,16 @@ private fun SettingsSample(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text("Bottom navigation Floating nav glass", style = MaterialTheme.typography.titleMedium)
+                    Text("Bottom navigation Liquid Glass", style = MaterialTheme.typography.titleMedium)
                     Text(
-                        "Only the floating bottom navigation uses Floating nav glass.",
+                        "Only the floating bottom navigation uses Liquid Glass.",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 Spacer(Modifier.width(16.dp))
                 Switch(
                     checked = floatingBottomNavigationGlassEnabled,
-                    onCheckedChange = onLiquidGlassEnabledChange,
+                    onCheckedChange = onFloatingBottomNavigationGlassEnabledChange,
                 )
             }
         }

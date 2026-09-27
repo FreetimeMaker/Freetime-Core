@@ -66,6 +66,7 @@ fun FloatingBottomNavigationGlassRoot(
 @Composable
 fun Modifier.floatingBottomNavigationGlass(): Modifier {
     val backdrop = LocalFloatingBottomNavigationBackdrop.current
+    val isDark = LocalIsDarkTheme.current
     val shape = Capsule()
 
     if (!LocalFloatingBottomNavigationGlassEnabled.current || backdrop == null) {
@@ -99,7 +100,7 @@ fun Modifier.floatingBottomNavigationGlass(): Modifier {
         onDrawSurface = {
             val scrim = lerp(0.12f, 0.50f, 0.4f)
             drawRect(
-                (if (LocalIsDarkTheme.current) Color.Black else Color.White)
+                (if (isDark) Color.Black else Color.White)
                     .copy(alpha = scrim),
             )
         },
