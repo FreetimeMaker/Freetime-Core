@@ -6,7 +6,12 @@ The project follows semantic versioning.
 
 ## Unreleased
 
-No unreleased changes yet.
+### Design
+
+- Restricted the supported Liquid Glass treatment to the floating bottom navigation.
+- Removed Liquid Glass from Sample top bars, cards, buttons and text fields.
+- Removed Liquid Glass from Donations and dropped Donations' dependency on the Design module.
+- Updated documentation so normal surfaces use Material 3 Expressive and only the floating bottom navigation samples the backdrop.
 
 ## 2.0.0 - 2026-09-25
 

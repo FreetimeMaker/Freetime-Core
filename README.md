@@ -4,14 +4,14 @@ Reusable, open-source Android libraries for Freetime Maker apps.
 
 **Current version: 2.0.0**
 
-Freetime Core keeps shared Android functionality in small modules that apps can adopt independently. Version 2.x moves the UI layer to **Material 3 Expressive + Material You**, keeps Liquid Glass as an optional reusable effect, and removes the former Freetime-prefixed component system.
+Freetime Core keeps shared Android functionality in small modules that apps can adopt independently. Version 2.x moves the UI layer to **Material 3 Expressive + Material You**, uses Liquid Glass only for the floating bottom navigation, and removes the former Freetime-prefixed component system.
 
 ## Highlights
 
 - **Material 3 Expressive** as the UI foundation
 - **Material You** dynamic colors on Android 12+
 - automatic light mode from **07:00** and dark mode from **19:00**
-- one global **Liquid Glass** switch for every glass surface
+- one **Liquid Glass** switch dedicated to the floating bottom navigation
 - reusable browser, donation and warning modules
 - no mandatory Freetime account, Luma Store installation or proprietary backend
 - F-Droid-friendly, open-source dependencies
@@ -22,7 +22,7 @@ Freetime Core keeps shared Android functionality in small modules that apps can 
 | Module | Purpose |
 | --- | --- |
 | `Core` | Shared models, results, SDK metadata and lightweight Android helpers |
-| `Design` | Material 3 Expressive / Material You theme helpers and Liquid Glass |
+| `Design` | Material 3 Expressive / Material You theme helpers plus floating bottom-navigation Liquid Glass |
 | `Browser` | External and in-app URL routing plus reusable browser UI |
 | `Donations` | Donation targets, wallet helpers and Compose donation UI |
 | `FreetimeWarn` | Reusable acknowledgement/warning flow for Compose apps |
@@ -83,7 +83,7 @@ The project currently pins `androidx.compose.material3:material3:1.5.0-alpha29` 
 
 ## Liquid Glass
 
-Liquid Glass is an effect layer on top of Material 3 Expressive rather than a separate design system.
+Liquid Glass is reserved for the floating bottom navigation. All other UI uses normal Material 3 Expressive surfaces.
 
 Wrap a screen that needs backdrop-aware glass:
 
@@ -97,31 +97,26 @@ LiquidGlassRoot(
 }
 ```
 
-Apply glass only where useful:
+Use it on the floating Material 3 navigation bar:
 
 ```kotlin
-Button(
-    onClick = ::continueFlow,
-    modifier = Modifier.liquidGlassCapsule(),
-    colors = ButtonDefaults.buttonColors(
-        containerColor = Color.Transparent,
-    ),
+LiquidGlassRoot(
+    source = { AppBackground() },
 ) {
-    Text("Continue")
+    NavigationBar(
+        modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .liquidGlassCapsule(interactive = false),
+        containerColor = Color.Transparent,
+    ) {
+        // NavigationBarItem(...)
+    }
 }
 ```
 
-Available primitives include:
+Do not apply Liquid Glass to cards, buttons, text fields, dialogs, top bars or content surfaces. Those should keep the normal Material 3 Expressive appearance.
 
-- `Modifier.liquidGlass()`
-- `Modifier.liquidGlassCapsule()`
-- `Modifier.liquidGlassCircle()`
-- `LiquidGlassContainer`
-- `LiquidGlassIconButton`
-- `rememberLiquidGlassBackdrop()`
-- `Modifier.liquidGlassSource()`
-
-The global setting is provided through `LocalLiquidGlassEnabled`. When disabled, glass surfaces automatically use a Material fallback instead of requiring separate UI branches.
+The global setting is provided through `LocalLiquidGlassEnabled`. When disabled, the floating bottom navigation automatically uses the Material fallback.
 
 Apps that already own their Material theme can provide only the glass setting:
 
@@ -191,19 +186,7 @@ Version 2.x is a breaking release.
 
 The old Freetime-prefixed Design components have been removed. Replace wrappers such as old Freetime buttons, cards, typography, shapes, scaffolds and settings controls with their Material 3 equivalents.
 
-The recommended structure is:
-
-```kotlin
-AppTheme {
-    LiquidGlassRoot(
-        source = { AppBackground() },
-    ) {
-        Material3AppContent()
-    }
-}
-```
-
-Use Material 3 Expressive for normal UI and the Liquid Glass modifiers only for surfaces that should visually sample the backdrop.
+The recommended structure is to keep all normal UI on Material 3 Expressive and apply Liquid Glass only to the floating bottom navigation.
 
 ## Versioning
 
@@ -224,7 +207,7 @@ See [CHANGELOG.md](CHANGELOG.md) for release history.
 2. No mandatory Freetime account, Luma Store dependency or hard-coded backend.
 3. Dependencies should remain open-source and F-Droid-friendly.
 4. Shared functionality should stay modular and host-controlled.
-5. Material 3 Expressive is the component system; Liquid Glass is an optional visual effect layer.
+5. Material 3 Expressive is the component system; Liquid Glass is reserved for the floating bottom navigation.
 6. Breaking API changes use semantic-versioning major releases.
 
 ## License

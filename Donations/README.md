@@ -1,6 +1,6 @@
 # Freetime Donations
 
-Reusable Compose donation UI built with Material 3 and the Design module's optional Liquid Glass effect.
+Reusable Compose donation UI built with Material 3 Expressive-compatible components.
 
 ## Dependency
 
@@ -8,7 +8,7 @@ Reusable Compose donation UI built with Material 3 and the Design module's optio
 implementation("com.github.FreetimeMaker.Freetime-Core:Donations:2.0.0")
 ```
 
-The module uses Core, Design and Browser.
+The module uses Core and Browser and no longer depends on Design.
 
 ## Donation targets
 
@@ -40,4 +40,4 @@ FreetimeDonationScreen(
 )
 ```
 
-The host app owns all actions. The screen uses Material 3 components; cards and action surfaces follow the global `LocalLiquidGlassEnabled` value when hosted under `AppTheme` or `ProvideLiquidGlass`.
+The host app owns all actions. Donation cards and buttons use normal Material 3 styling. Liquid Glass is reserved for the app's floating bottom navigation.

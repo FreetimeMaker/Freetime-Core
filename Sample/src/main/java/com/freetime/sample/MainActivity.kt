@@ -24,7 +24,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -54,7 +53,6 @@ import com.freetime.core.FreetimeCore
 import com.freetime.design.AppTheme
 import com.freetime.design.LiquidGlassRoot
 import com.freetime.design.ThemeMode
-import com.freetime.design.liquidGlass
 import com.freetime.design.liquidGlassCapsule
 import com.freetime.donations.DonationTarget
 import com.freetime.donations.FreetimeDonationActions
@@ -108,11 +106,10 @@ private fun SampleApp() {
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 topBar = {
                     Row(
-                        Modifier
+                        modifier = Modifier
                             .fillMaxWidth()
-                            .padding(12.dp)
-                            .liquidGlassCapsule(interactive = false)
-                            .padding(horizontal = 18.dp, vertical = 12.dp),
+                            .background(MaterialTheme.colorScheme.surfaceContainer)
+                            .padding(horizontal = 18.dp, vertical = 14.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
@@ -128,7 +125,7 @@ private fun SampleApp() {
                 bottomBar = {
                     NavigationBar(
                         modifier = Modifier
-                            .padding(12.dp)
+                            .padding(horizontal = 16.dp, vertical = 12.dp)
                             .liquidGlassCapsule(interactive = false),
                         containerColor = Color.Transparent,
                     ) {
@@ -174,21 +171,15 @@ private fun SampleApp() {
 }
 
 @Composable
-private fun GlassButton(
+private fun ExpressiveButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier
-            .heightIn(min = ButtonDefaults.MediumContainerHeight)
-            .liquidGlassCapsule(),
+        modifier = modifier.heightIn(min = ButtonDefaults.MediumContainerHeight),
         contentPadding = ButtonDefaults.MediumContentPadding,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-        ),
     ) {
         Text(text)
     }
@@ -208,17 +199,14 @@ private fun DesignSample(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Material 3 Expressive + Liquid Glass", style = MaterialTheme.typography.headlineMedium)
+        Text("Material 3 Expressive", style = MaterialTheme.typography.headlineMedium)
         Text(
-            "Material 3 Expressive provides the component, shape, typography and motion system; Liquid Glass stays a shared effect layer.",
+            "Normal surfaces use Material 3 Expressive. Liquid Glass is reserved for the floating bottom navigation.",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .liquidGlass(MaterialTheme.shapes.largeIncreased, interactive = false),
-            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Column(
                 Modifier.padding(18.dp),
@@ -232,14 +220,12 @@ private fun DesignSample(
         OutlinedTextField(
             value = query,
             onValueChange = { query = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .liquidGlass(MaterialTheme.shapes.medium, interactive = false),
+            modifier = Modifier.fillMaxWidth(),
             label = { Text("Search") },
-            placeholder = { Text("Material 3, Liquid Glass…") },
+            placeholder = { Text("Material 3 Expressive…") },
         )
 
-        GlassButton("Show message", { showMessage("Hello from Material 3 + Liquid Glass") })
+        ExpressiveButton("Show message", { showMessage("Hello from Material 3 Expressive") })
     }
 }
 
@@ -259,19 +245,16 @@ private fun SettingsSample(
         Text("Global appearance", style = MaterialTheme.typography.headlineMedium)
 
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .liquidGlass(MaterialTheme.shapes.largeIncreased, interactive = false),
-            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Row(
                 Modifier.fillMaxWidth().padding(18.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text("Liquid Glass", style = MaterialTheme.typography.titleMedium)
+                    Text("Bottom navigation Liquid Glass", style = MaterialTheme.typography.titleMedium)
                     Text(
-                        "One AppTheme setting controls every liquidGlass surface.",
+                        "Only the floating bottom navigation uses Liquid Glass.",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
@@ -312,7 +295,7 @@ private fun BrowserSample(
         Text("Browser", style = MaterialTheme.typography.headlineMedium)
         Text("Allowed: ${FreetimeBrowser.isAllowed(url, options)}")
 
-        GlassButton("Open website", {
+        ExpressiveButton("Open website", {
             FreetimeBrowser.open(context, url, options)
                 .onFailure { showMessage(it.message ?: "Could not open URL") }
         })

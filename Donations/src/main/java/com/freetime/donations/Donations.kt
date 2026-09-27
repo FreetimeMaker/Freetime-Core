@@ -9,17 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.freetime.design.liquidGlass
-import com.freetime.design.liquidGlassCapsule
 
 sealed interface DonationTarget {
     val label: String
@@ -49,14 +44,7 @@ private fun DonationAction(
     text: String,
     onClick: () -> Unit,
 ) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier.liquidGlassCapsule(),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-        ),
-    ) {
+    Button(onClick = onClick) {
         Text(text)
     }
 }
@@ -94,13 +82,7 @@ fun FreetimeDonationScreen(
             },
         ) { target ->
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .liquidGlass(
-                        shape = MaterialTheme.shapes.large,
-                        interactive = false,
-                    ),
-                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(
                     modifier = Modifier

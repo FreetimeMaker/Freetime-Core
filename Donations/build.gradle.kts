@@ -20,7 +20,6 @@ android {
 }
 dependencies {
     api(project(":Core"))
-    implementation(project(":Design"))
     api(project(":Browser"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)

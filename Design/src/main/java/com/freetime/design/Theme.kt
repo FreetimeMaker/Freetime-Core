@@ -35,8 +35,8 @@ val LocalIsDarkTheme = staticCompositionLocalOf { true }
 /**
  * Global Liquid Glass switch.
  *
- * This mirrors SimpMusic's approach: the app theme provides one boolean and the
- * shared liquidGlass modifier handles either real glass or the Material fallback.
+ * The app theme provides one boolean for the floating bottom navigation.
+ * Other Material 3 Expressive surfaces intentionally remain non-glass.
  */
 val LocalLiquidGlassEnabled = staticCompositionLocalOf { true }
 
@@ -84,7 +84,7 @@ fun rememberDarkTheme(
  * - Material You dynamic colors on Android 12+
  * - light theme from 07:00
  * - dark theme from 19:00
- * - Liquid Glass enabled globally
+ * - Liquid Glass enabled for the floating bottom navigation
  */
 @Composable
 fun AppTheme(
@@ -126,7 +126,7 @@ fun AppTheme(
     }
 }
 
-/** Use this when an app already owns its MaterialTheme but still wants the global glass toggle. */
+/** Use this when an app already owns its MaterialTheme but still wants the bottom-navigation glass toggle. */
 @Composable
 fun ProvideLiquidGlass(
     enabled: Boolean,

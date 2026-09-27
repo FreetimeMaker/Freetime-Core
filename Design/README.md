@@ -1,8 +1,8 @@
 # Freetime Core Design
 
-Material 3 Expressive, Material You and reusable Liquid Glass for Freetime Android apps.
+Material 3 Expressive, Material You and a focused Liquid Glass treatment for the floating bottom navigation.
 
-Version 2.0 removes the old Freetime-prefixed component system. Use Material 3 Expressive directly for normal UI and apply Liquid Glass only where the backdrop effect is useful.
+Version 2.x removes the old Freetime-prefixed component system. Normal UI uses Material 3 Expressive directly. Liquid Glass is intentionally limited to the floating bottom navigation.
 
 ## Dependency
 
@@ -30,23 +30,36 @@ Available modes:
 
 `AUTO_TIME` defaults to light from **07:00** and dark from **19:00**.
 
-## Global Liquid Glass setting
+## Liquid Glass policy
 
-One boolean controls every shared glass surface:
+Liquid Glass is used only by the floating bottom navigation.
+
+Cards, buttons, text fields, dialogs, top bars, donation surfaces and normal content stay on regular Material 3 Expressive styling.
+
+One boolean controls the bottom-navigation effect:
 
 ```kotlin
 AppTheme(
     liquidGlassEnabled = settings.liquidGlassEnabled,
 ) {
-    LiquidGlassRoot {
-        AppContent()
+    LiquidGlassRoot(
+        source = { AppBackground() },
+    ) {
+        NavigationBar(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .liquidGlassCapsule(interactive = false),
+            containerColor = Color.Transparent,
+        ) {
+            // NavigationBarItem(...)
+        }
     }
 }
 ```
 
 The value is available through `LocalLiquidGlassEnabled`.
 
-Apps that already own their Material theme can provide only the glass setting:
+Apps that already own their Material theme can provide only the navigation glass setting:
 
 ```kotlin
 ProvideLiquidGlass(enabled = settings.liquidGlassEnabled) {
@@ -54,11 +67,11 @@ ProvideLiquidGlass(enabled = settings.liquidGlassEnabled) {
 }
 ```
 
-When disabled, `Modifier.liquidGlass()` keeps the requested shape and automatically uses a Material `surfaceContainerHighest` fallback at 80% opacity.
+When disabled, the floating navigation keeps its capsule shape and automatically uses the Material fallback.
 
 ## Glass optics
 
-The shared Liquid Glass recipe uses:
+The floating navigation uses the shared SimpMusic-inspired recipe:
 
 - backdrop vibrancy
 - saturation **1.5**
@@ -66,43 +79,7 @@ The shared Liquid Glass recipe uses:
 - adaptive blur from **2dp to 16dp**
 - refraction up to half the surface height
 - adaptive scrim from **0.12 to 0.50**
-- pointer-following press glow
-- spring press interaction
-- **1.12x** press bulge for compact controls
-- **1.04x** press bulge for wide surfaces
 
-## Usage
+The low-level Liquid Glass primitives remain available for compatibility, but Freetime Core's supported design pattern applies them only to the floating bottom navigation.
 
-Keep the sampled background source and glass foreground separate:
-
-```kotlin
-LiquidGlassRoot(
-    source = {
-        ArtworkOrGradient()
-    },
-) {
-    Button(
-        onClick = ::continueFlow,
-        modifier = Modifier.liquidGlassCapsule(),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-        ),
-    ) {
-        Text("Continue")
-    }
-}
-```
-
-Available primitives:
-
-```kotlin
-Modifier.liquidGlass()
-Modifier.liquidGlassCapsule()
-Modifier.liquidGlassCircle()
-LiquidGlassContainer(...)
-LiquidGlassIconButton(...)
-rememberLiquidGlassBackdrop()
-Modifier.liquidGlassSource(...)
-```
-
-Use Material 3 Expressive for buttons, cards, text fields, navigation, dialogs, switches, sliders and other normal UI components. The module currently pins `androidx.compose.material3:material3:1.5.0-alpha29` for the current Expressive APIs.
+The module currently pins `androidx.compose.material3:material3:1.5.0-alpha29` for the current Expressive APIs.
