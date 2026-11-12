@@ -7,8 +7,10 @@ Version 3.x exposes Liquid Glass only through the dedicated floating bottom navi
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:Design:3.0.0")
+implementation("com.freetime:Design:3.1.0")
 ```
+
+Add `https://repo.free-time.me/maven/` to your repositories. See the root [installation and JitPack migration guide](../README.md#installation) for repository setup and access requirements. Public packages require no consumer credentials; they must be marked public in Gemfury.
 
 ## Theme
 
@@ -104,4 +106,4 @@ The floating navigation uses the shared SimpMusic-inspired recipe:
 
 There are no public generic Liquid Glass modifiers, containers, icon buttons, circle helpers or capsule helpers. Liquid Glass is encapsulated inside `FloatingBottomNavigationBar`.
 
-The module currently pins `androidx.compose.material3:material3:1.5.0-alpha29` for the current Expressive APIs.
+The module currently pins `androidx.compose.material3:material3:1.5.0-rc01` for the current Expressive APIs.

@@ -8,6 +8,44 @@ The project follows semantic versioning.
 
 No unreleased changes yet.
 
+## 3.1.0 - 2026-11-12
+
+### Publishing
+
+- Required anonymous downloads of all five modules' POMs, Gradle metadata, AARs, sources and Javadoc before CI creates a release tag.
+- Documented Gemfury's one-time public visibility setup for new packages; later versions inherit public visibility.
+
+- Migrated publishing from JitPack to Gemfury (fury.io), using Maven group `com.freetime` instead of `com.github.FreetimeMaker.Freetime-Core`.
+- Kept the case-sensitive artifact IDs `Core`, `Design`, `Browser`, `Donations` and `FreetimeWarn`, and version `3.1.0`, unchanged.
+- Configured `https://repo.free-time.me/maven/` as the Maven endpoint for publishing and dependency installation.
+- Documented local publishing with `sh gradlew publish`, properties `furyUsername` and `furyToken` in untracked `~/.gradle/gradle.properties`, or environment variables `FURY_USERNAME` and `FURY_TOKEN`.
+- Documented CI repository variable `FURY_USERNAME` and secret `FURY_TOKEN`; the username is the token assignee and the token is a deploy token.
+- Clarified that public consumption needs no credentials only when packages are public in Gemfury. Private consumers should use read-only tokens, never deploy tokens, and must not embed secrets in apps or tracked files.
+- Documented that CI publishes before creating the version tag. Existing tagged versions are not automatically republished; bump the shared version for the next release.
+
+### Theme templates
+
+- Added classic Material 3 and Material 3 Expressive theme templates under `com.freetime.design.templates.material3` and `com.freetime.design.templates.expressive`.
+- Included both template variants in the Design library and its published sources.
+- Separated colors, typography, shapes and theme composition into dedicated files that apps can copy and customize without inheriting product-specific branding.
+- Made Material You opt-in for the templates, with system light/dark appearance as the default and no prescribed schedule or OLED treatment.
+- Kept the core template sources independent of Freetime-specific providers and added separate `FreetimeTheme` adapters that disable floating-navigation Liquid Glass.
+- Added light and dark component previews for both variants.
+- Added an English template guide covering setup, package names, custom fonts, app settings and dynamic-color behavior.
+- Kept the existing root `AppTheme` and navigation APIs unchanged. Direct template usage currently exposes dark-mode and dynamic-color options; custom palettes, typography and shapes are configured in app-owned copies.
+
+### Build and dependencies
+
+- Added `:Design:checkTemplates` to compile the template sources, including previews and Freetime adapters, through the Design verification lifecycle and CI.
+- Updated Gradle to `9.9.1`, Android Gradle Plugin to `9.5.1` and Kotlin to `2.4.21`.
+- Updated Material 3 to `1.5.0-rc01`, Core KTX to `1.19.1` and Activity Compose to `1.13.0`.
+- Updated the CI build job to use JDK 25 and refreshed checkout and Java setup actions.
+
+### Version consistency
+
+- Updated the shared release version, `FreetimeCore.SDK_VERSION` and current dependency examples to `3.1.0`.
+- Updated the Sample app to version `3.1.0` with version code `4`.
+
 ## 3.0.0 - 2026-09-27
 
 ### Breaking Design API
@@ -223,4 +261,3 @@ Freetime Core began as a shared Android foundation for Freetime Maker applicatio
 - Open-source and F-Droid-friendly dependency choices as a project principle.
 
 From that base, the Design module evolved from Material-themed reusable glass components into the independent Freetime Design system introduced in 1.6.0.
-

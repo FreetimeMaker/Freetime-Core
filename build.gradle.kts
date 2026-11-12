@@ -1,6 +1,8 @@
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 
+import org.gradle.authentication.http.BasicAuthentication
+
 plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.android.application) apply false
@@ -12,17 +14,36 @@ val releaseVersion = providers.gradleProperty("releaseVersion")
     .orElse(libs.versions.freetime)
 
 allprojects {
-    group = if (System.getenv("JITPACK") == "true") {
-        "com.github.FreetimeMaker.Freetime-Core"
-    } else {
-        "me.free-time"
-    }
+    group = "com.freetime"
     version = releaseVersion.get()
 }
 
 subprojects {
     plugins.withId("com.android.library") {
         apply(plugin = "maven-publish")
+
+
+        val furyUsername = providers.gradleProperty("furyUsername")
+            .orElse(providers.environmentVariable("FURY_USERNAME"))
+        val furyToken = providers.gradleProperty("furyToken")
+            .orElse(providers.environmentVariable("FURY_TOKEN"))
+
+        extensions.configure<PublishingExtension> {
+            repositories {
+                maven {
+                    name = "fury"
+                    url = uri("https://repo.free-time.me/maven/")
+                    authentication {
+                        create<BasicAuthentication>("basic")
+                    }
+                    credentials {
+                        username = furyUsername.orNull
+                        password = furyToken.orNull
+                    }
+                }
+            }
+        }
+
 
         components.whenObjectAdded {
             if (name == "release" && extensions.getByType<PublishingExtension>().publications.findByName("release") == null) {
@@ -31,8 +52,7 @@ subprojects {
                     publications {
                         create<MavenPublication>("release") {
                             from(releaseComponent)
-                            // JitPack multi-module coordinates use the module name:
-                            // com.github.FreetimeMaker.Freetime-Core:<Module>:<Tag>
+                            // Keep module names stable: com.freetime:<Module>:<Version>.
                             artifactId = project.name
                             pom {
                                 name.set("Freetime Core - ${project.name}")

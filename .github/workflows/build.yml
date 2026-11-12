@@ -54,7 +54,7 @@ jobs:
           distribution: temurin
           java-version: "25"
 
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
 
       - name: Build and test libraries
         shell: bash
@@ -72,12 +72,30 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Verify JitPack publications
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Publish libraries to Gemfury
         shell: bash
+        env:
+          FURY_USERNAME: ${{ vars.FURY_USERNAME }}
+          FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
         run: |
           set -euo pipefail
+
+          test -n "$FURY_USERNAME" || { echo "Missing repository variable FURY_USERNAME"; exit 1; }
+          test -n "$FURY_TOKEN" || { echo "Missing repository secret FURY_TOKEN"; exit 1; }
           chmod +x ./gradlew
-          ./gradlew clean assembleRelease publishToMavenLocal -PreleaseVersion="${{ needs.build.outputs.version }}"
+          ./gradlew assembleRelease publish -PreleaseVersion="${{ needs.build.outputs.version }}"
+
+      - name: Verify anonymous access to all published packages
+        env:
+          RELEASE_VERSION: ${{ needs.build.outputs.version }}
+        run: python3 .github/scripts/verify_public_maven.py "$RELEASE_VERSION"
 
       - name: Create and push GitHub tag
         shell: bash

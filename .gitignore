@@ -16,3 +16,4 @@ local.properties
 .idea/
 .kotlin/
 **/build/
+**/__pycache__/

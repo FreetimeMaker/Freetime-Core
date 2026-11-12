@@ -7,8 +7,10 @@ The UI uses Material 3 directly and stays independent from the removed Freetime-
 ## Dependency
 
 ```kotlin
-implementation("com.github.FreetimeMaker.Freetime-Core:FreetimeWarn:3.0.0")
+implementation("com.freetime:FreetimeWarn:3.1.0")
 ```
+
+Add `https://repo.free-time.me/maven/` to your repositories. See the root [installation and JitPack migration guide](../README.md#installation) for repository setup and access requirements. Public packages require no consumer credentials; they must be marked public in Gemfury.
 
 ## Required app name
 
