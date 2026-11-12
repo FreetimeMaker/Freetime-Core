@@ -57,7 +57,7 @@ dependencies {
 }
 ```
 
-Public consumption requires no credentials, but the publisher must mark the packages **public in Gemfury**. For private packages, configure a read-only token through local Gradle properties or your CI secret store, never a publishing deploy token. Do not embed tokens or other secrets in apps or tracked files.
+Public consumption requires no credentials. The public upload flow requests public visibility for new packages; no initial dashboard step is required. For private packages, configure a read-only token through local Gradle properties or your CI secret store, never a publishing deploy token. Do not embed tokens or other secrets in apps or tracked files.
 
 ### Migrating from JitPack
 
@@ -65,48 +65,52 @@ Replace `com.github.FreetimeMaker.Freetime-Core:<module>:3.1.0` with `com.freeti
 
 ## Publishing
 
-Publishing targets `https://repo.free-time.me/maven/`. No account-specific repository URL is required. Gradle reads the following properties or environment variables:
+Public dependencies are consumed from `https://repo.free-time.me/maven/` with the stable group `com.freetime`. Uploads use the `freetimemaker` account only at the push endpoint; consumers do not need an account-specific URL.
 
-| Gradle property | Environment variable | Value                                   |
-| --------------- | -------------------- | --------------------------------------- |
-| `furyUsername`  | `FURY_USERNAME`      | Username of the deploy token's assignee |
-| `furyToken`     | `FURY_TOKEN`         | Gemfury deploy token                    |
+### Credentials and commands
 
-For local publishing, put the following in `~/.gradle/gradle.properties`, replacing the placeholders with your actual values. Never put these credentials in tracked project files:
+For local publishing, put only the deploy token in your **user** `~/.gradle/gradle.properties`, never in tracked project files:
 
 ```properties
-furyUsername=YOUR_TOKEN_ASSIGNEE_USERNAME
 furyToken=YOUR_DEPLOY_TOKEN
 ```
+
+In CI, configure only the `FURY_TOKEN` secret. `FURY_USERNAME` / `furyUsername` is not needed for the public path. Never embed publishing tokens in apps.
 
 From the repository root, run:
 
 ```sh
-sh gradlew publish
+sh gradlew publishPublic
 ```
 
-For GitHub Actions, configure repository secrets `FURY_USERNAME` and `FURY_TOKEN`. The workflow also accepts `FURY_USERNAME` as a repository variable if the secret is not set. The username must be the token assignee and the token must be a deploy token. Ensure packages are public in Gemfury if they should be consumable without authentication.
+This stages all five actual release AARs and their POMs through a file Maven repository in `build/public-maven`, then runs `.github/scripts/publish_public_maven.py VERSION`. The default version comes from the shared version catalog, for example `3.1.0`; an explicit `-PreleaseVersion` overrides it consistently for staging and uploads. Artifact versions are never randomized.
 
-### Public package visibility
+`sh gradlew publish` **only stages locally**; it does not upload remotely. To validate the staged archives without credentials or uploads:
 
-All Freetime Core modules must be public. Gemfury creates new packages as private;
-Gradle's Maven publishing protocol does not set their visibility. After the first
-upload, open each package in the Gemfury dashboard, open its settings and select
-**Make package public** for `Core`, `Design`, `Browser`, `Donations` and
-`FreetimeWarn` under `com.freetime`. Subsequent versions of those packages inherit
-public visibility. See [Gemfury's public package documentation](https://gemfury.com/help/public-packages/).
+```sh
+sh gradlew publish
+python3 .github/scripts/publish_public_maven.py 3.1.0 --dry-run
+```
 
-CI checks anonymous downloads of every module's POM, Gradle metadata, AAR, sources
-and Javadoc before creating the release tag. A private package, login page or
-inaccessible custom repository causes the release to fail rather than silently
-shipping private dependencies. No publishing credentials are passed to this check.
-Run the same check locally after publishing:
+### Public upload format and limits
+
+The Python publisher embeds `META-INF/maven/com.freetime/<Module>/pom.xml` and `pom.properties` in each AAR and uploads it using `POST https://push.fury.io/uploads?as=freetimemaker` with multipart fields `public=true` and `file`. The public publication exposes **only AARs and POMs**. Gradle `.module` metadata is disabled; POM metadata supplies dependency information.
+
+Sources and Javadoc archives are still built and staged locally, but are not advertised or downloadable from the public repository. Classifier multipart uploads were refused with HTTP 409 for the same version. Native Maven PUT returned HTTP 200 without making the artifacts available, while metadata finalization conflicted; it is not the public publication path.
+
+New packages require no manual initial dashboard visibility step. An existing private duplicate version instead causes a conflict: uploading does not automatically change an old package’s visibility. A retry skips HTTP 409 only when the anonymously accessible public AAR is identical by archive entry contents; a conflicting or private artifact fails rather than being treated as success.
+
+### Anonymous verification and release status
+
+CI stages and publicly uploads the release, then checks anonymous downloads of all five modules’ **POMs and AARs at the exact group, artifact and version**, before creating the release tag. It does not require sources, Javadoc or `.module` files. No publishing credentials are passed to the check. Run it locally after publishing:
 
 ```sh
 python3 .github/scripts/verify_public_maven.py 3.1.0
 ```
 
-The release workflow publishes and verifies public access before creating the version tag. Existing tagged versions are not automatically republished; normally, bump the shared version for the next release to run the publication-and-tag flow. Do not bump `3.1.0` merely to update these migration instructions.
+All five `com.freetime` modules at version `3.1.0` have been uploaded through this public path, and anonymous downloads of every AAR and POM have been verified at the custom repository URL. No release tag is created by the local publishing command.
+
+Existing tagged versions are not automatically republished; normally, bump the shared version for the next release to run the publication-and-tag flow. Do not bump `3.1.0` merely to update these migration instructions.
 
 ## Material 3 Expressive + Material You
 

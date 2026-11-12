@@ -12,21 +12,21 @@ No unreleased changes yet.
 
 ### Publishing
 
-- Required anonymous downloads of all five modules' POMs, Gradle metadata, AARs, sources and Javadoc before CI creates a release tag.
-- Documented Gemfury's one-time public visibility setup for new packages; later versions inherit public visibility.
-
-- Migrated publishing from JitPack to Gemfury (fury.io), using Maven group `com.freetime` instead of `com.github.FreetimeMaker.Freetime-Core`.
-- Kept the case-sensitive artifact IDs `Core`, `Design`, `Browser`, `Donations` and `FreetimeWarn`, and version `3.1.0`, unchanged.
-- Configured `https://repo.free-time.me/maven/` as the Maven endpoint for publishing and dependency installation.
-- Documented local publishing with `sh gradlew publish`, properties `furyUsername` and `furyToken` in untracked `~/.gradle/gradle.properties`, or environment variables `FURY_USERNAME` and `FURY_TOKEN`.
-- Configured CI to read repository secrets `FURY_USERNAME` and `FURY_TOKEN`, with a repository-variable fallback for `FURY_USERNAME`; the username is the token assignee and the token is a deploy token.
-- Clarified that public consumption needs no credentials only when packages are public in Gemfury. Private consumers should use read-only tokens, never deploy tokens, and must not embed secrets in apps or tracked files.
-- Documented that CI publishes before creating the version tag. Existing tagged versions are not automatically republished; bump the shared version for the next release.
+- Migrated public publishing from JitPack to Gemfury, using the stable Maven group `com.freetime`, case-sensitive artifact IDs `Core`, `Design`, `Browser`, `Donations` and `FreetimeWarn`, and exact catalog version `3.1.0`. Artifact versions are not randomized; multipart boundaries may be.
+- Added root `sh gradlew publishPublic` to stage all five actual release AARs and POMs through a file Maven repository in `build/public-maven`, then run `.github/scripts/publish_public_maven.py VERSION`. `sh gradlew publish` stages locally only.
+- Embedded `META-INF/maven/com.freetime/<Module>/{pom.xml,pom.properties}` in uploaded AARs and used multipart `public=true` and `file` with `POST https://push.fury.io/uploads?as=freetimemaker`. The account name is push-only; public consumption uses `https://repo.free-time.me/maven/` without credentials.
+- Limited public publication and exact-coordinate anonymous verification to AARs and POMs. Disabled Gradle `.module` metadata; POM metadata retains dependency information. Sources and Javadoc are still built and staged locally, but are not advertised or downloadable publicly.
+- Recorded that same-version sources/Javadoc classifier multipart uploads were refused with HTTP 409; native Maven PUT returned HTTP 200 without exposing artifacts and metadata finalization conflicted. Neither is a supported public publication path.
+- Removed the mandatory initial dashboard visibility step for new packages: public uploads request visibility directly. Existing private duplicate versions still fail with a conflict and are not automatically made public. Retries skip HTTP 409 only if the public AAR is identical by archive entry contents.
+- Documented only `FURY_TOKEN` as a CI secret or `furyToken` in the user’s untracked `~/.gradle/gradle.properties`; `FURY_USERNAME` is not needed for the public path. Publishing tokens must never be embedded in apps or tracked files.
+- Added credential-free staged-archive validation with `python3 .github/scripts/publish_public_maven.py 3.1.0 --dry-run`.
+- Configured CI to stage and publicly upload, verify anonymous POM/AAR downloads for all five exact coordinates, then create the release tag. Uploaded all five actual `com.freetime` modules at version `3.1.0` and verified anonymous downloads of every AAR and POM through the custom repository URL.
+- Kept existing tagged versions from being automatically republished; normally, bump the shared version for the next release, not merely for documentation changes.
 
 ### Theme templates
 
 - Added classic Material 3 and Material 3 Expressive theme templates under `com.freetime.design.templates.material3` and `com.freetime.design.templates.expressive`.
-- Included both template variants in the Design library and its published sources.
+- Included both template variants in the Design library and its locally staged sources archive; the public publication does not expose sources classifiers.
 - Separated colors, typography, shapes and theme composition into dedicated files that apps can copy and customize without inheriting product-specific branding.
 - Made Material You opt-in for the templates, with system light/dark appearance as the default and no prescribed schedule or OLED treatment.
 - Kept the core template sources independent of Freetime-specific providers and added separate `FreetimeTheme` adapters that disable floating-navigation Liquid Glass.

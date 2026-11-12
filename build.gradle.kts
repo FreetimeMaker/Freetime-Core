@@ -1,7 +1,7 @@
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 
-import org.gradle.authentication.http.BasicAuthentication
+import org.gradle.api.publish.tasks.GenerateModuleMetadata
 
 plugins {
     alias(libs.plugins.android.library) apply false
@@ -13,6 +13,16 @@ val releaseVersion = providers.gradleProperty("releaseVersion")
     .orElse(providers.environmentVariable("VERSION"))
     .orElse(libs.versions.freetime)
 
+val publicLibraryModules = listOf("Core", "Design", "Browser", "Donations", "FreetimeWarn")
+
+tasks.register<Exec>("publishPublic") {
+    group = "publishing"
+    description = "Uploads release artifacts to Gemfury with public=true using the release version."
+    dependsOn(publicLibraryModules.map { ":$it:publishAllPublicationsToPublicStagingRepository" })
+    workingDir(rootDir)
+    commandLine("python3", ".github/scripts/publish_public_maven.py", releaseVersion.get())
+}
+
 allprojects {
     group = "com.freetime"
     version = releaseVersion.get()
@@ -22,28 +32,20 @@ subprojects {
     plugins.withId("com.android.library") {
         apply(plugin = "maven-publish")
 
-
-        val furyUsername = providers.gradleProperty("furyUsername")
-            .orElse(providers.environmentVariable("FURY_USERNAME"))
-        val furyToken = providers.gradleProperty("furyToken")
-            .orElse(providers.environmentVariable("FURY_TOKEN"))
-
         extensions.configure<PublishingExtension> {
             repositories {
                 maven {
-                    name = "fury"
-                    url = uri("https://repo.free-time.me/maven/")
-                    authentication {
-                        create<BasicAuthentication>("basic")
-                    }
-                    credentials {
-                        username = furyUsername.orNull
-                        password = furyToken.orNull
-                    }
+                    name = "publicStaging"
+                    url = rootProject.layout.buildDirectory.dir("public-maven").get().asFile.toURI()
                 }
             }
         }
 
+        // Gemfury's public upload API serves Maven artifacts, not Gradle .module files.
+        // Publish POM dependency metadata without advertising an unavailable .module file.
+        tasks.withType<GenerateModuleMetadata>().configureEach {
+            enabled = false
+        }
 
         components.whenObjectAdded {
             if (name == "release" && extensions.getByType<PublishingExtension>().publications.findByName("release") == null) {

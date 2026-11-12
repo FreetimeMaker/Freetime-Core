@@ -10,7 +10,7 @@ The UI uses Material 3 directly and stays independent from the removed Freetime-
 implementation("com.freetime:FreetimeWarn:3.1.0")
 ```
 
-Add `https://repo.free-time.me/maven/` to your repositories. See the root [installation and JitPack migration guide](../README.md#installation) for repository setup and access requirements. Public packages require no consumer credentials; they must be marked public in Gemfury.
+Add `https://repo.free-time.me/maven/` to your repositories. See the root [installation and JitPack migration guide](../README.md#installation) for repository setup and access requirements. Public packages require no consumer credentials. The [public publishing flow](../README.md#publishing) requests public visibility for new packages without an initial dashboard step; existing private version conflicts are not automatically made public.
 
 ## Required app name
 

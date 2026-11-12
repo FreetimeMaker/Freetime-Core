@@ -8,7 +8,7 @@ Reusable Compose donation UI built with Material 3 Expressive-compatible compone
 implementation("com.freetime:Donations:3.1.0")
 ```
 
-Add `https://repo.free-time.me/maven/` to your repositories. See the root [installation and JitPack migration guide](../README.md#installation) for repository setup and access requirements. Public packages require no consumer credentials; they must be marked public in Gemfury.
+Add `https://repo.free-time.me/maven/` to your repositories. See the root [installation and JitPack migration guide](../README.md#installation) for repository setup and access requirements. Public packages require no consumer credentials. The [public publishing flow](../README.md#publishing) requests public visibility for new packages without an initial dashboard step; existing private version conflicts are not automatically made public.
 
 The module uses Core and Browser and no longer depends on Design.
 
