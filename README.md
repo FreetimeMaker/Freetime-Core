@@ -85,7 +85,7 @@ From the repository root, run:
 sh gradlew publish
 ```
 
-For GitHub Actions, configure repository variable `FURY_USERNAME`, and repository secret `FURY_TOKEN`. The username must be the token assignee and the token must be a deploy token. Ensure packages are public in Gemfury if they should be consumable without authentication.
+For GitHub Actions, configure repository secrets `FURY_USERNAME` and `FURY_TOKEN`. The workflow also accepts `FURY_USERNAME` as a repository variable if the secret is not set. The username must be the token assignee and the token must be a deploy token. Ensure packages are public in Gemfury if they should be consumable without authentication.
 
 ### Public package visibility
 

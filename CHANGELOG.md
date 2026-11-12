@@ -19,7 +19,7 @@ No unreleased changes yet.
 - Kept the case-sensitive artifact IDs `Core`, `Design`, `Browser`, `Donations` and `FreetimeWarn`, and version `3.1.0`, unchanged.
 - Configured `https://repo.free-time.me/maven/` as the Maven endpoint for publishing and dependency installation.
 - Documented local publishing with `sh gradlew publish`, properties `furyUsername` and `furyToken` in untracked `~/.gradle/gradle.properties`, or environment variables `FURY_USERNAME` and `FURY_TOKEN`.
-- Documented CI repository variable `FURY_USERNAME` and secret `FURY_TOKEN`; the username is the token assignee and the token is a deploy token.
+- Configured CI to read repository secrets `FURY_USERNAME` and `FURY_TOKEN`, with a repository-variable fallback for `FURY_USERNAME`; the username is the token assignee and the token is a deploy token.
 - Clarified that public consumption needs no credentials only when packages are public in Gemfury. Private consumers should use read-only tokens, never deploy tokens, and must not embed secrets in apps or tracked files.
 - Documented that CI publishes before creating the version tag. Existing tagged versions are not automatically republished; bump the shared version for the next release.
 

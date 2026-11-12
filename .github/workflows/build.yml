@@ -82,12 +82,12 @@ jobs:
       - name: Publish libraries to Gemfury
         shell: bash
         env:
-          FURY_USERNAME: ${{ vars.FURY_USERNAME }}
+          FURY_USERNAME: ${{ secrets.FURY_USERNAME || vars.FURY_USERNAME }}
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
         run: |
           set -euo pipefail
 
-          test -n "$FURY_USERNAME" || { echo "Missing repository variable FURY_USERNAME"; exit 1; }
+          test -n "$FURY_USERNAME" || { echo "Missing repository secret or variable FURY_USERNAME"; exit 1; }
           test -n "$FURY_TOKEN" || { echo "Missing repository secret FURY_TOKEN"; exit 1; }
           chmod +x ./gradlew
           ./gradlew assembleRelease publish -PreleaseVersion="${{ needs.build.outputs.version }}"
