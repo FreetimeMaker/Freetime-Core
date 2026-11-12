@@ -1,5 +1,5 @@
 [versions]
-freetime = "3.0.0"
+freetime = "3.1.0"
 compileSdk = "37"
 minSdk = "24"
 agp = "9.5.1"
