@@ -7,6 +7,7 @@ android {
     compileSdk = libs.versions.compileSdk.get().toInt()
     defaultConfig { minSdk = libs.versions.minSdk.get().toInt() }
     buildFeatures { compose = true }
+
     publishing {
         singleVariant("release") {
             withSourcesJar()
@@ -18,6 +19,17 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
+val checkTemplates by tasks.registering {
+    group = "verification"
+    description = "Compiles both app-owned theme templates, previews and optional Freetime adapters."
+    dependsOn("compileDebugKotlin")
+}
+
+tasks.named("check") {
+    dependsOn(checkTemplates)
+}
+
+
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     api(libs.androidx.compose.ui)

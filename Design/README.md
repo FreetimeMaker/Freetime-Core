@@ -30,6 +30,38 @@ Available modes:
 
 `AUTO_TIME` defaults to light from **07:00** and dark from **19:00**.
 
+## App-owned theme templates (without Liquid Glass)
+
+[`templates/`](src/main/java/com/freetime/design/templates/README.md) provides two copyable variants with a structure
+similar to GeoWeather **v4.1.0**, but without its branding or design tokens:
+
+- [`material3/`](src/main/java/com/freetime/design/templates/material3/): classic `MaterialTheme`.
+- [`expressive/`](src/main/java/com/freetime/design/templates/expressive/): `MaterialExpressiveTheme` with expressive motion.
+
+Their packages are `com.freetime.design.templates.material3` and
+`com.freetime.design.templates.expressive`. Copy the desired variant into your app
+and change the package to your own `templates` subpackage.
+
+Each variant separates colors (`Color.kt`), typography (`Type.kt`), shapes
+(`Shapes.kt`) and theme composition (`Theme.kt`). Optional `Preview.kt` files
+show light and dark examples. Optional `FreetimeTheme.kt` adapters disable
+floating-navigation glass; the core templates depend only on Compose.
+
+Apps own all design values and theme behavior. The starting values are Material
+3 defaults, Material You is opt-in, and there is no prescribed schedule or OLED
+behavior. The existing library `AppTheme` remains unchanged.
+
+Templates live in `src/main/java/com/freetime/design/templates` and are included
+in the Design library. Normal library builds compile both variants, including
+previews and optional adapters. You can also run the dedicated compilation check:
+
+```sh
+sh gradlew :Design:checkTemplates
+```
+
+This check also runs through `:Design:check` and the build workflow. See the
+[template guide](src/main/java/com/freetime/design/templates/README.md) for setup, previews, custom fonts and settings.
+
 ## Liquid Glass policy
 
 Liquid Glass is used only by the floating bottom navigation.

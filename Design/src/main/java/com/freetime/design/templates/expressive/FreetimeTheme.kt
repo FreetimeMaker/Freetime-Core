@@ -1,0 +1,21 @@
+package com.freetime.design.templates.expressive
+
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import com.freetime.design.LocalIsDarkTheme
+import com.freetime.design.ProvideFloatingBottomNavigationGlass
+
+// Optional: copy only when the app uses Freetime Core Design components.
+@Composable
+fun FreetimeTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = false,
+    content: @Composable () -> Unit,
+) {
+    AppTheme(darkTheme = darkTheme, dynamicColor = dynamicColor) {
+        CompositionLocalProvider(LocalIsDarkTheme provides darkTheme) {
+            ProvideFloatingBottomNavigationGlass(enabled = false, content = content)
+        }
+    }
+}
