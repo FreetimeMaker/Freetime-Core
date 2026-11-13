@@ -6,7 +6,17 @@ This is fully local polling: the device fetches public metadata and posts Androi
 
 ## Installation and publication status
 
-Notifications is a new, **not yet published** module. In this repository, add it to the consuming app's `build.gradle.kts`:
+Notifications is introduced in **3.2.0**. This release is prepared but **not yet uploaded**; the Maven dependency becomes available after actual publication.
+
+Add `https://repo.free-time.me/maven/` to your app's `settings.gradle.kts` as shown in the root [repository setup](../README.md#installation). Public consumption requires no credentials. After publication, add to your app's `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    implementation("com.freetime:Notifications:3.2.0")
+}
+```
+
+For local integration before publication, or when working in this repository, use this alternative instead:
 
 ```kotlin
 dependencies {
@@ -14,7 +24,7 @@ dependencies {
 }
 ```
 
-For another checkout, first include the local `Notifications` and `Core` projects in that build. Future Maven coordinates use group `com.freetime` and artifact ID `Notifications`; no released version is advertised here. Do not assume `com.freetime:Notifications:3.1.0` is available.
+For another checkout, first include the local `Notifications` and `Core` projects in that build. Notifications was not part of the five-module 3.1.0 release.
 
 ## Configure from an application-owned coroutine
 

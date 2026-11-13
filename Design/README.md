@@ -6,8 +6,10 @@ Version 3.x exposes Liquid Glass only through the dedicated floating bottom navi
 
 ## Dependency
 
+Version **3.2.0** is prepared but not yet uploaded; this dependency becomes available after publication.
+
 ```kotlin
-implementation("com.freetime:Design:3.1.0")
+implementation("com.freetime:Design:3.2.0")
 ```
 
 Add `https://repo.free-time.me/maven/` to your repositories. See the root [installation and JitPack migration guide](../README.md#installation) for repository setup and access requirements. Public packages require no consumer credentials. The [public publishing flow](../README.md#publishing) requests public visibility for new packages without an initial dashboard step; existing private version conflicts are not automatically made public.

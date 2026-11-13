@@ -2,7 +2,9 @@
 
 Reusable, open-source Android libraries for Freetime Maker apps.
 
-**Current version: 3.1.0**
+**Current version: 3.2.0**
+
+Release 3.2.0 is prepared but **not yet uploaded**. The Maven dependencies below become available after publication.
 
 Freetime Core keeps shared Android functionality in small modules that apps can adopt independently. Version 3.x keeps **Material 3 Expressive + Material You** as the UI foundation and restricts Liquid Glass to the dedicated floating bottom navigation API.
 
@@ -55,19 +57,22 @@ Then add only the modules your app needs:
 
 ```kotlin
 dependencies {
-    implementation("com.freetime:Core:3.1.0")
-    implementation("com.freetime:Design:3.1.0")
-    implementation("com.freetime:Browser:3.1.0")
-    implementation("com.freetime:Donations:3.1.0")
-    implementation("com.freetime:FreetimeWarn:3.1.0")
+    implementation("com.freetime:Core:3.2.0")
+    implementation("com.freetime:Design:3.2.0")
+    implementation("com.freetime:Browser:3.2.0")
+    implementation("com.freetime:Donations:3.2.0")
+    implementation("com.freetime:FreetimeWarn:3.2.0")
+    implementation("com.freetime:Notifications:3.2.0")
 }
 ```
 
 Public consumption requires no credentials. The public upload flow requests public visibility for new packages; no initial dashboard step is required. For private packages, configure a read-only token through local Gradle properties or your CI secret store, never a publishing deploy token. Do not embed tokens or other secrets in apps or tracked files.
 
-### Notifications: local module only
+### Notifications: 3.2.0 integration
 
-The new `:Notifications` module is **not yet published** and is not an available 3.1.0 dependency. Within this repository, add:
+Notifications is introduced in **3.2.0**, pending actual publication. After publication, use `implementation("com.freetime:Notifications:3.2.0")` with the repository settings above and follow the [module integration guide](Notifications/README.md).
+
+For local integration before publication, or when working within this repository, use the project dependency instead:
 
 ```kotlin
 dependencies {
@@ -75,11 +80,11 @@ dependencies {
 }
 ```
 
-For another checkout, include the local `Notifications` and `Core` projects in the consuming build first. Future publication uses Maven group `com.freetime` and artifact ID `Notifications`; no published version is advertised here. The five released dependencies above remain unchanged.
+For another checkout, include the local `Notifications` and `Core` projects in the consuming build first. The local project dependency is an alternative to the Maven dependency, not an additional requirement.
 
 ### Migrating from JitPack
 
-Replace `com.github.FreetimeMaker.Freetime-Core:<module>:3.1.0` with `com.freetime:<module>:3.1.0` and add the Gemfury repository above. Artifact IDs remain case-sensitive and unchanged: `Core`, `Design`, `Browser`, `Donations` and `FreetimeWarn`. The version remains `3.1.0`; this migration changes the repository and Maven group, not the library APIs. Remove `https://jitpack.io` only if no other dependencies need it.
+Historical 3.1.0 migration example: replace `com.github.FreetimeMaker.Freetime-Core:<module>:3.1.0` with `com.freetime:<module>:3.1.0` and add the Gemfury repository above. Artifact IDs remain case-sensitive and unchanged: `Core`, `Design`, `Browser`, `Donations` and `FreetimeWarn`. The version remains `3.1.0`; this migration changes the repository and Maven group, not the library APIs. Remove `https://jitpack.io` only if no other dependencies need it. For the prepared 3.2.0 release, use the six `com.freetime` dependencies above after publication; 3.2.0 is not a JitPack release.
 
 ## Publishing
 
@@ -101,15 +106,15 @@ From the repository root, run:
 sh gradlew publishPublic
 ```
 
-The configured publication module list now includes Notifications, but that new module has not yet been published or verified remotely. The previously released five-module status below does not establish Notifications availability.
+Publication is configured for six modules: `Core`, `Design`, `Browser`, `Donations`, `FreetimeWarn` and `Notifications`. Release 3.2.0 is prepared but has not yet been uploaded or verified remotely.
 
-This stages the configured release AARs and their POMs through a file Maven repository in `build/public-maven`, then runs `.github/scripts/publish_public_maven.py VERSION`. The default version comes from the shared version catalog, for example `3.1.0`; an explicit `-PreleaseVersion` overrides it consistently for staging and uploads. Artifact versions are never randomized.
+This stages the configured release AARs and their POMs through a file Maven repository in `build/public-maven`, then runs `.github/scripts/publish_public_maven.py VERSION`. The default version comes from the shared version catalog, for example `3.2.0`; an explicit `-PreleaseVersion` overrides it consistently for staging and uploads. Artifact versions are never randomized.
 
 `sh gradlew publish` **only stages locally**; it does not upload remotely. To validate the staged archives without credentials or uploads:
 
 ```sh
 sh gradlew publish
-python3 .github/scripts/publish_public_maven.py 3.1.0 --dry-run
+python3 .github/scripts/publish_public_maven.py 3.2.0 --dry-run
 ```
 
 ### Public upload format and limits
@@ -122,15 +127,15 @@ New packages require no manual initial dashboard visibility step. An existing pr
 
 ### Anonymous verification and release status
 
-CI stages and publicly uploads the release, then checks anonymous downloads of all five modules’ **POMs and AARs at the exact group, artifact and version**, before creating the release tag. It does not require sources, Javadoc or `.module` files. No publishing credentials are passed to the check. Run it locally after publishing:
+CI stages and publicly uploads the release, then checks anonymous downloads of all six configured modules’ **POMs and AARs at the exact group, artifact and version**, before creating the release tag. It does not require sources, Javadoc or `.module` files. No publishing credentials are passed to the check. Run it locally after publishing:
 
 ```sh
-python3 .github/scripts/verify_public_maven.py 3.1.0
+python3 .github/scripts/verify_public_maven.py 3.2.0
 ```
 
-All five `com.freetime` modules at version `3.1.0` have been uploaded through this public path, and anonymous downloads of every AAR and POM have been verified at the custom repository URL. No release tag is created by the local publishing command.
+Historically, the five `com.freetime` modules at version `3.1.0` were uploaded through this public path, and anonymous downloads of every AAR and POM were verified at the custom repository URL. No release tag is created by the local publishing command.
 
-Existing tagged versions are not automatically republished; normally, bump the shared version for the next release to run the publication-and-tag flow. Do not bump `3.1.0` merely to update these migration instructions.
+Existing tagged versions are not automatically republished; normally, bump the shared version for the next release to run the publication-and-tag flow. The next minor release, 3.2.0, adds Notifications as the sixth module; its public availability remains pending publication.
 
 ## Material 3 Expressive + Material You
 
@@ -299,10 +304,10 @@ The shared release version lives in `gradle/libs.versions.toml`:
 
 ```toml
 [versions]
-freetime = "3.1.0"
+freetime = "3.2.0"
 ```
 
-The root Gradle build applies that value to all published library modules. `FreetimeCore.SDK_VERSION` uses the same release number, and the GitHub Actions release workflow creates `v3.1.0` when the version does not already have a tag.
+The root Gradle build applies that value to all published library modules. `FreetimeCore.SDK_VERSION` uses the same release number, and the GitHub Actions release workflow creates `v3.2.0` after publication and verification when the version does not already have a tag.
 
 See [CHANGELOG.md](CHANGELOG.md) for release history.
 

@@ -6,15 +6,36 @@ The project follows semantic versioning.
 
 ## Unreleased
 
+No unreleased changes yet.
+
+## 3.2.0 - 2026-11-13
+
 ### Notifications
 
-- Add the Android `:Notifications` module (`com.freetime.notifications`), depending on `:Core`, for local GitHub/F-Droid update detection, GitHub release-note changelogs and developer blog messages. No Firebase, UnifiedPush or notification backend is required; this is polling, not guaranteed immediate push.
-- Compare releases only against the installed host app: GitHub numeric/semver-style tags must be newer than its version name; F-Droid selects the suggested version code when present, otherwise the highest code, and compares against the installed long version code. Only GitHub releases with nonblank bodies produce changelog alerts. Metadata is informational; no APK download or installation is provided.
-- Read developer messages from `https://api.free-time.me/v2/blog/posts`, the public API used by `blog.free-time.me`, with case-insensitive matching of all requested categories and encoded post query links. No blog tracking token is required.
-- Persist configuration, category overrides and bounded per-source/per-category deduplication in DataStore. Establish a silent first-success baseline unless explicitly opted into first-check notifications. Retain up to 500 IDs per source/category with at most 100 GitHub/blog feed entries per check.
-- Schedule connected WorkManager polling with a six-hour default and 15-minute minimum; provide suspending foreground `checkNow` with per-source failures and best-effort queued `requestCheck`. The host owns coroutine setup, notification icons, localized channel options and Android 13+ permission requests; Android channel/user settings retain precedence.
-- Support HTTPS custom F-Droid per-package APIs, raw index-v1 JSON and index-v1.jar metadata with 16 MiB response/inflation bounds, without signature validation. Require HTTPS requests/redirects without embedded credentials.
-- Document setup, persistent toggles, stop semantics, WorkManager initialization and public API/rate-limit constraints in [Notifications/README.md](Notifications/README.md). The module is **not yet published**: use `implementation(project(":Notifications"))`; future Maven group/artifact are `com.freetime` / `Notifications`. This does not announce a Notifications 3.1.0 artifact or change the release version.
+- Added the Android `Notifications` library with namespace `com.freetime.notifications` and an API dependency on `Core`. Its Maven coordinates are `com.freetime:Notifications:3.2.0`.
+- Added local GitHub release and F-Droid version detection, GitHub release-note changelog notifications, and developer messages from `blog.free-time.me`. No Firebase, UnifiedPush, Google Play Services, companion app or push backend is required.
+- Compared GitHub numeric/semver-style release tags against the installed app's version name, excluding drafts and optionally prereleases. Compared F-Droid's suggested version, or the highest available version when no suggestion exists, against the installed long version code.
+- Added custom F-Droid per-package APIs, raw index-v1 JSON and index-v1.jar metadata support. Metadata checks are informational; repository signatures are not validated and APKs are not downloaded or installed.
+- Read developer messages from the blog's verified public API, with case-insensitive category filters and encoded post links. Loaded full post text only for pending deliveries, falling back to a headline notification if the detail endpoint is unavailable.
+- Added independent update, changelog and developer-message channels with app-configurable names, descriptions and importance. Persisted user category overrides take precedence over initialization defaults; Android's permission and channel settings remain authoritative.
+- Persisted configuration and up to 500 delivered IDs per source/category in DataStore. The first successful check establishes a silent baseline unless first-check notifications are explicitly enabled; unposted entries remain pending.
+- Scheduled network-constrained WorkManager polling with a six-hour default and 15-minute minimum. Added foreground `checkNow`, best-effort queued checks and stop controls. This is polling, not guaranteed immediate push, and Android can delay background execution.
+- Cancelled and invalidated active checks on configuration changes or stop, preventing stale delivery without blocking lifecycle changes behind network requests. Resolved persisted icon resource names against the current app installation after updates.
+- Bounded HTTPS response sizes, redirects and request duration; bounded archive inflation and sanitized background failure logs. The host app requests notification permission on Android 13+.
+- Added an English integration guide in [Notifications/README.md](Notifications/README.md).
+
+### Build and publishing
+
+- Included Notifications in the six-module public-upload and anonymous-verification flow, using the shared release version and explicit `public=true` uploads.
+- Added Notifications compilation, unit tests and Android lint to CI.
+- Added AndroidX WorkManager `2.12.0`, Preferences DataStore `1.3.0` and coroutines `1.11.0` for Notifications, plus JVM JSON fixtures for parser tests.
+- Added unit coverage for source parsing, archive limits, version ordering, configuration persistence formats, deduplication policy and lifecycle invalidation.
+
+### Version consistency
+
+- Updated the shared version catalog, `FreetimeCore.SDK_VERSION` and current dependency examples to `3.2.0`.
+- Updated the Sample app to version `3.2.0` with version code `5`.
+- Kept existing 3.1.x APIs unchanged. Notifications is an optional dependency; notification permission and runtime setup are required only by apps adopting that module.
 
 ## 3.1.0 - 2026-11-12
 
