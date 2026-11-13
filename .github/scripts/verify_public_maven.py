@@ -8,7 +8,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 REPOSITORY = "https://repo.free-time.me/maven/"
-MODULES = ("Core", "Design", "Browser", "Donations", "FreetimeWarn")
+MODULES = ("Core", "Design", "Browser", "Donations", "FreetimeWarn", "Notifications")
 
 
 def verify_artifact(url, extension, expected=None):

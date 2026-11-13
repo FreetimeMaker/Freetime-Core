@@ -18,20 +18,22 @@ Freetime Core keeps shared Android functionality in small modules that apps can 
 - automatic light mode from **07:00** and dark mode from **19:00**
 - one **Liquid Glass** switch dedicated to the floating bottom navigation
 - reusable browser, donation and warning modules
+- local polling for app updates, GitHub changelogs and developer blog messages with the new [Notifications module](Notifications/README.md) (not yet published)
 - no mandatory Freetime account, Luma Store installation or proprietary backend
 - F-Droid-friendly, open-source dependencies
 - minimum Android SDK **24**, compile SDK **37**
 
 ## Modules
 
-| Module         | Purpose                                                                                         |
-| -------------- | ----------------------------------------------------------------------------------------------- |
-| `Core`         | Shared models, results, SDK metadata and lightweight Android helpers                            |
-| `Design`       | Material 3 Expressive / Material You theme helpers plus floating bottom-navigation Liquid Glass |
-| `Browser`      | External and in-app URL routing plus reusable browser UI                                        |
-| `Donations`    | Donation targets, wallet helpers and Compose donation UI                                        |
-| `FreetimeWarn` | Reusable acknowledgement/warning flow for Compose apps                                          |
-| `Sample`       | Example application demonstrating the libraries together                                        |
+| Module          | Purpose                                                                                                                                       |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Core`          | Shared models, results, SDK metadata and lightweight Android helpers                                                                          |
+| `Design`        | Material 3 Expressive / Material You theme helpers plus floating bottom-navigation Liquid Glass                                               |
+| `Browser`       | External and in-app URL routing plus reusable browser UI                                                                                      |
+| `Donations`     | Donation targets, wallet helpers and Compose donation UI                                                                                      |
+| `FreetimeWarn`  | Reusable acknowledgement/warning flow for Compose apps                                                                                        |
+| `Notifications` | Local GitHub/F-Droid update detection, GitHub release notes and developer blog messages ([guide](Notifications/README.md); not yet published) |
+| `Sample`        | Example application demonstrating the libraries together                                                                                      |
 
 ## Installation
 
@@ -63,6 +65,18 @@ dependencies {
 
 Public consumption requires no credentials. The public upload flow requests public visibility for new packages; no initial dashboard step is required. For private packages, configure a read-only token through local Gradle properties or your CI secret store, never a publishing deploy token. Do not embed tokens or other secrets in apps or tracked files.
 
+### Notifications: local module only
+
+The new `:Notifications` module is **not yet published** and is not an available 3.1.0 dependency. Within this repository, add:
+
+```kotlin
+dependencies {
+    implementation(project(":Notifications"))
+}
+```
+
+For another checkout, include the local `Notifications` and `Core` projects in the consuming build first. Future publication uses Maven group `com.freetime` and artifact ID `Notifications`; no published version is advertised here. The five released dependencies above remain unchanged.
+
 ### Migrating from JitPack
 
 Replace `com.github.FreetimeMaker.Freetime-Core:<module>:3.1.0` with `com.freetime:<module>:3.1.0` and add the Gemfury repository above. Artifact IDs remain case-sensitive and unchanged: `Core`, `Design`, `Browser`, `Donations` and `FreetimeWarn`. The version remains `3.1.0`; this migration changes the repository and Maven group, not the library APIs. Remove `https://jitpack.io` only if no other dependencies need it.
@@ -87,7 +101,9 @@ From the repository root, run:
 sh gradlew publishPublic
 ```
 
-This stages all five actual release AARs and their POMs through a file Maven repository in `build/public-maven`, then runs `.github/scripts/publish_public_maven.py VERSION`. The default version comes from the shared version catalog, for example `3.1.0`; an explicit `-PreleaseVersion` overrides it consistently for staging and uploads. Artifact versions are never randomized.
+The configured publication module list now includes Notifications, but that new module has not yet been published or verified remotely. The previously released five-module status below does not establish Notifications availability.
+
+This stages the configured release AARs and their POMs through a file Maven repository in `build/public-maven`, then runs `.github/scripts/publish_public_maven.py VERSION`. The default version comes from the shared version catalog, for example `3.1.0`; an explicit `-PreleaseVersion` overrides it consistently for staging and uploads. Artifact versions are never randomized.
 
 `sh gradlew publish` **only stages locally**; it does not upload remotely. To validate the staged archives without credentials or uploads:
 
@@ -209,6 +225,14 @@ FreetimeBrowser.openExternal(
 ```
 
 For app-owned browsing, use `BrowserMode.IN_APP` with the routing options or the reusable browser screen.
+
+## Notifications
+
+The new [`:Notifications` module](Notifications/README.md) (`com.freetime.notifications`, depending on `:Core`) polls public sources locally for GitHub/F-Droid versions newer than the installed app, GitHub release-note changelogs and developer blog messages. Configure only update repositories/packages for the same installed app. F-Droid metadata does not produce changelog alerts or download/install APKs.
+
+No Firebase, UnifiedPush or notification backend is required. The blog source uses `https://api.free-time.me/v2/blog/posts`, the public API used by `blog.free-time.me`; filters require all requested categories, case-insensitively, without a tracking token. WorkManager polling defaults to six hours with a 15-minute minimum, not an immediate push guarantee. A suspending `checkNow` performs a foreground HTTP check; `requestCheck` only queues best-effort work.
+
+Configuration and bounded per-source/per-category deduplication persist in DataStore. The first successful check is a silent baseline by default. The host supplies its notification icon, localized channel options and Android 13+ permission request. See the [module guide](Notifications/README.md) for the initialization DSL, application-owned coroutine setup, version rules, persistent toggles and networking limits. Use the local project dependency above until publication is available.
 
 ## Donations
 

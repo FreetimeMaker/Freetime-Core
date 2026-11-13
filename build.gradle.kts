@@ -1,6 +1,5 @@
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
-
 import org.gradle.api.publish.tasks.GenerateModuleMetadata
 
 plugins {
@@ -13,7 +12,7 @@ val releaseVersion = providers.gradleProperty("releaseVersion")
     .orElse(providers.environmentVariable("VERSION"))
     .orElse(libs.versions.freetime)
 
-val publicLibraryModules = listOf("Core", "Design", "Browser", "Donations", "FreetimeWarn")
+val publicLibraryModules = listOf("Core", "Design", "Browser", "Donations", "FreetimeWarn", "Notifications")
 
 tasks.register<Exec>("publishPublic") {
     group = "publishing"

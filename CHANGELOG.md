@@ -6,7 +6,15 @@ The project follows semantic versioning.
 
 ## Unreleased
 
-No unreleased changes yet.
+### Notifications
+
+- Add the Android `:Notifications` module (`com.freetime.notifications`), depending on `:Core`, for local GitHub/F-Droid update detection, GitHub release-note changelogs and developer blog messages. No Firebase, UnifiedPush or notification backend is required; this is polling, not guaranteed immediate push.
+- Compare releases only against the installed host app: GitHub numeric/semver-style tags must be newer than its version name; F-Droid selects the suggested version code when present, otherwise the highest code, and compares against the installed long version code. Only GitHub releases with nonblank bodies produce changelog alerts. Metadata is informational; no APK download or installation is provided.
+- Read developer messages from `https://api.free-time.me/v2/blog/posts`, the public API used by `blog.free-time.me`, with case-insensitive matching of all requested categories and encoded post query links. No blog tracking token is required.
+- Persist configuration, category overrides and bounded per-source/per-category deduplication in DataStore. Establish a silent first-success baseline unless explicitly opted into first-check notifications. Retain up to 500 IDs per source/category with at most 100 GitHub/blog feed entries per check.
+- Schedule connected WorkManager polling with a six-hour default and 15-minute minimum; provide suspending foreground `checkNow` with per-source failures and best-effort queued `requestCheck`. The host owns coroutine setup, notification icons, localized channel options and Android 13+ permission requests; Android channel/user settings retain precedence.
+- Support HTTPS custom F-Droid per-package APIs, raw index-v1 JSON and index-v1.jar metadata with 16 MiB response/inflation bounds, without signature validation. Require HTTPS requests/redirects without embedded credentials.
+- Document setup, persistent toggles, stop semantics, WorkManager initialization and public API/rate-limit constraints in [Notifications/README.md](Notifications/README.md). The module is **not yet published**: use `implementation(project(":Notifications"))`; future Maven group/artifact are `com.freetime` / `Notifications`. This does not announce a Notifications 3.1.0 artifact or change the release version.
 
 ## 3.1.0 - 2026-11-12
 
