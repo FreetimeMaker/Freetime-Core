@@ -6,6 +6,10 @@ Reusable, open-source Android libraries for Freetime Maker apps.
 
 Freetime Core keeps shared Android functionality in small modules that apps can adopt independently. Version 3.x keeps **Material 3 Expressive + Material You** as the UI foundation and restricts Liquid Glass to the dedicated floating bottom navigation API.
 
+## This Repo is sponsored by
+
+[![Sponsor](https://readme.cash/i/i2o7ay35ms.svg)](https://readme.cash/c/i2o7ay35ms)
+
 ## Highlights
 
 - **Material 3 Expressive** as the UI foundation
