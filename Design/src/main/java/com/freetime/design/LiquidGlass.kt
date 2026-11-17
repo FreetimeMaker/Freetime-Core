@@ -309,7 +309,9 @@ private fun FloatingNavigationCapsule(
                 .width(tabWidth)
                 .height(NavigationIndicatorHeight)
                 .graphicsLayer {
-                    val value = if (ltr) motion.position else (count - 1) - motion.position
+                    // An invalid tab index leaves selection to the separate search button.
+                                        alpha = if (selectedItemIndex in items.indices) 1f else 0f
+                                        val value = if (ltr) motion.position else (count - 1) - motion.position
                     translationX = value * tabWidthPx + insetPx
 
                     val velocityWarp = (indicatorVelocity / 10f).coerceIn(-0.2f, 0.2f)

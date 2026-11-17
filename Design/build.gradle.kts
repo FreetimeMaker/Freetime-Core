@@ -21,7 +21,7 @@ android {
 }
 val checkTemplates by tasks.registering {
     group = "verification"
-    description = "Compiles both app-owned theme templates, previews and optional Freetime adapters."
+    description = "Compiles all four app-owned theme templates, previews and Freetime adapters."
     dependsOn("compileDebugKotlin")
 }
 
