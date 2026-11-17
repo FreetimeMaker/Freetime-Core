@@ -20,7 +20,7 @@ Freetime Core keeps shared Android functionality in small modules that apps can 
 - automatic light mode from **07:00** and dark mode from **19:00**
 - one **Liquid Glass** switch dedicated to the floating bottom navigation
 - reusable browser, donation and warning modules
-- local polling for app updates, GitHub changelogs and developer blog messages with the new [Notifications module](Notifications/README.md) (not yet published)
+- local polling for app updates, GitHub changelogs and developer blog messages with the new [Notifications module](Notifications/README.md)
 - no mandatory Freetime account, Luma Store installation or proprietary backend
 - F-Droid-friendly, open-source dependencies
 - minimum Android SDK **24**, compile SDK **37**
@@ -34,7 +34,7 @@ Freetime Core keeps shared Android functionality in small modules that apps can 
 | `Browser`       | External and in-app URL routing plus reusable browser UI                                                                                      |
 | `Donations`     | Donation targets, wallet helpers and Compose donation UI                                                                                      |
 | `FreetimeWarn`  | Reusable acknowledgement/warning flow for Compose apps                                                                                        |
-| `Notifications` | Local GitHub/F-Droid update detection, GitHub release notes and developer blog messages ([guide](Notifications/README.md); not yet published) |
+| `Notifications` | Local GitHub/F-Droid update detection, GitHub release notes and developer blog messages ([guide](Notifications/README.md) |
 | `Sample`        | Example application demonstrating the libraries together                                                                                      |
 
 ## Installation

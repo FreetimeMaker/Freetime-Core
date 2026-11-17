@@ -6,7 +6,7 @@ This is fully local polling: the device fetches public metadata and posts Androi
 
 ## Installation and publication status
 
-Notifications is introduced in **3.2.0**. This release is prepared but **not yet uploaded**; the Maven dependency becomes available after actual publication.
+Notifications is introduced in **3.2.0**.
 
 Add `https://repo.free-time.me/maven/` to your app's `settings.gradle.kts` as shown in the root [repository setup](../README.md#installation). Public consumption requires no credentials. After publication, add to your app's `build.gradle.kts`:
 
