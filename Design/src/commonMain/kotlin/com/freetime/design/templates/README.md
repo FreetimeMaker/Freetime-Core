@@ -52,7 +52,7 @@ Use `LiquidGlassRoot(source = { ... }) { ... }` to supply glass to arbitrary scr
 
 `AppLightColorScheme`, `AppDarkColorScheme`, `AppTypography` and `AppShapes` are app-owned values initialized with Material defaults. Customize colors in `Color.kt` or use complete light and dark schemes exported from Material Theme Builder. No library or product palette is applied implicitly.
 
-Place custom font files in your app's `res/font` directory, then configure the text styles in `Type.kt` using `FontFamily`, `Font` and the appropriate weights. The templates do not include font files; Material and system font defaults apply unless customized. Configure corner shapes in `Shapes.kt`.
+Place shared custom font files in your app's `src/commonMain/composeResources/font` directory, then configure the text styles in `Type.kt` using `FontFamily`, Compose Multiplatform resource `Font` and the appropriate weights. The templates do not include font files; Material and system font defaults apply unless customized. Configure corner shapes in `Shapes.kt`.
 
 ## App settings and Material You
 
@@ -66,23 +66,23 @@ AppTheme(darkTheme = resolvedDarkTheme, dynamicColor = useDynamicColor) {
 
 The names in this example represent the calling app's state. The template does not read or store app settings or enforce another mode.
 
-With `dynamicColor = true`, Android 12 and later replace the entire selected color scheme with Material You system colors, typically derived from the wallpaper. This affects all components that read theme color roles, including text, surfaces, cards, buttons and text fields. Custom static scheme colors are not active in this mode; fonts, shapes and expressive motion remain unchanged. On older Android versions, the app's own light and dark schemes remain active. Expressive does not require dynamic colors.
+With `dynamicColor = true`, Android 12 and later replace the entire selected color scheme with Material You system colors, typically derived from the wallpaper. This affects all components that read theme color roles, including text, surfaces, cards, buttons and text fields. Custom static scheme colors are not active in this mode; fonts, shapes and expressive motion remain unchanged. On desktop and older Android versions, the app's own light and dark schemes remain active. Expressive does not require dynamic colors.
 
 ## Optional Freetime integration without glass
 
-Only if your app uses Freetime Core Design components, also copy the `FreetimeTheme.kt` file **from the selected variant** and update its package declaration. This requires the app to depend on the Design library. Without this file, the core themes remain fully independent of Freetime.
+Only if your app uses Freetime Core Design components, also copy the `FreetimeTheme.kt` file **from the selected variant** and update its package declaration. This requires the app to depend on the Design library. Without this file, the core themes need no Freetime components; standalone copies must still copy or adapt the dynamic-color platform helper described above.
 
 At the app entry point, use `FreetimeTheme(...)` instead of `AppTheme(...)`. The wrapper forwards `darkTheme` and `dynamicColor` unchanged, provides the same dark-mode Boolean through `LocalIsDarkTheme`, and sets `ProvideFloatingBottomNavigationGlass(enabled = false)`. It does not call the library's root theme or introduce additional color or mode selection. The core themes do not draw glass either.
 
 ## Light and dark previews
 
-Optionally copy `Preview.kt` from the same variant and update its package declaration. The app needs `androidx.compose.ui:ui-tooling-preview` and typically `ui-tooling` as a debug dependency, using versions compatible with the app.
+Optionally copy `Preview.kt` from the same variant and update its package declaration. The shared previews use `org.jetbrains.compose.ui.tooling.preview.Preview` and need Compose Multiplatform's `compose.components.uiToolingPreview` dependency. Configure platform preview tooling separately, using versions compatible with the app.
 
 Each file contains two private preview entry points and a private sample with `Surface`, `Column`, `Text`, `Card`, `Button` and `TextField`. Light and dark modes are set explicitly, and dynamic colors are disabled so both app-owned schemes are visible regardless of the preview device. The samples require neither icons nor Freetime. The text field is a static visual example, not an interactive form.
 
 ## Compilation check
 
-This directory belongs to the Design module's main source set. Every normal library build compiles all four variants, including previews and Freetime wrappers; their classes are included in the library artifact. The dedicated task checks those same original sources:
+This directory belongs to the Design module's `commonMain` source set. Every normal library build compiles all four variants, including previews and Freetime wrappers; their classes are included in the library artifact. The dedicated task checks those same original sources:
 
 ```sh
 sh gradlew :Design:checkTemplates

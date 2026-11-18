@@ -2,7 +2,7 @@
 
 Package: `com.freetime.design.templates.fullglass`.
 
-This is an opt-in, state-hoisted component toolkit for Material 3 **1.5.0-rc01**, shared by the Material 3 and Expressive templates. It reuses native controls for input, focus, keyboard navigation, selection semantics and animation, replacing appropriate container fills with a refracting glass surface. It does not intercept or replace ordinary `androidx.compose.material3` calls.
+This is an opt-in, state-hoisted component toolkit for Compose Multiplatform Material 3 **1.10.0-alpha05**, shared by the Material 3 and Expressive templates on Android and desktop JVM. It reuses native controls for input, focus, keyboard navigation, selection semantics and animation, replacing appropriate container fills with a refracting glass surface. It does not intercept or replace ordinary `androidx.compose.material3` calls.
 
 ## Open the interactive catalog
 
