@@ -2,17 +2,17 @@
 
 A Kotlin/Jetpack Compose acknowledgement and warning library inspired by FreeDroidWarn.
 
-The UI uses Material 3 directly and stays independent from the removed Freetime-prefixed Design component system.
+The shared UI uses Material 3 exported by `:Design`.
 
 ## Dependency
 
-Version **3.2.0** is prepared but not yet uploaded; this dependency becomes available after publication.
+Version **4.0.0** is prepared but not yet uploaded; this dependency becomes available after publication.
 
 ```kotlin
-implementation("com.freetime:FreetimeWarn:3.2.0")
+implementation("com.freetime:FreetimeWarn:4.0.0")
 ```
 
-Add `https://repo.free-time.me/maven/` to your repositories. See the root [installation and JitPack migration guide](../README.md#installation) for repository setup and access requirements. Public packages require no consumer credentials. The [public publishing flow](../README.md#publishing) requests public visibility for new packages without an initial dashboard step; existing private version conflicts are not automatically made public.
+Add `https://repo.free-time.me/maven/` to your repositories. See the root [installation and JitPack migration guide](../README.md#installation) for repository setup and access requirements. Anonymous access and complete KMP metadata must be verified before release. See the [publishing requirements](../README.md#publishing); the historical AAR-only public uploader is not suitable for KMP.
 
 ## Required app name
 
@@ -56,3 +56,28 @@ FreetimeWarn(
 ```
 
 Keep policy-specific wording current rather than relying indefinitely on text embedded in an old library release.
+
+## Android and desktop KMP
+
+The state, frequency handling, and all dialog UI live in `commonMain`. Shared calls
+no longer need a Context:
+
+```kotlin
+val warning = rememberFreetimeWarnState(
+    appName = "My app",
+    versionCode = 42L,
+)
+FreetimeWarn(state = warning)
+```
+
+The Android Context overload remains available and uses the original
+`freetime_warn` SharedPreferences file and acknowledgement keys. Desktop uses
+`java.util.prefs.Preferences` under `com/freetime/warn`, hashing keys to accommodate
+Java Preferences' key-length limit. Both persist ONCE and ONCE_PER_VERSION
+acknowledgements across restarts; dismissing without acknowledgement does not
+persist. Desktop writes are flushed and Android writes are committed before the
+warning closes. Storage failures propagate rather than falsely acknowledging.
+Hosts may inject `WarningPreferences` for custom storage or tests.
+
+The default content deliberately remains the existing Android-distribution notice,
+including on desktop. Supply `FreetimeWarnContent` for platform-specific messaging.

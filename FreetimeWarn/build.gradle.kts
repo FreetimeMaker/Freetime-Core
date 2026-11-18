@@ -1,34 +1,26 @@
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.multiplatform.library)
+    alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
 }
 
-android {
-    namespace = "com.freetime.warn"
-    compileSdk = libs.versions.compileSdk.get().toInt()
-
-    defaultConfig {
+kotlin {
+    androidLibrary {
+        namespace = "com.freetime.warn"
+        compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
+        withHostTestBuilder {}.configure {}
     }
-
-    buildFeatures { compose = true }
-
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
+    jvm("desktop")
+    jvmToolchain(17)
+    sourceSets {
+        commonMain.dependencies {
+            implementation(compose.runtime)
+            implementation(compose.ui)
+            implementation(compose.foundation)
+            implementation(project(":Design"))
         }
+        commonTest.dependencies { implementation(kotlin("test")) }
     }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-}
-
-dependencies {
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.foundation)
-    implementation(libs.androidx.compose.material3)
 }

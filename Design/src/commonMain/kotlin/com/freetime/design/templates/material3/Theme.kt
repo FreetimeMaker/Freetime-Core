@@ -1,0 +1,23 @@
+package com.freetime.design.templates.material3
+
+import com.freetime.design.platformDynamicColorScheme
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+
+@Composable
+fun AppTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = false,
+    content: @Composable () -> Unit,
+) {
+    val colorScheme = (if (dynamicColor) platformDynamicColorScheme(darkTheme) else null)
+        ?: if (darkTheme) AppDarkColorScheme else AppLightColorScheme
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = AppTypography,
+        shapes = AppShapes,
+        content = content,
+    )
+}

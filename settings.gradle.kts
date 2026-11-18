@@ -16,5 +16,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Freetime Core"
-include(":Core", ":Design", ":Browser", ":Donations", ":FreetimeWarn", ":Notifications", ":Sample")
+rootProject.name = "Freetime Core KMP"
+include(":Core", ":Design", ":Browser", ":Donations", ":FreetimeWarn", ":Notifications", ":Sample", ":Sample-android")
+project(":Sample-android").projectDir = file("Sample/androidApp")

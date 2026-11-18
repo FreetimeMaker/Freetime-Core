@@ -1,24 +1,27 @@
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.multiplatform.library)
 }
 
-android {
-    namespace = "com.freetime.core"
-    compileSdk = libs.versions.compileSdk.get().toInt()
-    defaultConfig { minSdk = libs.versions.minSdk.get().toInt() }
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
+kotlin {
+    androidLibrary {
+        namespace = "com.freetime.core"
+        compileSdk = libs.versions.compileSdk.get().toInt()
+        minSdk = libs.versions.minSdk.get().toInt()
+        testNamespace = "com.freetime.core.test"
+        withHostTestBuilder {}.configure {}
+        withDeviceTestBuilder {}.configure {
+            applicationId = "com.freetime.core.test"
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+    jvm("desktop")
+    jvmToolchain(17)
+    sourceSets {
+        commonTest.dependencies { implementation(kotlin("test")) }
+        getByName("androidDeviceTest").dependencies {
+            implementation("androidx.test:runner:1.6.2")
+            implementation("androidx.test.ext:junit:1.2.1")
+        }
     }
-}
-
-dependencies {
-    api(libs.androidx.core.ktx)
-    testImplementation(libs.junit)
 }

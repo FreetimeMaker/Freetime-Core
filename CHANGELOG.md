@@ -8,6 +8,23 @@ The project follows semantic versioning.
 
 No unreleased changes yet.
 
+## 4.0.0 - 2026-11-18
+
+### Breaking KMP import
+
+- Migrated `:Sample` to real shared KMP UI with a desktop entry point and a thin `:Sample-android` host in `Sample/androidApp`. Breaking changes concern source sets, KMP metadata, platform APIs and notification services, not module/artifact renaming.
+- Added platform-aware browser/donation launchers, desktop preferences and warning persistence. Desktop Browser is external-only, not an embedded WebView.
+- Added desktop in-process notification polling, atomic JSON storage and AWT tray delivery. Notification engine ports are JVM-shared with Java imports; no iOS/web support is claimed.
+- Preserved imported optional full-glass Design templates separately from the default navigation-only glass policy.
+- KMP consumption requires root and Android/desktop publications with Gradle Module Metadata. The previous AAR-only public uploader is not a KMP publication path.
+- Documented API migration and capability limits in [MIGRATION-4.0.md](MIGRATION-4.0.md).
+- Aligned both platform `FreetimeCore.SDK_VERSION` actuals to `4.0.0`, cleaned up migrated SDK tests, and advanced the Android sample migration counter to version code `6`, with version name derived from `project.version`.
+- Successful reruns with the unsuffixed module names passed: `:Design:checkTemplates`, `:Sample:compileKotlinDesktop`, `:Sample:desktopJar`, `:Sample-android:assembleDebug` and `:Sample-android:assembleRelease`.
+- `desktopTest` and `testAndroidHostTest` for Core, Browser, Donations, FreetimeWarn and Notifications passed, along with all 15 Python tests. JVM test counts (desktop / Android host) were Core 3 / 3, Browser 6 / 6, Donations 2 / 2, FreetimeWarn 2 / 2 and Notifications 36 / 34.
+- Credential-free `stagePublications` passed. Local publication verification covered 18 publications (root, Android and desktop for six libraries), totaling 78 files. All `.module` component versions are `4.0.0` in group `com.freetime`; POM and `.module` contents contain no `-kmp` references.
+- Desktop GUI smoke tests and device execution have not been performed; the Core device-test APK has not been compiled. These build and automated-test results do not establish GUI/device runtime behavior. Remote KMP metadata preservation and public/anonymous access remain unverified. No remote publication, upload, release tag or commit has been performed for this milestone.
+- Remote publication remains an explicit action through `publishKmp`/`publishGemfury`, not the historical AAR-only `publishPublic` path.
+
 ## 3.2.0 - 2026-11-13
 
 ### Notifications

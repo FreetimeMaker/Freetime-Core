@@ -1,28 +1,28 @@
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.multiplatform.library)
+    alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
 }
-android {
-    namespace = "com.freetime.donations"
-    compileSdk = libs.versions.compileSdk.get().toInt()
-    defaultConfig { minSdk = libs.versions.minSdk.get().toInt() }
-    buildFeatures { compose = true }
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
+
+kotlin {
+    androidLibrary {
+        namespace = "com.freetime.donations"
+        compileSdk = libs.versions.compileSdk.get().toInt()
+        minSdk = libs.versions.minSdk.get().toInt()
+        withHostTestBuilder {}.configure {}
+    }
+    jvm("desktop")
+    jvmToolchain(17)
+    sourceSets {
+        commonMain.dependencies {
+            api(project(":Core"))
+            api(project(":Browser"))
+            implementation(compose.runtime)
+            implementation(compose.ui)
+            implementation(compose.foundation)
+            implementation(project(":Design"))
         }
+        commonTest.dependencies { implementation(kotlin("test")) }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-}
-dependencies {
-    api(project(":Core"))
-    api(project(":Browser"))
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.foundation)
-    implementation(libs.androidx.compose.material3)
 }

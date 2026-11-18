@@ -56,7 +56,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
-      - name: Test public publishing scripts
+      - name: Test publishing scripts
         run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
 
       - name: Build and test libraries
@@ -64,7 +64,8 @@ jobs:
         run: |
           set -euo pipefail
           chmod +x ./gradlew
-          ./gradlew :Design:checkTemplates :Design:assembleDebug :Design:testDebugUnitTest :Notifications:assembleDebug :Notifications:testDebugUnitTest :Notifications:lintDebug :Sample:assembleDebug assembleDebug test
+          ./gradlew :Design:checkTemplates :Core:testAndroidHostTest :Browser:testAndroidHostTest :Donations:testAndroidHostTest :FreetimeWarn:testAndroidHostTest :Notifications:testAndroidHostTest :Sample-android:assembleDebug :Sample-android:assembleRelease stagePublications
+          ./gradlew -Djava.awt.headless=true :Core:desktopTest :Design:desktopTest :Browser:desktopTest :Donations:desktopTest :FreetimeWarn:desktopTest :Notifications:desktopTest :Sample:compileKotlinDesktop
 
   release:
     needs: build
@@ -92,12 +93,12 @@ jobs:
 
           test -n "$FURY_TOKEN" || { echo "Missing repository secret FURY_TOKEN"; exit 1; }
           chmod +x ./gradlew
-          ./gradlew assembleRelease publishPublic -PreleaseVersion="${{ needs.build.outputs.version }}"
+          ./gradlew stagePublications publishKmp -PreleaseVersion="${{ needs.build.outputs.version }}"
 
       - name: Verify anonymous access to all published packages
         env:
           RELEASE_VERSION: ${{ needs.build.outputs.version }}
-        run: python3 .github/scripts/verify_public_maven.py "$RELEASE_VERSION"
+        run: python3 .github/scripts/verify_gemfury_release.py "$RELEASE_VERSION"
 
       - name: Create and push GitHub tag
         shell: bash

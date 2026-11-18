@@ -1,18 +1,60 @@
 # Notifications
 
-Local Android notifications for **app updates**, **GitHub release-note changelogs** and **developer blog messages**. Module `:Notifications` uses namespace `com.freetime.notifications` and exposes a dependency on `:Core`; it uses AndroidX WorkManager, Preferences DataStore and coroutines. Minimum Android SDK is 24.
+Kotlin Multiplatform Android + desktop JVM notifications for **app updates**, **GitHub release-note changelogs** and **developer blog messages**. Module `:Notifications` uses namespace `com.freetime.notifications` and exposes `:Core`. Android retains WorkManager, Preferences DataStore and its Context-based API. Desktop provides in-process coroutine polling, atomic JSON file storage and AWT system-tray notifications. Minimum Android SDK is 24; JVM toolchain/target is 17.
+
+## Source layout and build integration
+
+- `androidMain`: existing Android facade, worker, manifest, DataStore and notification channels.
+- `jvmSharedMain`: models, configuration DSL/codec, HTTPS networking, parsing, policy, cancellation and checking engine. This intentionally JVM-shared source set uses Java and `org.json`; it is not a Native/JS implementation. Android uses framework `org.json`; desktop bundles the catalog JSON dependency.
+- `jvmSharedTest`: original codec, parser, policy and cancellation tests, used by both JVM targets.
+- `desktopMain` / `desktopTest`: desktop lifecycle, storage, tray delivery and persistence/engine tests.
+
+The root build provides `libs.plugins.kotlin.multiplatform`, `libs.plugins.android.multiplatform.library` and the `:Core` project mapping. Reruns with the unsuffixed module names passed all 36 desktop tests and 34 Android host tests. Desktop GUI smoke tests and device tests have not been run. Gradle validation commands are `sh gradlew :Notifications:desktopTest` and `sh gradlew :Notifications:testAndroidHostTest` (run sequentially).
+
+## Desktop usage
+
+```kotlin
+import com.freetime.notifications.DesktopFreetimeNotifications
+import java.nio.file.Path
+
+val notifications = DesktopFreetimeNotifications(
+    storageDirectory = Path.of(System.getProperty("user.home"), ".my-app", "notifications"),
+    installedVersionName = "1.2.0",
+    installedVersionCode = 12, // Required for meaningful F-Droid comparisons.
+    appName = "My App",
+)
+
+// From an application-owned coroutine; no Android resource icon is needed.
+notifications.initialize {
+    github("your-owner", "your-app")
+    developerMessages("Desktop")
+}
+val result = notifications.checkNow()
+// On subsequent launches, use notifications.resume() to load stored configuration.
+// notifications.stop() clears configuration but retains IDs and category overrides.
+// notifications.shutdown() releases polling/tray resources, preserving configuration.
+// close() is the blocking alternative for non-AWT threads only.
+```
+
+`DesktopFreetimeNotifications` implements the JVM-shared `NotificationService` interface. It also offers the builder overload, `requestCheck()`, and `resume()`. Initialization/resume starts an immediate check followed by fixed-delay polling; failures are logged and retried at the next interval. All storage/network operations run on `Dispatchers.IO`. One instance/process must own each app-specific directory: the file store is not a multi-process database. Writes use atomic replacement and fail explicitly on filesystems that do not support it. Stored endpoints and preferences are ordinary unencrypted JSON; choose an app-private directory.
+
+Desktop polling runs **only while the process is alive**. The host must call `resume()` or `initialize()` after restart; there is no autostart, reboot service, or OS background scheduler. The shared minimum interval remains 15 minutes. `smallIcon` defaults to zero for desktop and is ignored there; Android initialization still requires and validates a real drawable/mipmap.
+
+Delivery uses a generated tray icon per category and the OS's AWT notification support. Headless sessions and desktops without a system tray report `hasPermission() == false` and retain pending alerts (subject to the normal first-check baseline). Desktop `hasPermission()` means tray capability, **not** an authoritative OS permission/DND check: AWT cannot confirm that a balloon was shown. Successful handoff is acknowledged as delivery. Desktop channel names/importance do not create native channels. Disabling a category removes its tray icon; an already displayed OS balloon may remain. Clicking a tray action opens the latest entry URL for that category, not a guaranteed per-balloon deep link. Actual tray presentation still needs a graphical-session smoke test.
+
+The remaining integration examples below describe the preserved **Android API**.
 
 This is fully local polling: the device fetches public metadata and posts Android notifications. No Firebase, UnifiedPush, push registration, Freetime account or notification backend is required. The optional blog source reads an existing public content API, not a push backend. There is no immediate push-delivery guarantee. GitLab, RSS and arbitrary reminders are not supported.
 
 ## Installation and publication status
 
-Notifications is introduced in **3.2.0**. This release is prepared but **not yet uploaded**; the Maven dependency becomes available after actual publication.
+The Android Notifications module was introduced in **3.2.0**; **4.0.0** retains the root artifact ID and namespace while adding breaking KMP source-set, metadata and notification-service changes plus a desktop implementation. Publication of 4.0.0 is pending.
 
 Add `https://repo.free-time.me/maven/` to your app's `settings.gradle.kts` as shown in the root [repository setup](../README.md#installation). Public consumption requires no credentials. After publication, add to your app's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.freetime:Notifications:3.2.0")
+    implementation("com.freetime:Notifications:4.0.0")
 }
 ```
 
@@ -24,7 +66,7 @@ dependencies {
 }
 ```
 
-For another checkout, first include the local `Notifications` and `Core` projects in that build. Notifications was not part of the five-module 3.1.0 release.
+For another checkout, first include the local `:Notifications` and `:Core` projects in that build. Notifications was not part of the five-module 3.1.0 release.
 
 ## Configure from an application-owned coroutine
 
