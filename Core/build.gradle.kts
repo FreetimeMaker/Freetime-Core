@@ -20,8 +20,8 @@ kotlin {
     sourceSets {
         commonTest.dependencies { implementation(kotlin("test")) }
         getByName("androidDeviceTest").dependencies {
-            implementation("androidx.test:runner:1.7.0")
-            implementation("androidx.test.ext:junit:1.3.0")
+            implementation(libs.androidx.test.runner)
+            implementation(libs.androidx.test.ext.junit)
         }
     }
 }

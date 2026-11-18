@@ -19,7 +19,7 @@ kotlin {
             api(compose.ui)
             api(compose.foundation)
             // Expressive APIs require a newer Material 3 than Compose's bundled default.
-            api("org.jetbrains.compose.material3:material3:1.10.0-alpha05")
+            api(libs.compose.material3)
             implementation(compose.components.uiToolingPreview)
             api(libs.kyant.backdrop)
             api(libs.kyant.shapes)
