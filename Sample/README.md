@@ -30,12 +30,12 @@ Run desktop with `:Sample:run`, or build/install the
 Android application with `:Sample-android:assembleDebug` /
 `:Sample-android:installDebug`. Successful reruns passed `:Sample:compileKotlinDesktop`, `:Sample:desktopJar`, `:Sample-android:assembleDebug` and `:Sample-android:assembleRelease`, along with `:Design:checkTemplates`. GUI/device execution and `installDebug` are not established by those results.
 
-The project release version is **4.0.0**. The Android host uses version code **6** and `versionName = project.version.toString()`. Desktop GUI smoke tests and device tests have not been run. Only Android and desktop JVM are supported, not iOS or web. Desktop Browser opens external URLs; Android has the embedded WebView. See the [migration guide](../MIGRATION-4.0.md).
+The project release version is **4.0.1**. The Android host uses version code **6** and `versionName = project.version.toString()`. Desktop GUI smoke tests and device tests have not been run. Only Android and desktop JVM are supported, not iOS or web. Desktop Browser opens external URLs; Android has the embedded WebView. See the [migration guide](../MIGRATION-4.0.md).
 
 ## Release validation status
 
-`desktopTest` and `testAndroidHostTest` for Core, Browser, Donations, FreetimeWarn and Notifications passed, along with all 15 Python tests. JVM test counts (desktop / Android host) were Core 3 / 3, Browser 6 / 6, Donations 2 / 2, FreetimeWarn 2 / 2 and Notifications 36 / 34.
+`desktopTest` and `testAndroidHostTest` for Core, Browser, Donations, FreetimeWarn and Notifications passed, along with the Python publishing test suite. JVM test counts (desktop / Android host) were Core 3 / 3, Browser 6 / 6, Donations 2 / 2, FreetimeWarn 2 / 2 and Notifications 36 / 34.
 
-Credential-free `stagePublications` passed. Local publication verification covered 18 publications (root, Android and desktop for six libraries), totaling 78 files. All `.module` component versions are `4.0.0` in group `com.freetime`; POM and `.module` contents contain no `-kmp` references.
+Credential-free `stagePublications` passed. Local publication verification covered six unified publications (one coordinate per library), totaling 48 files. All `.module` component versions are `4.0.1` in group `com.freetime`; POM and `.module` contents contain no `-kmp` references and no `available-at` redirects.
 
-Desktop GUI smoke tests and device execution have not been performed; the Core device-test APK has not been compiled. These build and automated-test results do not establish GUI/device runtime behavior. Remote KMP metadata preservation and public/anonymous access remain unverified. No remote publication, upload, release tag or commit has been performed for this milestone.
+Desktop GUI smoke tests and device execution have not been performed; the Core device-test APK has not been compiled. These build and automated-test results do not establish GUI/device runtime behavior. Remote KMP metadata preservation and public/anonymous access remain unverified: the earlier 4.0.0 upload exposed only POMs and root JARs and was rejected by the anonymous verification step.

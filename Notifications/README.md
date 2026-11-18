@@ -48,13 +48,13 @@ This is fully local polling: the device fetches public metadata and posts Androi
 
 ## Installation and publication status
 
-The Android Notifications module was introduced and published in **3.2.0**; **4.0.0** retains the root artifact ID and namespace while adding breaking KMP source-set, metadata and notification-service changes plus a desktop implementation. Publication of 4.0.0 is pending.
+The Android Notifications module was introduced and published in **3.2.0**; **4.0.1** retains the root artifact ID and namespace while adding breaking KMP source-set, metadata and notification-service changes plus a desktop implementation. The attempted **4.0.0** upload on the repository is incomplete (POM and root JAR only, no `.module` metadata or desktop artifacts) and must not be consumed.
 
 Add `https://repo.free-time.me/maven/` to your app's `settings.gradle.kts` as shown in the root [repository setup](../README.md#installation). Public consumption requires no credentials. After publication, add to your app's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.freetime:Notifications:4.0.0")
+    implementation("com.freetime:Notifications:4.0.1")
 }
 ```
 

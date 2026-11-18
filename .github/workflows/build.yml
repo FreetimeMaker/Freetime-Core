@@ -67,6 +67,12 @@ jobs:
           ./gradlew :Design:checkTemplates :Core:testAndroidHostTest :Browser:testAndroidHostTest :Donations:testAndroidHostTest :FreetimeWarn:testAndroidHostTest :Notifications:testAndroidHostTest :Sample-android:assembleDebug :Sample-android:assembleRelease stagePublications
           ./gradlew -Djava.awt.headless=true :Core:desktopTest :Design:desktopTest :Browser:desktopTest :Donations:desktopTest :FreetimeWarn:desktopTest :Notifications:desktopTest :Sample:compileKotlinDesktop
 
+      - name: Validate staged unified publications
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/verify_gemfury_release.py "${{ steps.version.outputs.version }}" --staging build/public-maven --local-only
+
   release:
     needs: build
     if: needs.build.outputs.release == 'true'

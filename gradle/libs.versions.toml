@@ -1,10 +1,10 @@
 [versions]
-freetime = "4.0.0"
+freetime = "4.0.1"
 compileSdk = "37"
 minSdk = "24"
 agp = "9.5.1"
 kotlin = "2.4.21"
-composeMultiplatform = "1.10.3"
+composeMultiplatform = "1.12.2"
 coreKtx = "1.19.1"
 composeBom = "2026.09.00"
 material3 = "1.5.0-rc01"

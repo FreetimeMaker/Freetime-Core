@@ -9,12 +9,12 @@ class FreetimeCoreTest {
     @Test
     fun sdkIdentityMatchesRelease() {
         assertEquals("Freetime Core", FreetimeCore.SDK_NAME)
-        assertEquals("4.0.0", FreetimeCore.SDK_VERSION)
+        assertEquals("4.0.1", FreetimeCore.SDK_VERSION)
     }
 
     @Test
     fun successPreservesAppInfo() {
-        val info = FreetimeAppInfo("com.example.app", "4.0.0", 4_000_000_000L)
+        val info = FreetimeAppInfo("com.example.app", "4.0.1", 4_000_000_000L)
         val result: FreetimeResult<FreetimeAppInfo> = FreetimeResult.Success(info)
 
         assertSame(info, assertIs<FreetimeResult.Success<FreetimeAppInfo>>(result).value)

@@ -2,9 +2,9 @@
 
 Reusable, open-source Kotlin Multiplatform libraries for Android and desktop for Freetime Maker apps.
 
-**Current version: 4.0.0**
+**Current version: 4.0.1**
 
-Freetime Core keeps shared Android and desktop functionality in small modules that apps can adopt independently. Version **4.0.0** is the breaking KMP successor to Android-only **3.2.0**, not a new 1.x release. It keeps **Material 3 Expressive + Material You** as the default UI foundation. Default glass remains navigation-only; imported full-glass templates are separate, explicit opt-in surfaces.
+Freetime Core keeps shared Android and desktop functionality in small modules that apps can adopt independently. Version **4.0.1** is the breaking KMP successor to Android-only **3.2.0**, not a new 1.x release. It keeps **Material 3 Expressive + Material You** as the default UI foundation. Default glass remains navigation-only; imported full-glass templates are separate, explicit opt-in surfaces.
 
 ## This Repo is sponsored by
 
@@ -54,7 +54,7 @@ Desktop browser/wallet/clipboard/tray integrations depend on a graphical session
 
 ## Installation
 
-KMP libraries use the Maven group `com.freetime` and case-sensitive artifact IDs matching the library module names. Availability at the public repository below is pending KMP publication; historical Android artifacts are not KMP releases. Add the root KMP dependency and let Gradle select Android or desktop through Gradle Module Metadata.
+KMP libraries use the Maven group `com.freetime` and case-sensitive artifact IDs matching the library module names. Every library is a **single Maven coordinate** that carries the common metadata JAR, the Android AAR and the desktop JAR as classifiers; there are no separate `Core-android` or `Core-desktop` packages to consume. Add the root dependency and let Gradle select Android or desktop through Gradle Module Metadata.
 
 Add the Maven repository in your app's `settings.gradle.kts`:
 
@@ -72,16 +72,16 @@ Then add only the modules your app needs:
 
 ```kotlin
 dependencies {
-    implementation("com.freetime:Core:4.0.0")
-    implementation("com.freetime:Design:4.0.0")
-    implementation("com.freetime:Browser:4.0.0")
-    implementation("com.freetime:Donations:4.0.0")
-    implementation("com.freetime:FreetimeWarn:4.0.0")
-    implementation("com.freetime:Notifications:4.0.0")
+    implementation("com.freetime:Core:4.0.1")
+    implementation("com.freetime:Design:4.0.1")
+    implementation("com.freetime:Browser:4.0.1")
+    implementation("com.freetime:Donations:4.0.1")
+    implementation("com.freetime:FreetimeWarn:4.0.1")
+    implementation("com.freetime:Notifications:4.0.1")
 }
 ```
 
-Public visibility must be configured in Gemfury and verified with anonymous downloads before consumers can rely on this repository without credentials. Remote KMP `.module` support remains unverified until a real upload and retrieval test succeeds. Never embed publishing credentials in apps or tracked files.
+The attempted **4.0.0** upload on this repository is incomplete: only the POMs and root JARs are anonymously retrievable, so **4.0.0 must not be consumed**. It has no `.module` metadata, no sources, no AAR and no desktop JAR, and no `v4.0.0` tag exists. Every release is staged locally first and only tagged after `verify_gemfury_release.py` has anonymously downloaded and hash-checked all staged files. Never embed publishing credentials in apps or tracked files.
 
 ### Migrating from Android-only artifacts
 
@@ -89,7 +89,7 @@ Follow [MIGRATION-4.0.md](MIGRATION-4.0.md) for API and platform differences.
 
 ### Dependency changes
 
-Replace historical JitPack dependencies with `com.freetime:<Module>:4.0.0` after publication. Existing `com.freetime` consumers keep the same case-sensitive root artifact IDs as 3.2.0 and update the version; no module or root artifact rename is required. Generated target artifacts such as `Core-android` and `Core-desktop` correctly retain their platform suffixes. Keep Gradle Module Metadata enabled so Gradle can resolve the appropriate target and dependencies.
+Replace historical JitPack dependencies with `com.freetime:<Module>:4.0.1` after publication. Existing `com.freetime` consumers keep the same case-sensitive root artifact IDs as 3.2.0 and update the version; no module or root artifact rename is required. The former generated target coordinates `Core-android` and `Core-desktop` are gone: the platform artifacts now ride the root coordinate as the `-android` and `-desktop` classifiers, so consumers never reference them directly. Keep Gradle Module Metadata enabled so Gradle can resolve the appropriate variant and dependencies.
 
 ## Project layout and verification
 
@@ -101,37 +101,41 @@ Root settings map `:Core`, `:Design`, `:Browser`, `:Donations`, `:FreetimeWarn`,
 
 Shared APIs target Android and desktop; Android system integrations such as WorkManager, notification permission and Material You remain platform-specific.
 
-### 4.0.0 validation milestone
+### 4.0.1 validation milestone
 
-Successful reruns with the unsuffixed module names passed: `:Design:checkTemplates`, `:Sample:compileKotlinDesktop`, `:Sample:desktopJar`, `:Sample-android:assembleDebug` and `:Sample-android:assembleRelease`.
+`stagePublications` stages **six unified publications totalling 48 files**: each library contributes `POM`, `.module`, main JAR, sources JAR, `-android.aar`, `-android-sources.jar`, `-desktop.jar` and `-desktop-sources.jar` under one coordinate. Every `.module` component reports group `com.freetime`, version `4.0.1`, contains no `available-at` redirect and no `-kmp` reference. `verify_gemfury_release.py 4.0.1 --staging build/public-maven --local-only` validates all 48 files, and a scratch Gradle consumer resolving `com.freetime:Core:4.0.1` from that staged repository receives `Core-4.0.1-desktop.jar` plus `kotlin-stdlib`.
 
-`desktopTest` and `testAndroidHostTest` for Core, Browser, Donations, FreetimeWarn and Notifications passed, along with all 15 Python tests. JVM test counts (desktop / Android host) were Core 3 / 3, Browser 6 / 6, Donations 2 / 2, FreetimeWarn 2 / 2 and Notifications 36 / 34.
+The complete CI command set (`:Design:checkTemplates`, five `testAndroidHostTest`, `:Sample-android:assembleDebug`/`assembleRelease` and `stagePublications`) and the Python publishing test suite pass. Desktop GUI smoke tests and device execution have not been performed; the Core device-test APK has not been compiled. These results do not establish GUI/device runtime behavior.
 
-Credential-free `stagePublications` passed. Local publication verification covered 18 publications (root, Android and desktop for six libraries), totaling 78 files. All `.module` component versions are `4.0.0` in group `com.freetime`; POM and `.module` contents contain no `-kmp` references.
-
-Desktop GUI smoke tests and device execution have not been performed; the Core device-test APK has not been compiled. These build and automated-test results do not establish GUI/device runtime behavior. Remote KMP metadata preservation and public/anonymous access remain unverified. No remote publication, upload, release tag or commit has been performed for this milestone.
+Remote publication is still unproven: the earlier CI attempt for 4.0.0 reported success from the upload step but left only POMs and root JARs anonymously retrievable, so its verification step failed and no tag was created. Whether the unified publication uploads every classifier and the `.module` file must be confirmed by `verify_gemfury_release.py` against the live repository before tagging.
 
 ## Publishing
 
-Publishing uses standard Gradle `maven-publish` for **all KMP publications**, including root and target POMs, `.module` metadata, Android AARs, desktop JARs and generated auxiliary artifacts. Do not disable metadata or upload only AARs.
+Each library is published as **one Maven coordinate**. Gradle's native KMP publications (root, Android, desktop) are first staged privately to `build/native-maven`; `.github/scripts/consolidate_kmp_publications.py` then validates them — SemVer, variant roles, sizes and every checksum — and inlines the platform artifacts into `build/unified-inputs` as classifier artifacts of the root coordinate, rewriting cross-module dependencies from `Core-android`/`Core-desktop` to `Core`. The `unified` Gradle publication attaches those validated files plus a POM that keeps the native dependency block and the `published-with-gradle-metadata` marker. Invalid input aborts before any output is written.
 
 Stage publications locally without credentials (safe; no remote upload):
 
 ```sh
-./gradlew stagePublications -PreleaseVersion=4.0.0
+./gradlew stagePublications -PreleaseVersion=4.0.1
 ```
 
-`stagePublications` is the credential-free local staging entry point and has passed local verification of all 18 publications and 78 files. Local validation does not verify remote metadata preservation or anonymous retrieval; those checks remain required before release. Do not substitute the historical AAR uploader.
+`stagePublications` runs the staging, consolidation and unified publishing steps and has passed local verification of all six publications and 48 files. Local validation does not verify remote storage or anonymous retrieval; those checks remain required before release. Do not substitute the historical AAR uploader.
 
 Remote publishing is an explicit, credentialed action, not part of documentation validation:
 
 ```sh
-./gradlew publishKmp -PreleaseVersion=4.0.0
+./gradlew publishKmp -PreleaseVersion=4.0.1
 # Explicit alternative:
-./gradlew publishGemfury -PreleaseVersion=4.0.0
+./gradlew publishGemfury -PreleaseVersion=4.0.1
 ```
 
-Use `FURY_TOKEN` or `furyToken` in user `~/.gradle/gradle.properties`, never tracked files or app code. The Maven endpoint is `https://repo.free-time.me/maven/`. A successful upload alone is insufficient: public visibility, anonymous retrieval, preserved root/target Gradle Module Metadata and all referenced Android/desktop artifacts must be verified. The historical AAR/POM-only public upload cannot publish a usable KMP release. **4.0.0 is not claimed published.** Use `publishKmp` or `publishGemfury` for explicit remote KMP publishing, not the historical `publishPublic` AAR-only path. No remote publishing was performed for this milestone.
+Before a release tag may be created, the staged tree must be verified against the live repository:
+
+```sh
+python3 .github/scripts/verify_gemfury_release.py 4.0.1
+```
+
+Use `FURY_TOKEN` or `furyToken` in user `~/.gradle/gradle.properties`, never tracked files or app code. The Maven endpoint is `https://repo.free-time.me/maven/`. A successful upload alone is insufficient: the verifier re-downloads every staged file anonymously and compares SHA-256 hashes, so a repository that accepted the upload but exposed only part of it fails instead of being tagged. This already happened once — the 4.0.0 upload reported success while only POMs and root JARs became retrievable. Use `publishKmp` or `publishGemfury` for explicit remote KMP publishing, not the historical `publishPublic` AAR-only path.
 
 ## Material 3 Expressive + Material You
 
@@ -278,14 +282,14 @@ Supported frequencies are `ONCE`, `ONCE_PER_VERSION` and `ALWAYS`.
 
 ## Versioning
 
-The intended 4.0.0 shared release version lives in `gradle/libs.versions.toml`:
+The intended 4.0.1 shared release version lives in `gradle/libs.versions.toml`:
 
 ```toml
 [versions]
-freetime = "4.0.0"
+freetime = "4.0.1"
 ```
 
-Both Android and desktop `FreetimeCore.SDK_VERSION` actuals are **4.0.0**. The Android sample uses version code **6** and derives its version name from `project.version`. See [CHANGELOG.md](CHANGELOG.md) for release history.
+Both Android and desktop `FreetimeCore.SDK_VERSION` actuals are **4.0.1**. The Android sample uses version code **6** and derives its version name from `project.version`. See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 ## Project principles
 
