@@ -25,30 +25,30 @@ Freetime Core keeps shared Android and desktop functionality in small modules th
 
 ## Modules
 
-| Module              | Purpose                                                                                                                   |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `Core`          | Shared models, results, SDK metadata and lightweight Android helpers                                                      |
-| `Design`        | Material 3 Expressive / Material You theme helpers plus floating bottom-navigation Liquid Glass                           |
-| `Browser`       | External and in-app URL routing plus reusable browser UI                                                                  |
-| `Donations`     | Donation targets, wallet helpers and Compose donation UI                                                                  |
-| `FreetimeWarn`  | Reusable acknowledgement/warning flow for Compose apps                                                                    |
-| `Notifications` | Local GitHub/F-Droid update detection, GitHub release notes and developer blog messages ([guide](Notifications/README.md)) |
-| `Sample`        | Shared sample UI and desktop entry point |
-| `Sample-android` | Android sample application host in `Sample/androidApp` |
+| Module           | Purpose                                                                                                                    |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `Core`           | Shared models, results, SDK metadata and lightweight Android helpers                                                       |
+| `Design`         | Material 3 Expressive / Material You theme helpers plus floating bottom-navigation Liquid Glass                            |
+| `Browser`        | External and in-app URL routing plus reusable browser UI                                                                   |
+| `Donations`      | Donation targets, wallet helpers and Compose donation UI                                                                   |
+| `FreetimeWarn`   | Reusable acknowledgement/warning flow for Compose apps                                                                     |
+| `Notifications`  | Local GitHub/F-Droid update detection, GitHub release notes and developer blog messages ([guide](Notifications/README.md)) |
+| `Sample`         | Shared sample UI and desktop entry point                                                                                   |
+| `Sample-android` | Android sample application host in `Sample/androidApp`                                                                     |
 
 ## Android and desktop capability matrix
 
 Only **Android and desktop JVM** are supported. There are no supported iOS or web targets. “Supported” here describes implemented APIs, not a claim that every OS has passed runtime testing.
 
-| Capability | Android | Desktop JVM |
-| --- | --- | --- |
-| Core models and preferences | SharedPreferences; `appName(context)` helper | Java Preferences; no Android Context helper |
-| Design themes and Compose UI | Material You on Android 12+, regular schemes otherwise | Regular light/dark schemes; no Material You |
-| Browser screen | Embedded WebView, opt-in JavaScript | External browser action only; no embedded HTML engine |
-| URL routing | Context-bound intents or remembered launcher | AWT `Desktop.browse`; host IN_APP callback or permitted external fallback |
-| Donations | Clipboard and wallet intents | AWT clipboard and registered wallet URI handlers |
-| Warning acknowledgements | SharedPreferences | Java Preferences |
-| Notifications | WorkManager, DataStore, native channels; host requests permission | In-process polling, atomic JSON storage, AWT tray; no OS background scheduler |
+| Capability                   | Android                                                           | Desktop JVM                                                                   |
+| ---------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Core models and preferences  | SharedPreferences; `appName(context)` helper                      | Java Preferences; no Android Context helper                                   |
+| Design themes and Compose UI | Material You on Android 12+, regular schemes otherwise            | Regular light/dark schemes; no Material You                                   |
+| Browser screen               | Embedded WebView, opt-in JavaScript                               | External browser action only; no embedded HTML engine                         |
+| URL routing                  | Context-bound intents or remembered launcher                      | AWT `Desktop.browse`; host IN_APP callback or permitted external fallback     |
+| Donations                    | Clipboard and wallet intents                                      | AWT clipboard and registered wallet URI handlers                              |
+| Warning acknowledgements     | SharedPreferences                                                 | Java Preferences                                                              |
+| Notifications                | WorkManager, DataStore, native channels; host requests permission | In-process polling, atomic JSON storage, AWT tray; no OS background scheduler |
 
 Desktop browser/wallet/clipboard/tray integrations depend on a graphical session and OS support. Handle returned failures. QR encoding is supplied by the host on both platforms. Notifications uses JVM-shared Java/`org.json` code, not portable Native/JS common code.
 
@@ -135,7 +135,7 @@ Before a release tag may be created, the staged tree must be verified against th
 python3 .github/scripts/verify_gemfury_release.py 4.0.1
 ```
 
-Use `FURY_TOKEN` or `furyToken` in user `~/.gradle/gradle.properties`, never tracked files or app code. The Maven endpoint is `https://repo.free-time.me/maven/`. A successful upload alone is insufficient: the verifier re-downloads every staged file anonymously and compares SHA-256 hashes, so a repository that accepted the upload but exposed only part of it fails instead of being tagged. This already happened once — the 4.0.0 upload reported success while only POMs and root JARs became retrievable. Use `publishKmp` or `publishGemfury` for explicit remote KMP publishing, not the historical `publishPublic` AAR-only path.
+Use `FURY_TOKEN` or `furyToken` in user `~/.gradle/gradle.properties`, never tracked files or app code. The upload endpoint is `https://maven.fury.io/freetimemaker/` (Gemfury's native Maven deployment endpoint); `https://repo.free-time.me/maven/` remains the public download endpoint. Both Android and desktop variants are published under the same `com.freetime:<Module>:<version>` coordinate, not separate `<Module>-android` or `<Module>-desktop` packages. The `-android`/`-desktop` artifact filenames are classifiers within that one package and are selected through Gradle module metadata. A successful upload alone is insufficient: the verifier re-downloads every staged file anonymously and compares SHA-256 hashes, so a repository that accepted the upload but exposed only part of it fails instead of being tagged. This already happened once — the 4.0.0 upload reported success while only POMs and root JARs became retrievable. Use `publishKmp` or `publishGemfury` for explicit remote KMP publishing, not the historical `publishPublic` AAR-only path.
 
 ## Material 3 Expressive + Material You
 

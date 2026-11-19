@@ -81,7 +81,8 @@ subprojects {
                     }
                     maven {
                         name = "gemfury"
-                        url = uri("https://repo.free-time.me/maven/")
+                        // Deploy directly to Gemfury; the custom domain is the public download endpoint.
+                                                url = uri("https://maven.fury.io/freetimemaker/")
                         authentication { create<BasicAuthentication>("basic") }
                         credentials {
                             username = gemfuryUsername.get()
