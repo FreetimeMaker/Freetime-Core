@@ -8,7 +8,7 @@ The project follows semantic versioning.
 
 No unreleased changes yet.
 
-## 4.0.1 - 2026-11-18
+## 4.0.1 - 2026-11-19
 
 ### Unified KMP publication
 
@@ -22,10 +22,6 @@ No unreleased changes yet.
 
 - Rewrote `verify_gemfury_release.py` around the unified layout. It now requires the POM, `.module`, main JAR, Android AAR and desktop JAR, parses the metadata and requires every referenced artifact, rejects `available-at` redirects, unsafe or non-root URLs, wrong `formatVersion`/component identity and missing API/runtime variants, then downloads every staged file anonymously and compares SHA-256 hashes. Added `--local-only` to validate a staging tree without network access and a CLI that reports failures without a traceback.
 - Expanded `test_gemfury_release.py` from 7 to 18 tests covering the required-file set, metadata validation, redirect/URL rejection, HTTP error handling and both CLI modes, and added `test_consolidate_kmp.py` with 14 offline integration tests over native-shaped metadata and ZIPs. The publishing suite now runs 41 tests.
-
-### The incomplete 4.0.0 upload
-
-- The CI release attempt for 4.0.0 passed its upload step but the anonymous verification step failed: only the six POMs and six root JARs are retrievable. There is no `.module` metadata, no sources JAR, no AAR, no desktop JAR and no target package on the repository, and no `v4.0.0` tag was created. **4.0.0 must not be consumed.** This release therefore bumps to 4.0.1 and keeps verification as the mandatory gate before tagging.
 
 ### Build, dependencies and version consistency
 

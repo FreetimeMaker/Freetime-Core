@@ -3,8 +3,6 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.api.publish.tasks.GenerateModuleMetadata
-import org.gradle.authentication.http.BasicAuthentication
-import java.util.Properties
 import javax.xml.parsers.DocumentBuilderFactory
 
 plugins {
@@ -19,16 +17,6 @@ val releaseVersion = providers.gradleProperty("releaseVersion")
     .orElse(providers.environmentVariable("VERSION"))
     .orElse(libs.versions.freetime)
 val libraryModules = listOf("Core", "Design", "Browser", "Donations", "FreetimeWarn", "Notifications")
-
-// Never read publishing credentials from tracked project properties.
-val userFuryProperties = Properties().apply {
-    val file = gradle.gradleUserHomeDir.resolve("gradle.properties")
-    if (file.isFile) file.inputStream().use { load(it) }
-}
-val gemfuryUsername = providers.environmentVariable("FURY_USERNAME")
-    .orElse(userFuryProperties.getProperty("furyUsername") ?: "freetimemaker")
-val gemfuryToken = providers.environmentVariable("FURY_TOKEN")
-    .orElse(userFuryProperties.getProperty("furyToken") ?: "")
 
 allprojects {
     group = "com.freetime"
@@ -57,14 +45,6 @@ val prepareUnifiedPublications = tasks.register<Exec>("prepareUnifiedPublication
     outputs.dir(layout.buildDirectory.dir("unified-inputs"))
 }
 
-val validateGemfuryCredentials = tasks.register("validateGemfuryCredentials") {
-    doLast {
-        check(gemfuryToken.get().isNotBlank()) {
-            "Set FURY_TOKEN or furyToken in user ~/.gradle/gradle.properties. Project-local tokens are ignored."
-        }
-    }
-}
-
 subprojects {
     if (name in libraryModules) {
         plugins.withId("org.jetbrains.kotlin.multiplatform") {
@@ -78,16 +58,6 @@ subprojects {
                     maven {
                         name = "publicStaging"
                         url = rootProject.layout.buildDirectory.dir("public-maven").get().asFile.toURI()
-                    }
-                    maven {
-                        name = "gemfury"
-                        // Deploy directly to Gemfury; the custom domain is the public download endpoint.
-                                                url = uri("https://maven.fury.io/freetimemaker/")
-                        authentication { create<BasicAuthentication>("basic") }
-                        credentials {
-                            username = gemfuryUsername.get()
-                            password = gemfuryToken.get()
-                        }
                     }
                 }
                 publications.withType<MavenPublication>().configureEach {
@@ -175,10 +145,9 @@ subprojects {
                 if (name.endsWith("ToNativeStagingRepository")) {
                     if (unified) enabled = false
                 } else if (!unified) {
-                    // Native target publications are local inputs, never separate remote packages.
+                    // Native target publications are local inputs, never separate staged packages.
                     enabled = false
                 }
-                if (unified && name.endsWith("ToGemfuryRepository")) dependsOn(validateGemfuryCredentials)
             }
         }
     }
@@ -190,22 +159,10 @@ tasks.register("stagePublications") {
     dependsOn(libraryModules.map { ":$it:publishUnifiedPublicationToPublicStagingRepository" })
 }
 
-tasks.register("publishGemfury") {
-    group = "publishing"
-    description = "Publishes one complete Maven coordinate per library, including all KMP variants."
-    dependsOn(libraryModules.map { ":$it:publishUnifiedPublicationToGemfuryRepository" })
-}
-
-tasks.register("publishKmp") {
-    group = "publishing"
-    description = "Publishes unified KMP libraries; anonymous metadata verification is required before tagging."
-    dependsOn("publishGemfury")
-}
-
 tasks.register("publishPublic") {
     group = "publishing"
     description = "Rejects the legacy AAR-only uploader; it cannot publish KMP variant metadata."
     doLast {
-        throw GradleException("Use stagePublications or publishKmp, then verify_gemfury_release.py. KMP requires public .module metadata.")
+        throw GradleException("Remote publishing is disabled. Use stagePublications to stage KMP .module metadata locally.")
     }
 }

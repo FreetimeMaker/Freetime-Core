@@ -81,7 +81,7 @@ dependencies {
 }
 ```
 
-The attempted **4.0.0** upload on this repository is incomplete: only the POMs and root JARs are anonymously retrievable, so **4.0.0 must not be consumed**. It has no `.module` metadata, no sources, no AAR and no desktop JAR, and no `v4.0.0` tag exists. Every release is staged locally first and only tagged after `verify_gemfury_release.py` has anonymously downloaded and hash-checked all staged files. Never embed publishing credentials in apps or tracked files.
+The attempted **4.0.0** upload on this repository is incomplete: only the POMs and root JARs are anonymously retrievable, so **4.0.0 must not be consumed**. It has no `.module` metadata, no sources, no AAR and no desktop JAR, and no `v4.0.0` tag exists. New builds are staged locally only; remote publishing is disabled.
 
 ### Migrating from Android-only artifacts
 
@@ -107,11 +107,9 @@ Shared APIs target Android and desktop; Android system integrations such as Work
 
 The complete CI command set (`:Design:checkTemplates`, five `testAndroidHostTest`, `:Sample-android:assembleDebug`/`assembleRelease` and `stagePublications`) and the Python publishing test suite pass. Desktop GUI smoke tests and device execution have not been performed; the Core device-test APK has not been compiled. These results do not establish GUI/device runtime behavior.
 
-Remote publication is still unproven: the earlier CI attempt for 4.0.0 reported success from the upload step but left only POMs and root JARs anonymously retrievable, so its verification step failed and no tag was created. Whether the unified publication uploads every classifier and the `.module` file must be confirmed by `verify_gemfury_release.py` against the live repository before tagging.
-
 ## Publishing
 
-Each library is published as **one Maven coordinate**. Gradle's native KMP publications (root, Android, desktop) are first staged privately to `build/native-maven`; `.github/scripts/consolidate_kmp_publications.py` then validates them — SemVer, variant roles, sizes and every checksum — and inlines the platform artifacts into `build/unified-inputs` as classifier artifacts of the root coordinate, rewriting cross-module dependencies from `Core-android`/`Core-desktop` to `Core`. The `unified` Gradle publication attaches those validated files plus a POM that keeps the native dependency block and the `published-with-gradle-metadata` marker. Invalid input aborts before any output is written.
+Each library is staged under **one Maven coordinate**. Gradle's native KMP publications (root, Android, desktop) are first staged privately to `build/native-maven`; `.github/scripts/consolidate_kmp_publications.py` then validates them — SemVer, variant roles, sizes and every checksum — and inlines the platform artifacts into `build/unified-inputs` as classifier artifacts of the root coordinate, rewriting cross-module dependencies from `Core-android`/`Core-desktop` to `Core`. The `unified` Gradle publication attaches those validated files plus a POM that keeps the native dependency block and the `published-with-gradle-metadata` marker. Invalid input aborts before any output is written.
 
 Stage publications locally without credentials (safe; no remote upload):
 
@@ -119,23 +117,7 @@ Stage publications locally without credentials (safe; no remote upload):
 ./gradlew stagePublications -PreleaseVersion=4.0.1
 ```
 
-`stagePublications` runs the staging, consolidation and unified publishing steps and has passed local verification of all six publications and 48 files. Local validation does not verify remote storage or anonymous retrieval; those checks remain required before release. Do not substitute the historical AAR uploader.
-
-Remote publishing is an explicit, credentialed action, not part of documentation validation:
-
-```sh
-./gradlew publishKmp -PreleaseVersion=4.0.1
-# Explicit alternative:
-./gradlew publishGemfury -PreleaseVersion=4.0.1
-```
-
-Before a release tag may be created, the staged tree must be verified against the live repository:
-
-```sh
-python3 .github/scripts/verify_gemfury_release.py 4.0.1
-```
-
-Use `FURY_TOKEN` or `furyToken` in user `~/.gradle/gradle.properties`, never tracked files or app code. The upload endpoint is `https://maven.fury.io/freetimemaker/` (Gemfury's native Maven deployment endpoint); `https://repo.free-time.me/maven/` remains the public download endpoint. Both Android and desktop variants are published under the same `com.freetime:<Module>:<version>` coordinate, not separate `<Module>-android` or `<Module>-desktop` packages. The `-android`/`-desktop` artifact filenames are classifiers within that one package and are selected through Gradle module metadata. A successful upload alone is insufficient: the verifier re-downloads every staged file anonymously and compares SHA-256 hashes, so a repository that accepted the upload but exposed only part of it fails instead of being tagged. This already happened once — the 4.0.0 upload reported success while only POMs and root JARs became retrievable. Use `publishKmp` or `publishGemfury` for explicit remote KMP publishing, not the historical `publishPublic` AAR-only path.
+`stagePublications` writes all six unified libraries to `build/public-maven`. CI validates that local repository with `verify_gemfury_release.py --local-only`. It does not upload packages or create release tags.
 
 ## Material 3 Expressive + Material You
 

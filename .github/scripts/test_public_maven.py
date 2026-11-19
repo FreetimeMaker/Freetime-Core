@@ -18,7 +18,7 @@ class LegacyPublishingTests(unittest.TestCase):
             request.assert_not_called()
         self.assertIn(".module", str(error.exception))
         self.assertIn("stagePublications", str(error.exception))
-        self.assertIn("publishKmp", str(error.exception))
+        self.assertIn("Remote publishing is disabled", str(error.exception))
 
     def test_verifier_cannot_certify_aar_only_release(self):
         with self.assertRaises(SystemExit) as error:

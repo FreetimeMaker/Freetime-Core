@@ -1,13 +1,8 @@
 """Fail closed for the retired Gemfury archive upload path."""
 
 MESSAGE = (
-    "The legacy archive uploader is retired. Use ./gradlew publishKmp for native "
-    "Maven publishing, retaining KMP .module metadata and all target publications. "
-    "Stage locally without credentials using ./gradlew stagePublications "
-    "(build/public-maven). Publishing uses https://repo.free-time.me/maven/ and "
-    "FURY_TOKEN or furyToken in user ~/.gradle/gradle.properties only. "
-    "Native Maven cannot force public visibility: verify_gemfury_release.py must "
-    "verify anonymous access before tagging. --dry-run does not validate staging."
+    "Remote publishing is disabled. Use ./gradlew stagePublications to stage "
+    "KMP .module metadata and platform artifacts locally in build/public-maven."
 )
 
 

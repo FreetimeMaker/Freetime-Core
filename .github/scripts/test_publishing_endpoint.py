@@ -1,15 +1,25 @@
-"""Keep deployment separate from the public download endpoint."""
+"""Guard against re-enabling remote publishing."""
 
 import unittest
 from pathlib import Path
 
 
 class PublishingEndpointTests(unittest.TestCase):
-    def test_native_maven_deployment_endpoint(self):
+    def test_publishing_repositories_are_local(self):
         root = Path(__file__).resolve().parents[2]
         build = (root / "build.gradle.kts").read_text()
-        self.assertIn('url = uri("https://maven.fury.io/freetimemaker/")', build)
-        self.assertNotIn('url = uri("https://repo.free-time.me/maven/")', build)
+        urls = [
+            line.strip()
+            for line in build.splitlines()
+            if line.strip().startswith("url =")
+        ]
+        self.assertEqual(
+            urls,
+            [
+                'url = rootProject.layout.buildDirectory.dir("native-maven").get().asFile.toURI()',
+                'url = rootProject.layout.buildDirectory.dir("public-maven").get().asFile.toURI()',
+            ],
+        )
 
 
 if __name__ == "__main__":
