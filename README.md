@@ -117,7 +117,7 @@ Stage publications locally without credentials (safe; no remote upload):
 ./gradlew stagePublications -PreleaseVersion=4.0.1
 ```
 
-`stagePublications` writes all six unified libraries to `build/public-maven`. CI validates that local repository with `verify_gemfury_release.py --local-only`. It does not upload packages or create release tags.
+`stagePublications` writes all six unified libraries to `build/public-maven`. CI validates that local repository with `verify_gemfury_release.py --local-only`. After successful tests and local validation on `master`, CI creates the version tag if it does not already exist. CI does not upload Maven packages; [FreetimeMaker/Repoitories](https://github.com/FreetimeMaker/Repoitories) builds from tags and manages the public Maven repository separately.
 
 ## Material 3 Expressive + Material You
 

@@ -15,6 +15,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v7
 
@@ -57,3 +59,35 @@ jobs:
         run: |
           set -euo pipefail
           python3 .github/scripts/verify_gemfury_release.py "${{ steps.version.outputs.version }}" --staging build/public-maven --local-only
+
+  tag:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+      - name: Create version tag if absent
+        shell: bash
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          set -euo pipefail
+          TAG="v$VERSION"
+          REF="refs/tags/$TAG"
+          if git ls-remote --exit-code --refs origin "$REF"; then
+            echo "$TAG already exists; leaving it unchanged."
+            exit 0
+          else
+            STATUS=$?
+            if [[ "$STATUS" != 2 ]]; then
+              exit "$STATUS"
+            fi
+          fi
+          git -c user.name='github-actions[bot]' \
+              -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              tag -a "$TAG" "$GITHUB_SHA" -m "Freetime Core $VERSION"
+          git push origin "$REF:$REF"
