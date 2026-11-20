@@ -29,6 +29,8 @@ No unreleased changes yet.
 - Updated the shared release version, both `FreetimeCore.SDK_VERSION` actuals, the SDK identity tests, the dependency examples in the root and module READMEs, the migration guide and the Sample documentation to `4.0.1`.
 - Verified locally: the complete CI command set (`:Design:checkTemplates`, five `testAndroidHostTest`, `:Sample-android:assembleDebug`/`assembleRelease`, the six `desktopTest` tasks and `:Sample:compileKotlinDesktop`), `stagePublications` with six publications and 48 files, `verify_gemfury_release.py --local-only` over that tree, and a scratch Gradle consumer that resolves `com.freetime:Core:4.0.1` to `Core-4.0.1-desktop.jar`.
 
+# After 4.0.1 The following Versions are no longer published, but remain available in the Git history and in the local build:
+
 ## 4.0.0 - 2026-11-18
 
 ### Breaking KMP import
