@@ -2,7 +2,9 @@
 
 Reusable, open-source Kotlin Multiplatform libraries for Android and desktop for Freetime Maker apps.
 
-**Current version: 4.0.1**
+**Only supported version: v4.0.1**
+
+Versions below **v4.0.1** are available only through [JitPack](https://jitpack.io/) and are no longer supported.
 
 Freetime Core keeps shared Android and desktop functionality in small modules that apps can adopt independently. Version **4.0.1** is the breaking KMP successor to Android-only **3.2.0**, not a new 1.x release. It keeps **Material 3 Expressive + Material You** as the default UI foundation. Default glass remains navigation-only; imported full-glass templates are separate, explicit opt-in surfaces.
 
