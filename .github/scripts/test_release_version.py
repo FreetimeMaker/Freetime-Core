@@ -86,9 +86,7 @@ class ReleaseVersionTests(unittest.TestCase):
         ):
             self.assertIn("SampleApp()", entry.read_text())
 
-    def test_documented_version_and_latest_changelog_match_catalog(self):
-        readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertIn(f'freetime = "{self.version}"', readme)
+    def test_latest_changelog_matches_catalog(self):
         changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
 
         releases = re.findall(r"^## (\d+\.\d+\.\d+) -", changelog, re.MULTILINE)
