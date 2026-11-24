@@ -1,6 +1,7 @@
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom
+import org.gradle.api.publish.maven.tasks.PublishToMavenLocal
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.api.publish.tasks.GenerateModuleMetadata
 import javax.xml.parsers.DocumentBuilderFactory
@@ -16,6 +17,9 @@ plugins {
 val releaseVersion = providers.gradleProperty("releaseVersion")
     .orElse(providers.environmentVariable("VERSION"))
     .orElse(libs.versions.freetime)
+    // JitPack exports VERSION=v4.0.1; Maven and the consolidator use bare SemVer.
+    .map { it.removePrefix("v") }
+val pythonExecutable = providers.gradleProperty("pythonExecutable").orElse("python3")
 val libraryModules = listOf("Core", "Design", "Browser", "Donations", "FreetimeWarn", "Notifications")
 
 allprojects {
@@ -38,7 +42,7 @@ val prepareUnifiedPublications = tasks.register<Exec>("prepareUnifiedPublication
     description = "Inlines platform variants into one Maven coordinate per library."
     dependsOn(stageNativePublications)
     workingDir(rootDir)
-    commandLine("python3", ".github/scripts/consolidate_kmp_publications.py", releaseVersion.get())
+    commandLine(pythonExecutable.get(), ".github/scripts/consolidate_kmp_publications.py", releaseVersion.get())
     inputs.file(".github/scripts/consolidate_kmp_publications.py")
     inputs.dir(layout.buildDirectory.dir("native-maven"))
     inputs.property("releaseVersion", releaseVersion)
@@ -139,6 +143,10 @@ subprojects {
             tasks.withType<GenerateModuleMetadata>().configureEach {
                 // The unified publication attaches the validated, inlined metadata explicitly.
                 if (name == "generateMetadataFileForUnifiedPublication") enabled = false
+            }
+            tasks.withType<PublishToMavenLocal>().configureEach {
+                // Native root coordinates would collide with the unified publication in Maven local.
+                if (name != "publishUnifiedPublicationToMavenLocal") enabled = false
             }
             tasks.withType<PublishToMavenRepository>().configureEach {
                 val unified = name.startsWith("publishUnifiedPublication")

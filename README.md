@@ -2,11 +2,7 @@
 
 Reusable, open-source Kotlin Multiplatform libraries for Android and desktop for Freetime Maker apps.
 
-**Only supported version: v4.0.1**
-
 Versions below **v4.0.1** are available only through [JitPack](https://jitpack.io/) and are no longer supported.
-
-Freetime Core keeps shared Android and desktop functionality in small modules that apps can adopt independently. Version **4.0.1** is the breaking KMP successor to Android-only **3.2.0**, not a new 1.x release. It keeps **Material 3 Expressive + Material You** as the default UI foundation. Default glass remains navigation-only; imported full-glass templates are separate, explicit opt-in surfaces.
 
 ## This Repo is sponsored by
 
@@ -74,24 +70,14 @@ Then add only the modules your app needs:
 
 ```kotlin
 dependencies {
-    implementation("com.freetime:Core:4.0.1")
-    implementation("com.freetime:Design:4.0.1")
-    implementation("com.freetime:Browser:4.0.1")
-    implementation("com.freetime:Donations:4.0.1")
-    implementation("com.freetime:FreetimeWarn:4.0.1")
-    implementation("com.freetime:Notifications:4.0.1")
+    implementation("com.freetime:Core:4.0.2")
+    implementation("com.freetime:Design:4.0.2")
+    implementation("com.freetime:Browser:4.0.2")
+    implementation("com.freetime:Donations:4.0.2")
+    implementation("com.freetime:FreetimeWarn:4.0.2")
+    implementation("com.freetime:Notifications:4.0.2")
 }
 ```
-
-The attempted **4.0.0** upload on this repository is incomplete: only the POMs and root JARs are anonymously retrievable, so **4.0.0 must not be consumed**. It has no `.module` metadata, no sources, no AAR and no desktop JAR, and no `v4.0.0` tag exists. New builds are staged locally only; remote publishing is disabled.
-
-### Migrating from Android-only artifacts
-
-Follow [MIGRATION-4.0.md](MIGRATION-4.0.md) for API and platform differences.
-
-### Dependency changes
-
-Replace historical JitPack dependencies with `com.freetime:<Module>:4.0.1` after publication. Existing `com.freetime` consumers keep the same case-sensitive root artifact IDs as 3.2.0 and update the version; no module or root artifact rename is required. The former generated target coordinates `Core-android` and `Core-desktop` are gone: the platform artifacts now ride the root coordinate as the `-android` and `-desktop` classifiers, so consumers never reference them directly. Keep Gradle Module Metadata enabled so Gradle can resolve the appropriate variant and dependencies.
 
 ## Project layout and verification
 
@@ -102,24 +88,6 @@ Root settings map `:Core`, `:Design`, `:Browser`, `:Donations`, `:FreetimeWarn`,
 ```
 
 Shared APIs target Android and desktop; Android system integrations such as WorkManager, notification permission and Material You remain platform-specific.
-
-### 4.0.1 validation milestone
-
-`stagePublications` stages **six unified publications totalling 48 files**: each library contributes `POM`, `.module`, main JAR, sources JAR, `-android.aar`, `-android-sources.jar`, `-desktop.jar` and `-desktop-sources.jar` under one coordinate. Every `.module` component reports group `com.freetime`, version `4.0.1`, contains no `available-at` redirect and no `-kmp` reference. `verify_gemfury_release.py 4.0.1 --staging build/public-maven --local-only` validates all 48 files, and a scratch Gradle consumer resolving `com.freetime:Core:4.0.1` from that staged repository receives `Core-4.0.1-desktop.jar` plus `kotlin-stdlib`.
-
-The complete CI command set (`:Design:checkTemplates`, five `testAndroidHostTest`, `:Sample-android:assembleDebug`/`assembleRelease` and `stagePublications`) and the Python publishing test suite pass. Desktop GUI smoke tests and device execution have not been performed; the Core device-test APK has not been compiled. These results do not establish GUI/device runtime behavior.
-
-## Publishing
-
-Each library is staged under **one Maven coordinate**. Gradle's native KMP publications (root, Android, desktop) are first staged privately to `build/native-maven`; `.github/scripts/consolidate_kmp_publications.py` then validates them — SemVer, variant roles, sizes and every checksum — and inlines the platform artifacts into `build/unified-inputs` as classifier artifacts of the root coordinate, rewriting cross-module dependencies from `Core-android`/`Core-desktop` to `Core`. The `unified` Gradle publication attaches those validated files plus a POM that keeps the native dependency block and the `published-with-gradle-metadata` marker. Invalid input aborts before any output is written.
-
-Stage publications locally without credentials (safe; no remote upload):
-
-```sh
-./gradlew stagePublications -PreleaseVersion=4.0.1
-```
-
-`stagePublications` writes all six unified libraries to `build/public-maven`. CI validates that local repository with `verify_gemfury_release.py --local-only`. After successful tests and local validation on `master`, CI creates the version tag if it does not already exist. CI does not upload Maven packages; [FreetimeMaker/Repoitories](https://github.com/FreetimeMaker/Repoitories) builds from tags and manages the public Maven repository separately.
 
 ## Material 3 Expressive + Material You
 
@@ -143,8 +111,6 @@ AppTheme(
 - `SYSTEM`, `LIGHT`, `DARK`, `OLED` and `AUTO_TIME` modes
 - automatic light/dark switching at 07:00 and 19:00 by default
 - the global Liquid Glass state
-
-The project currently pins `androidx.compose.material3:material3:1.5.0-rc01` for the current Material 3 Expressive APIs.
 
 ## App-owned theme templates
 
@@ -263,17 +229,6 @@ FreetimeWarn(
 ```
 
 Supported frequencies are `ONCE`, `ONCE_PER_VERSION` and `ALWAYS`.
-
-## Versioning
-
-The intended 4.0.1 shared release version lives in `gradle/libs.versions.toml`:
-
-```toml
-[versions]
-freetime = "4.0.1"
-```
-
-Both Android and desktop `FreetimeCore.SDK_VERSION` actuals are **4.0.1**. The Android sample uses version code **6** and derives its version name from `project.version`. See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 ## Project principles
 

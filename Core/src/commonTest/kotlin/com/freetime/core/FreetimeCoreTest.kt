@@ -9,7 +9,7 @@ class FreetimeCoreTest {
     @Test
     fun sdkIdentityMatchesRelease() {
         assertEquals("Freetime Core", FreetimeCore.SDK_NAME)
-        assertEquals("4.0.1", FreetimeCore.SDK_VERSION)
+        assertEquals("4.0.2", FreetimeCore.SDK_VERSION)
     }
 
     @Test

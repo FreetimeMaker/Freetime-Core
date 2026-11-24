@@ -1,5 +1,6 @@
 """Offline integration tests using native-shaped Gradle metadata and ZIPs."""
 
+import ast
 import copy
 import hashlib
 import io
@@ -9,7 +10,13 @@ import unittest
 import zipfile
 from pathlib import Path
 
-from consolidate_kmp_publications import MODULES, consolidate
+from consolidate_kmp_publications import (
+    MODULES,
+    _inside,
+    _resolve,
+    _without_suffix,
+    consolidate,
+)
 
 VERSION = "4.0.1"
 
@@ -234,6 +241,38 @@ class ConsolidationTests(unittest.TestCase):
             },
         )
         self.assertEqual(paths, self.run_consolidate())
+
+    def test_runtime_avoids_newer_python_syntax_and_path_apis(self):
+        # JitPack can run this one production script with its legacy system python3.
+        source = (
+            Path(__file__)
+            .with_name("consolidate_kmp_publications.py")
+            .read_text(encoding="utf-8")
+        )
+        tree = ast.parse(source)
+        for node in ast.walk(tree):
+            self.assertNotIsInstance(
+                node, (ast.JoinedStr, ast.AnnAssign, ast.NamedExpr)
+            )
+            if isinstance(node, ast.Attribute):
+                self.assertNotIn(
+                    node.attr, ("is_relative_to", "removeprefix", "removesuffix")
+                )
+
+    def test_path_helpers_preserve_boundary_checks_for_missing_outputs(self):
+        boundary = _resolve(self.base / "not-created")
+        self.assertTrue(_inside(_resolve(boundary / "child"), boundary))
+        self.assertTrue(_inside(boundary, boundary))
+        self.assertFalse(_inside(_resolve(self.base / "not-created-sibling"), boundary))
+        self.assertFalse(_inside(_resolve(boundary / ".." / "outside"), boundary))
+        self.assertFalse(boundary.exists())
+
+    def test_suffix_helper_removes_only_the_exact_suffix(self):
+        self.assertEqual("api", _without_suffix("api-published", "-published"))
+        self.assertEqual(
+            "published-api", _without_suffix("published-api", "-published")
+        )
+        self.assertEqual("api-publishe", _without_suffix("api-publishe", "-published"))
 
     def test_missing_target_metadata(self):
         self.metadata("Notifications-desktop").unlink()

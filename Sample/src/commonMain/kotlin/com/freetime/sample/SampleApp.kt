@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import com.freetime.browser.BrowserMode
 import com.freetime.browser.BrowserOptions
 import com.freetime.browser.FreetimeBrowser
+import com.freetime.browser.FreetimeBrowserScreen
 import com.freetime.browser.rememberBrowserLauncher
 import com.freetime.core.FreetimeCore
 import com.freetime.design.AppTheme
@@ -285,6 +286,18 @@ private fun BrowserSample(
     modifier: Modifier,
     showMessage: (String) -> Unit,
 ) {
+    var showInAppBrowser by remember { mutableStateOf(false) }
+    if (showInAppBrowser) {
+        FreetimeBrowserScreen(
+            initialUrl = "https://keepandroidopen.org",
+            modifier = modifier,
+            title = "In-app browser",
+            javaScriptEnabled = true,
+            onClose = { showInAppBrowser = false },
+        )
+        return
+    }
+
     val browser = rememberBrowserLauncher()
     val url = "https://free-time.me"
     val options = BrowserOptions(
@@ -301,6 +314,8 @@ private fun BrowserSample(
     ) {
         Text("Browser", style = MaterialTheme.typography.headlineMedium)
         Text("Allowed: ${FreetimeBrowser.isAllowed(url, options)}")
+
+        ExpressiveButton("Open in-app browser", { showInAppBrowser = true })
 
         ExpressiveButton("Open website", {
             browser.open(url, options)

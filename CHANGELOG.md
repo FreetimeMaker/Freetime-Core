@@ -2,11 +2,25 @@
 
 All notable changes to Freetime Core are documented here.
 
-The project follows semantic versioning. Only **v4.0.1** is supported. Versions below **v4.0.1** are available only through [JitPack](https://jitpack.io/) and are no longer supported.
+The project follows semantic versioning. Versions below **v4.0.1** are available only through [JitPack](https://jitpack.io/) and are no longer supported.
 
 ## Unreleased
 
 No unreleased changes yet.
+
+## 4.0.2 - 2026-11-24
+
+### Version consistency
+
+- Bumped the shared release version, Android/desktop SDK constants, SDK identity test and current dependency examples to `4.0.2`.
+- Increased the Android sample version code to `7`; its version name remains derived from the shared release version.
+
+### Tagged build compatibility
+
+- Kept the publication consolidator compatible with legacy Python 3 runtimes on JitPack by replacing f-strings, newer string helpers and newer `pathlib` APIs without weakening metadata, checksum or path-boundary validation.
+- Normalized a leading `v` in the shared release version before staging artifacts and invoking strict SemVer validation.
+- Restricted Maven-local publishing to unified publications so native root/target publications cannot collide with them, and added an optional `pythonExecutable` Gradle property.
+- Added regression coverage for compatibility helpers and publication configuration. Existing release tags are not moved; remote JitPack hosting remains unverified.
 
 ## 4.0.1 - 2026-11-19
 

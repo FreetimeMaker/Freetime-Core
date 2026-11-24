@@ -4,10 +4,10 @@ Small, dependency-light base module shared by the other Freetime Core libraries.
 
 ## Dependency
 
-Version **4.0.1** is staged locally; this dependency becomes available once the release is published and anonymously verified.
+Version **4.0.2** is staged locally; this dependency becomes available once the release is published and anonymously verified.
 
 ```kotlin
-implementation("com.freetime:Core:4.0.1")
+implementation("com.freetime:Core:4.0.2")
 ```
 
 Add `https://repo.free-time.me/maven/` to your repositories. See the root [installation and JitPack migration guide](../README.md#installation) for repository setup and access requirements. Anonymous access and complete KMP metadata must be verified before release. See the [publishing requirements](../README.md#publishing); the historical AAR-only public uploader is not suitable for KMP.

@@ -6,10 +6,10 @@ The shared UI uses Material 3 exported by `:Design`.
 
 ## Dependency
 
-Version **4.0.1** is staged locally; this dependency becomes available once the release is published and anonymously verified.
+Version **4.0.2** is staged locally; this dependency becomes available once the release is published and anonymously verified.
 
 ```kotlin
-implementation("com.freetime:FreetimeWarn:4.0.1")
+implementation("com.freetime:FreetimeWarn:4.0.2")
 ```
 
 Add `https://repo.free-time.me/maven/` to your repositories. See the root [installation and JitPack migration guide](../README.md#installation) for repository setup and access requirements. Anonymous access and complete KMP metadata must be verified before release. See the [publishing requirements](../README.md#publishing); the historical AAR-only public uploader is not suitable for KMP.

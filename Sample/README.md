@@ -30,9 +30,11 @@ Run desktop with `:Sample:run`, or build/install the
 Android application with `:Sample-android:assembleDebug` /
 `:Sample-android:installDebug`. Successful reruns passed `:Sample:compileKotlinDesktop`, `:Sample:desktopJar`, `:Sample-android:assembleDebug` and `:Sample-android:assembleRelease`, along with `:Design:checkTemplates`. GUI/device execution and `installDebug` are not established by those results.
 
-The project release version is **4.0.1**. The Android host uses version code **6** and `versionName = project.version.toString()`. Desktop GUI smoke tests and device tests have not been run. Only Android and desktop JVM are supported, not iOS or web. Desktop Browser opens external URLs; Android has the embedded WebView. See the [migration guide](../MIGRATION-4.0.md).
+The project release version is **4.0.2**. The Android host uses version code **7** and `versionName = project.version.toString()`. Desktop GUI smoke tests and device tests have not been run. Only Android and desktop JVM are supported, not iOS or web. Desktop Browser opens external URLs; Android has the embedded WebView. See the [migration guide](../MIGRATION-4.0.md).
 
-## Release validation status
+## Recorded 4.0.1 validation
+
+The results below describe the previous release. Version `4.0.2` requires a fresh build and local publication validation; they do not establish remote availability.
 
 `desktopTest` and `testAndroidHostTest` for Core, Browser, Donations, FreetimeWarn and Notifications passed, along with the Python publishing test suite. JVM test counts (desktop / Android host) were Core 3 / 3, Browser 6 / 6, Donations 2 / 2, FreetimeWarn 2 / 2 and Notifications 36 / 34.
 

@@ -21,6 +21,20 @@ class ReleaseVersionTests(unittest.TestCase):
         self.assertNotIn("Freetime-Core-KMP", script)
         self.assertIn("https://github.com/FreetimeMaker/Freetime-Core", script)
 
+    def test_tag_versions_are_normalized_before_publication(self):
+        script = (ROOT / "build.gradle.kts").read_text(encoding="utf-8")
+        self.assertIn('.map { it.removePrefix("v") }', script)
+        self.assertIn("version = releaseVersion.get()", script)
+        self.assertIn("releaseVersion.get())", script)
+
+    def test_maven_local_uses_only_the_unified_publication(self):
+        script = (ROOT / "build.gradle.kts").read_text(encoding="utf-8")
+        self.assertIn("tasks.withType<PublishToMavenLocal>().configureEach", script)
+        self.assertIn(
+            'if (name != "publishUnifiedPublicationToMavenLocal") enabled = false',
+            script,
+        )
+
     def test_platform_sdk_versions_match_catalog(self):
         for target in ("android", "desktop"):
             path = (
@@ -71,6 +85,34 @@ class ReleaseVersionTests(unittest.TestCase):
             ROOT / "Sample/src/desktopMain/kotlin/com/freetime/sample/Main.kt",
         ):
             self.assertIn("SampleApp()", entry.read_text())
+
+    def test_documented_version_and_latest_changelog_match_catalog(self):
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn(f'freetime = "{self.version}"', readme)
+        changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+
+        releases = re.findall(r"^## (\d+\.\d+\.\d+) -", changelog, re.MULTILINE)
+        self.assertTrue(releases)
+        self.assertEqual(self.version, releases[0])
+
+    def test_sdk_identity_test_matches_catalog(self):
+        source = (
+            ROOT / "Core/src/commonTest/kotlin/com/freetime/core/FreetimeCoreTest.kt"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            f'assertEquals("{self.version}", FreetimeCore.SDK_VERSION)', source
+        )
+
+    def test_sample_documentation_matches_app_version(self):
+        script = (ROOT / "Sample/androidApp/build.gradle.kts").read_text(
+            encoding="utf-8"
+        )
+        code = re.search(r"versionCode\s*=\s*(\d+)", script).group(1)
+        documentation = (ROOT / "Sample/README.md").read_text(encoding="utf-8")
+        self.assertIn(
+            f"The project release version is **{self.version}**", documentation
+        )
+        self.assertIn(f"version code **{code}**", documentation)
 
     def test_sample_uses_shared_release_version(self):
         script = (ROOT / "Sample/androidApp/build.gradle.kts").read_text()
